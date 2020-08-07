@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import auth
 
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,12 +10,16 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Create your views here.
+def init_group():
+    group = Group(name = "Editor")
+    group.save()
+
+
 def signup(request):
     if (request.method) == 'POST':
         if request.POST.get('pwd1') == request.POST.get('pwd2'):
-            user = User.objects.create_user(
-                username=request.POST.get('id'), password=request.POST.get('pwd1')
-                )
+            user = User.objects.create_user(username=request.POST.get('id'), password=request.POST.get('pwd1'))
+            user.groups.add(request.POST.get('type'))
             auth.login(request, user)
             return render(request,'login/signup.html')
         return  render(request,'login/signup.html')
