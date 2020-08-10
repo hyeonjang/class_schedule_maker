@@ -1,50 +1,21 @@
-<head>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
-    <link rel="shortcut icon" href="{% static 'images/favicon.ico' type-image/x-icon %}">
-    <title>Timetable Maker v0.1</title>
-</head>
+{% extends 'accounts/base.html' %}
 
-<body>
-    <div class="signup">
-        <h1>Signup</h1>
-        <form method="POST" action="">
-            {% csrf_token %}
-            <table>
-                <tr>
-                 <td>id: <input type="text" name="id"/></td>
-                </tr>
-                <tr>
-                    <td>password: <input type="password" name="pwd1"/></td>
-                 </tr>
-                <tr>
-                   <td>re-password: <input type="password" name="pwd2"/></td>
-                </tr>
-                <tr>
-                    <td>email: <input type="email" name="email"/></td>
-                </tr>
-                <tr>
-                    <td>성: <input type="text" name="last_name"></td>
-                </tr>
-                <tr>
-                    <td>이름: <input type="text" name="first_name"></td>
-                </tr>
-                <tr>
-                    <td>
-                        <select size="3" name="type">
-                        <option value="" selected>-- select --</option>>
-                        <option value="0"> 교과 </option>>
-                        <option value="1"> 담임 </option>>
-                        <option value="2"> 관리자</option>>
-                    </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="submit" class="btn btn-primary btn-block btn-large">Signup</button>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
-</body>
+{% block content %}
+  <h2>Sign up</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <p>
+        {{ field.label_tag }}<br>
+        {{ field }}
+        {% if field.help_text %}
+          <small style="color: grey">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </p>
+    {% endfor %}
+    <button type="submit">Sign up</button>
+  </form>
+{% endblock %}

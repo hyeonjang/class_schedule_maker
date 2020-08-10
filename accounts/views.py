@@ -1,42 +1,43 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, Group
 from django.contrib import auth
-
 from django.http import HttpResponse, HttpResponseRedirect
-# import requests, json, base64
-# from timetable.models import TimeTable
-# from course.models import Course
-from datetime import datetime, timedelta
-from operator import itemgetter
+from . import models, forms
 
 # Create your views here.
 
 def signup(request):
-    if (request.method) == 'POST':
-        if request.POST.get('pwd1') == request.POST.get('pwd2'):
-            user = User.objects.create_user(username=request.POST.get('id'), password=request.POST.get('pwd1'))
-            user.last_name = request.POST.get('last_name')
-            user.first_name = request.POST.get('first_name')
-            user.save()
-            #user.groups.add(request.POST.get('type'))
+    if request.method == 'POST':
+        form = forms.SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = auth.authenticate(username=username, password=password)
             auth.login(request, user)
-            return render(request,'accounts/login.html')
-        return  render(request,'accounts/signup.html')
+            return redirect('home')
     else:
-        return render(request, 'accounts/signup.html')
+        form = forms.SignUpForm()
+    return render(request, 'accounts/signup.html', {'form':form })
 
 def login(request):
-    if (request.method) == 'POST':
-        username = request.POST.get('id')
-        password = request.POST.get('pwd')
-        user = auth.authenticate(request, username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return HttpResponseRedirect('home')
-        else:
-            return render(request, 'accounts/login.html', {'error': 'username or password is incorrect'})
+    if request.method == 'POST':
+        form = forms.LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = auth.authenticate(username=username, password=password)
+            if user:
+                auth.login(request, user)
+                return redirect('home')
+            # form.add_error(None, 'invalid Username or Password')
     else:
-        return render(request, 'accounts/login.html')
+        form = forms.LoginForm()
+    return render(request, 'accounts/login.html', {'form':form })
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect('home')
 
 # def userauth(id, pwd):
 #     password_bytes = pwd.encode('ascii')
