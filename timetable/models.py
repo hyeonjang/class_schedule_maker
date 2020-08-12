@@ -15,3 +15,11 @@ class TimeTable(models.Model):
                 )
             )
 
+class Term(models.Model):
+    semesterCode = models.PrimaryKey()
+
+class ClassRoom(models.Model):
+
+class Teacher(models.Model):
+
+class Subject(models.Model):
