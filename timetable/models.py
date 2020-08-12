@@ -1,16 +1,17 @@
 from django.conf import settings
 from django.db import models
-from django.utils import timezone
-from django.contrib.auth.models import User
+
+from django.contrib.postgres.fields import ArrayField
+
 
 # Create your models here.
 class TimeTable(models.Model):
-    studentID = models.CharField(max_length=200)
-    studentName = models.CharField(max_length=200)
-    courses = models.CharField(max_length=200)
-    published_date = models.DateTimeField(
-            blank=True, null=True)
-
-    def __str__(self):
-        return self.studentID
+    Teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    classGrade = models.SmallIntegerField(default=0)
+    classNumber = models.SmallIntegerField(default=0)
+    Table = ArrayField(
+                ArrayField(
+                    ArrayField(models.CharField(max_length=50 ,default=''))
+                )
+            )
 

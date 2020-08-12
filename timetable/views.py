@@ -1,7 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
-from .models import TimeTable
+
+from .forms import TableForm
 
 def table_list(request):
-    tables = TimeTable.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
-    return render(request, 'timetable/table_list.html', {'tables': tables})
+    if request.POST:
+        form = TableForm(request.POST)
+        return redirect('accounts/login.html')
+    else:
+        form = TableForm()
+    return render(request, 'timetable/timetable.html', {'form': form})
