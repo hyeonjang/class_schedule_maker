@@ -13,9 +13,8 @@ def classroom(request):
 
 # @@todo 2-array;
 def subject(request):
-    l_form = [[]]
+    l_form = []
     for i in range(0,5):
-        for j in range(0,6):
-            form = TableForm(request.POST)
+        form = TableForm(request.POST)
         l_form.append(form)
     return render(request, 'timetable/subject.html', {'form': l_form})
