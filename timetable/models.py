@@ -3,22 +3,22 @@ from django.db import models
 
 # Create your models here.
 class TimeTable(models.Model):
-    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    classGrade = models.SmallIntegerField(default=0) #@@todo class room
+    c_teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    classGrade = models.SmallIntegerField(default=0)
     classNumber = models.SmallIntegerField(default=0)
-    weekDay = models.CharField(max_length=50)
-    time = models.CharField(max_length=50)
-    semester = models.IntegerField(default=0)
-    subject = models.CharField(max_length=50)
+    classRoom = models.SmallIntegerField(default=0)
+    c_subject = models.CharField(max_length=50)
+    i_time = models.SmallIntegerField(default=0)
+    c_weekday = models.CharField(max_length=50)
 
-class sTerm(models.Model):
+class Term(models.Model):
     code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 
-class sClass(models.Model):
-    code = models.ForeignKey(TimeTable, on_delete=models.CASCADE) # actually class number
-
-class sTeacher(models.Model):
+class ClassRoom(models.Model):
     code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 
-class sSubject(models.Model):
+class Teacher(models.Model):
+    code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
+
+class Subject(models.Model):
     code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
