@@ -1,25 +1,24 @@
 from django.conf import settings
 from django.db import models
 
-from django.contrib.postgres.fields import ArrayField
-
-
 # Create your models here.
 class TimeTable(models.Model):
-    Teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    c_teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     classGrade = models.SmallIntegerField(default=0)
     classNumber = models.SmallIntegerField(default=0)
-    Table = ArrayField(
-                ArrayField(
-                    ArrayField(models.CharField(max_length=50 ,default=''))
-                )
-            )
+    classRoom = models.SmallIntegerField(default=0)
+    c_subject = models.CharField(max_length=50)
+    i_time = models.SmallIntegerField(default=0)
+    c_weekday = models.CharField(max_length=50)
 
 class Term(models.Model):
-    semesterCode = models.PrimaryKey()
+    code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 
 class ClassRoom(models.Model):
+    code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 
 class Teacher(models.Model):
+    code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 
 class Subject(models.Model):
+    code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)

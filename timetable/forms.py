@@ -2,6 +2,6 @@ from django import forms
 from .models import TimeTable
 
 class TableForm(forms.ModelForm):
-    class Meta:
+   class Meta:
         model = TimeTable
-        fields = ['Teacher', 'classGrade', 'Table']
+        fields = ['c_teacher', 'classGrade']
