@@ -3,11 +3,19 @@
 {% block content %}
   <h2>Subject</h2>
   <form method="post">
+    {% csrf_token %}
     <table>
-      {% for f in form %}
-          {{ f.as_ul }}
+      {% for form in list_form %}
+      <tr>
+          {% for tup in form %}
+          <td>
+            {{ tup.c_teacher }}
+            {{ tup.classNumber }}
+          </td>
+          {% endfor %}
+      </tr>
       {% endfor %}
     </table>
-    <button class="btn btn-primary btn-block">Login</button>
+    <button type="submit">Login</button>
   </form>
 {% endblock %}
