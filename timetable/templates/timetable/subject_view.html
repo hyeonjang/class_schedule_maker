@@ -5,12 +5,12 @@
   <form method="post">
     {% csrf_token %}
     <table>
-      {% for form in list_form %}
+      {% for oneday in week %}
       <tr>
-          {% for tup in form %}
+          {% for course in oneday %}
           <td>
-            {{ tup.c_teacher }}
-            {{ tup.classNumber }}
+            {{ course.c_teacher }}
+            {{ course.classNumber }}
           </td>
           {% endfor %}
       </tr>

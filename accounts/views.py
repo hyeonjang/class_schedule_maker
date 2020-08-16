@@ -21,16 +21,16 @@ def signup(request):
     return render(request, 'accounts/signup.html', {'form':form })
 
 def login(request):
-    if request.method == 'POST':
+    if request.POST:
         form = forms.LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                return redirect('home')
-            # form.add_error(None, 'invalid Username or Password')
+        username = request.POST['username']
+        password = request.POST['password']
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('../home')
+        else:
+            form.add_error(None, 'invalid Username or Password')
     else:
         form = forms.LoginForm()
     return render(request, 'accounts/login.html', {'form':form })
