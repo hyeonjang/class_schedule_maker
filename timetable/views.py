@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
-from .forms import TableForm
+from .forms import SubjectTableForm
 from .models import TimeTable
 
 def home(request):
@@ -22,9 +22,9 @@ def subject_form(request):
     week = [[0]*5]*8
     for row in range(8):
         for col in range(5):
-            form = TableForm(request.POST)
-            table = TimeTable(c_teacher=request.user, c_weekday=weekday[col], i_time=row)
-            if form.is_valid():
+            form = SubjectTableForm(request.POST)
+            table = TimeTable(c_teacher=request.user, c_weekday=weekday[col], i_time=row+1)
+            if form.is_valid() and form.has_changed():
                 table.save()
             else:
                 print(form.errors)
@@ -38,9 +38,10 @@ def subject_form(request):
     return render(request, 'timetable/subject_form.html', context )
 
 def subject_view(request):
-    form = TimeTable.objects.get(c_teacher=request.user.id)
+    weekday = ['월', '화', '수', '목', '금']
     week = [[0]*5]*8
     for row in range(8):
         for col in range(5):
+            form = TimeTable.objects.get(c_teacher=request.user.id, c_weekday=weekday[col], i_time=row+1)
             week[row][col] = form
     return render(request, 'timetable/subject_view.html', {'week': week } )

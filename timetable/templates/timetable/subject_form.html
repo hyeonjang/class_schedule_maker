@@ -13,7 +13,9 @@
       <tr>
           <td>{{ forloop.counter }}</td>
           {% for course in oneday %}
-            <td> {{ course.classNumber }} </td>
+            <td> {{ course.classNumber }} 
+                 {{ course.subject }} 
+            </td>
           {% endfor %}
       </tr>
       {% endfor %}
