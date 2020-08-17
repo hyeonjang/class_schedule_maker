@@ -7,7 +7,7 @@ def home(request):
     if request.user is None:
         return render(request, 'accounts/login.html')
     else:
-        return render(request, 'timetable/subject_view.html')
+        return subject_view(request)
 
 def classroom(request):
     if request.POST:
@@ -18,33 +18,42 @@ def classroom(request):
     return render(request, 'timetable/classroom.html', {'form': form} )
 
 def subject_form(request):
+    courses = []
     weekday = ['월', '화', '수', '목', '금']
-    week = [[0]*5]*8
     for row in range(8):
         for col in range(5):
-            follow, is_follow = TimeTable.objects.get_or_create(c_teacher=request.user, c_weekday=weekday[col], i_time=row+1)
+            follow, is_follow = TimeTable.objects.get_or_create(teacher=request.user, weekday=weekday[col], time=row+1)
             if request.POST:
-                form = SubjectTableForm(request.POST)
-                if form.is_valid() and form.has_changed():
+                form = SubjectTableForm(request.POST, initial={'id':follow.id, 'classNumber':follow.classNumber, 'time':follow.time, 'subject':follow.subject, 'weekday':follow.weekday })
+                if form.is_valid():
+                    follow.classNumber = request.POST['classNumber']
+                    follow.subject = form.cleaned_data.get('subject')
                     follow.save()
+                    redirect('timetable/subject_form.html')
                 else:
                     print(form.errors)
             else:
-                form = SubjectTableForm(initial={'classNumber':follow.classNumber, 'subject':follow.c_subject, 'weekday':follow.c_weekday })
-            week[row][col] = form
+                 form = SubjectTableForm(initial={'id':follow.id, 'classNumber':follow.classNumber, 'time':follow.time, 'subject':follow.subject, 'weekday':follow.weekday })
+            courses.append(form)
 
     context = {
-        'weekday':weekday,
-        'week':week,
+        'courses': courses,
+        'weekday': weekday,
     }
 
     return render(request, 'timetable/subject_form.html', context )
 
 def subject_view(request):
-    weekday = ['월', '화', '수', '목', '금']
-    week = [[0]*5]*8
+    week  = [[0]*5]*8
+    weeks = ['월', '화', '수', '목', '금']
     for row in range(8):
         for col in range(5):
-            form = TimeTable.objects.get(c_teacher=request.user.id, c_weekday=weekday[col], i_time=row+1)
+            form = TimeTable.objects.get(teacher=request.user, weekday=weeks[col], time=row+1)
             week[row][col] = form
-    return render(request, 'timetable/subject_view.html', {'week': week } )
+            print(form)
+    context = {
+        'weekday':weeks,
+        'week':week,
+    }
+
+    return render(request, 'timetable/subject_view.html', context )

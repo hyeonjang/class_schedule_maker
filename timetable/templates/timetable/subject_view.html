@@ -1,21 +1,31 @@
 {% extends 'accounts/base.html' %}
 
 {% block content %}
-  <h2>Subject</h2>
+  <h2>Subject View</h2>
   <form method="post">
     {% csrf_token %}
     <table>
+      <td> 시간표 </td>
+
+      <!-- {% for oneday in weekday %} 
+        <td>{{ oneday }}</td> 
+      {% endfor %} -->
+      
       {% for oneday in week %}
       <tr>
+          <td>{{ forloop.counter }}</td>
           {% for course in oneday %}
-          <td>
-            {{ course.c_teacher }}
-            {{ course.classNumber }}
-          </td>
+            <td> 
+                <p> id {{ course.id }} </p>
+                <p> num {{ course.classNumber }} </p>
+                <p> sub {{ course.subject }} </p>
+                <p>{{ course.teacher }} </p>
+                <p>{{ course.weekday }} </p>
+            </td>
           {% endfor %}
       </tr>
       {% endfor %}
+
     </table>
-    <button type="submit">Login</button>
   </form>
 {% endblock %}
