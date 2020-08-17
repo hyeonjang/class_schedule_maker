@@ -22,12 +22,15 @@ def subject_form(request):
     week = [[0]*5]*8
     for row in range(8):
         for col in range(5):
-            form = SubjectTableForm(request.POST)
-            table = TimeTable(c_teacher=request.user, c_weekday=weekday[col], i_time=row+1)
-            if form.is_valid() and form.has_changed():
-                table.save()
+            follow, is_follow = TimeTable.objects.get_or_create(c_teacher=request.user, c_weekday=weekday[col], i_time=row+1)
+            if request.POST:
+                form = SubjectTableForm(request.POST)
+                if form.is_valid() and form.has_changed():
+                    follow.save()
+                else:
+                    print(form.errors)
             else:
-                print(form.errors)
+                form = SubjectTableForm(initial={'classNumber':follow.classNumber, 'subject':follow.c_subject, 'weekday':follow.c_weekday })
             week[row][col] = form
 
     context = {

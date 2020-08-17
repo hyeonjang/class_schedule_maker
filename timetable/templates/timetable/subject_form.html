@@ -13,8 +13,10 @@
       <tr>
           <td>{{ forloop.counter }}</td>
           {% for course in oneday %}
-            <td> {{ course.classNumber }} 
-                 {{ course.subject }} 
+            <td> 
+                {{ course.classNumber }} 
+                {{ course.subject }} 
+                {{ course.weekday }}
             </td>
           {% endfor %}
       </tr>
