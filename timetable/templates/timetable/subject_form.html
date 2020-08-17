@@ -2,7 +2,7 @@
 
 {% block content %}
   <h2>Subject Form</h2>
-  <form action="{% url 'subject_view' %}" method="post">
+  <form action="{% url 'form' %}" method="post">
     {% csrf_token %}
     <table border="1">
 
@@ -15,11 +15,12 @@
           <td>
             {{c.id}}
             {{c.subject}}
+            {{c.weekday}}
           </td>
         {% cycle '' '' '' '' '</tr>' %}
       {% endfor %}
 
     </table>
-    <button type="submit">수정</button>
+    <input type="submit">
   </form>
 {% endblock %}

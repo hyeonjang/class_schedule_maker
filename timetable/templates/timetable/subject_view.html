@@ -4,27 +4,22 @@
   <h2>Subject View</h2>
   <form method="post">
     {% csrf_token %}
-    <table>
-      <td> 시간표 </td>
+    <table border="1">
 
-      <!-- {% for oneday in weekday %} 
+      {% for oneday in weekday %} 
         <td>{{ oneday }}</td> 
-      {% endfor %} -->
-      
-      {% for oneday in week %}
-      <tr>
-          <td>{{ forloop.counter }}</td>
-          {% for course in oneday %}
-            <td> 
-                <p> id {{ course.id }} </p>
-                <p> num {{ course.classNumber }} </p>
-                <p> sub {{ course.subject }} </p>
-                <p>{{ course.teacher }} </p>
-                <p>{{ course.weekday }} </p>
-            </td>
-          {% endfor %}
-      </tr>
       {% endfor %}
+
+      {% for c in courses %}
+        {% cycle '<tr>' '' '' '' '' %}
+          <td>
+            <p>{{c.id}}</p>
+            <p>{{c.subject}}</p>
+            <p>{{c.created_time}}</p>
+          </td>
+        {% cycle '' '' '' '' '</tr>' %}
+      {% endfor %}
+
 
     </table>
   </form>
