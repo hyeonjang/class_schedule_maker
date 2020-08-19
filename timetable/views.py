@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
-from .forms import SubjectTableForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db import transaction
+from .forms import SubjectTableForm, TableForm
 from .models import TimeTable
 
 def home(request):
@@ -17,57 +18,24 @@ def classroom(request):
         form = TableForm()
     return render(request, 'timetable/classroom.html', {'form': form} )
 
-# def subject_form(request):
-#     courses = []
-#     weekday = ['월', '화', '수', '목', '금']
-#     for row in range(8):
-#         for col in range(5):
-#             follow, is_follow = TimeTable.objects.get_or_create(teacher=request.user, weekday=weekday[col], time=row+1)
-#             if request.method == 'POST':
-#                 form = SubjectTableForm(request.POST, initial={'id':follow.id, 'classNumber':follow.classNumber, 'time':follow.time, 'subject':follow.subject, 'weekday':follow.weekday })
-#                 if form.is_valid():
-#                     follow.classNumber = form.cleaned_data['classNumber']
-#                     follow.subject = form.cleaned_data['subject']
-#                     follow.save()
-#                     redirect(follow)
-#                 else:
-#                     print(form.errors)
-#             else:
-#                  form = SubjectTableForm(initial={'id':follow.id, 'classNumber':follow.classNumber, 'time':follow.time, 'subject':follow.subject, 'weekday':follow.weekday })
-#             courses.append(form)
-
-#     context = {
-#         'courses': courses,
-#         'weekday': weekday,
-#     }
-
-#     return render(request, 'timetable/subject_form.html', context )
-
-def modify(request):
+def create(request):
     courses = []
     weekday = ['월', '화', '수', '목', '금']
     for row in range(8):
         for col in range(5):
-            try:
-                follow = TimeTable.objects.get(teacher=request.user, weekday=weekday[col], time=row+1)
-            except TimeTable.DoesNotExist:
-                follow = None
             if request.POST:
-                form = SubjectTableForm({'id':follow.id, 'classNumber':follow.classNumber, 'time':follow.time, 'subject':follow.subject, 'weekday':follow.weekday })
-                form.time = 1
+                form = TableForm(request.POST)
                 if form.is_valid():
-                    follow.classNumber = form.cleaned_data['classNumber']
-                    follow.subject = request.POST.get('subject')
-                    print(form.cleaned_data)
-                    follow.save()
-                    redirect('view')
+                    course = form.save(commit=False)
+                    course.teacher = request.user
+                    course.time = row+1
+                    course.weekday = weekday[col]
+                    course.classNumber = 0
+                    course.save()
                 else:
                     print(form.errors)
-                    from django.contrib import messages
-                    messages.error(request, form.errors)
             else:
-                print("get")
-                form = SubjectTableForm(initial={'id':follow.id, 'classNumber':follow.classNumber, 'time':follow.time, 'subject':follow.subject, 'weekday':follow.weekday })
+                 form = TableForm()
             courses.append(form)
 
     context = {
@@ -75,8 +43,37 @@ def modify(request):
         'weekday': weekday,
     }
 
-    return render(request, 'timetable/subject_form.html', context )
+    return render(request, 'timetable/create.html', context )
 
+def modify(request):
+    courses = []
+    weekday = ['월', '화', '수', '목', '금']
+    forms = []
+    for row in range(8):
+        for col in range(5):
+            follow = TimeTable.objects.get(teacher=request.user, weekday=weekday[col], time=row+1)
+            if request.POST:
+                form = TableForm(request.POST, instance=follow)
+                if form.is_valid():
+                    with transaction.atomic(): 
+                        form.save()
+                else:
+                    from django.contrib import messages
+                    messages.error(request, form.errors)
+            else:
+                print("get")
+                form = TableForm(instance=follow, initial={'id':follow.id})
+            courses.append(form)
+
+    context = {
+        'courses': courses,
+        'weekday': weekday,
+    }
+
+    for f in forms:
+        f.save()
+
+    return render(request, 'timetable/modify.html', context )
 
 def subject_view(request):
     courses = []

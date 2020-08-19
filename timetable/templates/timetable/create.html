@@ -1,0 +1,26 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+  <h2>Subject Form</h2>
+  <form action="{% url 'create' %}" method="post">
+    {% csrf_token %}
+    <table border="1">
+
+      {% for oneday in weekday %} 
+        <td>{{ oneday }}</td> 
+      {% endfor %}
+
+      {% for form in courses %}
+        {% cycle '<tr>' '' '' '' '' %}
+          <td>
+            {{ form.classNumber }}
+            {{ form.subject }}
+            {{ form.time }}
+          </td>
+        {% cycle '' '' '' '' '</tr>' %}
+      {% endfor %}
+
+    </table>
+    <input type="submit">
+  </form>
+{% endblock %}

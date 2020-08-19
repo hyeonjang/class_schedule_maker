@@ -5,10 +5,10 @@ from django.utils import timezone
 # Create your models here.
 class TimeTable(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    classGrade = models.SmallIntegerField(default=0)
-    classNumber = models.SmallIntegerField(default=0)
-    classRoom = models.SmallIntegerField(default=0)
-    subject = models.CharField(max_length=50)
+    classGrade = models.SmallIntegerField(default=0, blank=True)
+    classNumber = models.SmallIntegerField(default=1, blank=True)
+    classRoom = models.SmallIntegerField(default=0, blank=True)
+    subject = models.CharField(max_length=50, blank=True)
     time = models.SmallIntegerField(default=0)
     weekday = models.CharField(max_length=50)
     created_time = models.DateTimeField(default=timezone.now)
