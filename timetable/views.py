@@ -48,15 +48,13 @@ def create(request):
 def modify(request):
     courses = []
     weekday = ['월', '화', '수', '목', '금']
-    forms = []
     for row in range(8):
         for col in range(5):
             follow = TimeTable.objects.get(teacher=request.user, weekday=weekday[col], time=row+1)
             if request.POST:
                 form = TableForm(request.POST, instance=follow)
                 if form.is_valid():
-                    with transaction.atomic(): 
-                        form.save()
+                    form.save()
                 else:
                     from django.contrib import messages
                     messages.error(request, form.errors)
@@ -69,10 +67,6 @@ def modify(request):
         'courses': courses,
         'weekday': weekday,
     }
-
-    for f in forms:
-        f.save()
-
     return render(request, 'timetable/modify.html', context )
 
 def subject_view(request):

@@ -1,5 +1,7 @@
 from django import forms
 from .models import TimeTable
+from django.forms import formset_factory
+
 
 class SubjectTableForm(forms.Form):
    id = forms.IntegerField() ## for debugging
@@ -31,4 +33,3 @@ class TableForm(forms.ModelForm):
    #       print("invalid")
 
    #    return subject
-     
