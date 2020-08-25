@@ -2,27 +2,30 @@
 
 {% block content %}
   <h2>Subject Form</h2>
+  <form action="{% url 'modify' %}" method="post">
     {% csrf_token %}
+    {{ formset.management_form }}
+    {{ formset.non_form_errors.as_ul }}
+    
     <table border="1">
+      <tr>
+      <thead>
+        {% for oneday in weekday %} 
+          <td>{{ oneday }}</td> 
+        {% endfor %}
+      </thead>
+      </tr>
 
-      {% for oneday in weekday %} 
-        <td>{{ oneday }}</td> 
-      {% endfor %}
-
-      {% for form in courses %}
-      <form action="{% url 'modify' %}" method="post">
-        {% csrf_token %}
+      {% for form in formset %}
         {% cycle '<tr>' '' '' '' '' %}
           <td>
-            {{form.id}}
-            {{form.classNumber}}
-            {{form.subject}}
+            {{ form.id }}
+            {{ form.subject }}
           </td>
         {% cycle '' '' '' '' '</tr>' %}
-      <input type="submit">
-      </form>
       {% endfor %}
 
     </table>
-    <input type="submit">
+    <input type="submit"/>
+  </form>
 {% endblock %}

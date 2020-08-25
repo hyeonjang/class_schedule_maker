@@ -1,6 +1,6 @@
 from django import forms
 from .models import TimeTable
-from django.forms import formset_factory
+from django.forms import modelformset_factory
 
 
 class SubjectTableForm(forms.Form):
@@ -24,6 +24,9 @@ class TableForm(forms.ModelForm):
       model = TimeTable
       fields = ['id', 'classNumber', 'subject']
    
+class ArticleForm(forms.Form):
+   subject = forms.CharField(max_length=64)
+   weekday = forms.CharField(max_length=64)
    # def clean_subject(self):
    #    if self.cleaned_data['subject'] != None:
    #       print(self.cleaned_data['subject'])

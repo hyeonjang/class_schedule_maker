@@ -4,23 +4,27 @@
   <h2>Subject Form</h2>
   <form action="{% url 'create' %}" method="post">
     {% csrf_token %}
+    {{ formset.management_form }}
+    {{ formset.non_form_errors.as_ul }}
+  
     <table border="1">
+      <tr>
+      <thead>
+        {% for oneday in weekday %} 
+          <td>{{ oneday }}</td> 
+          {% endfor %}
+        </thead>
+      </tr>
 
-      {% for oneday in weekday %} 
-        <td>{{ oneday }}</td> 
-      {% endfor %}
-
-      {% for form in courses %}
+        {% for form in formset %}
         {% cycle '<tr>' '' '' '' '' %}
           <td>
-            {{ form.classNumber }}
-            {{ form.subject }}
-            {{ form.time }}
+            {{ form.as_p }}
           </td>
         {% cycle '' '' '' '' '</tr>' %}
-      {% endfor %}
+        {% endfor %}
 
-    </table>
-    <input type="submit">
+  </table>
+    <input type="submit"/>
   </form>
 {% endblock %}

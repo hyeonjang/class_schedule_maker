@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
-from .forms import SubjectTableForm, TableForm
+from .forms import SubjectTableForm, TableForm, ArticleForm
 from .models import TimeTable
+from django.forms import formset_factory, modelformset_factory, inlineformset_factory
 
 def home(request):
     if request.user is None:
@@ -19,65 +20,63 @@ def classroom(request):
     return render(request, 'timetable/classroom.html', {'form': form} )
 
 def create(request):
-    courses = []
     weekday = ['월', '화', '수', '목', '금']
-    for row in range(8):
-        for col in range(5):
-            if request.POST:
-                form = TableForm(request.POST)
-                if form.is_valid():
-                    course = form.save(commit=False)
-                    course.teacher = request.user
-                    course.time = row+1
-                    course.weekday = weekday[col]
-                    course.classNumber = 0
-                    course.save()
-                else:
-                    print(form.errors)
-            else:
-                 form = TableForm()
-            courses.append(form)
+    TimeTableSet = inlineformset_factory(User, TimeTable, extra=40, form=TableForm)
+    teacher = request.user
+    if request.POST:
+        formset = TimeTableSet(request.POST, instance=teacher)
+        if formset.is_valid():
+            for i, form in enumerate(formset):
+                instance = form.save(commit=False)
+                instance.time = (i//5)%8+1 # row major table input
+                instance.weekday = weekday[i%5]
+                instance.save()
+        else:
+            print(formset.errors)
+        return redirect('view') 
+    else:
+        formset = TimeTableSet()
 
     context = {
-        'courses': courses,
+        'formset': formset,
         'weekday': weekday,
     }
 
-    return render(request, 'timetable/create.html', context )
+    return render(request, 'timetable/create.html', context)
 
 def modify(request):
-    courses = []
     weekday = ['월', '화', '수', '목', '금']
-    for row in range(8):
-        for col in range(5):
-            follow = TimeTable.objects.get(teacher=request.user, weekday=weekday[col], time=row+1)
-            if request.POST:
-                form = TableForm(request.POST, instance=follow)
-                if form.is_valid():
-                    form.save()
-                else:
-                    from django.contrib import messages
-                    messages.error(request, form.errors)
-            else:
-                print("get")
-                form = TableForm(instance=follow, initial={'id':follow.id})
-            courses.append(form)
+    TimeTableSet = inlineformset_factory(User, TimeTable, extra=40, form=TableForm)
+    teacher = request.user
+    if request.POST:
+        formset = TimeTableSet(request.POST, instance=teacher)
+        if formset.is_valid():
+            for i, form in enumerate(formset):
+                instance = TimeTable.objects.get(teacher=request.user, time=(i//5)%8+1, weekday=weekday[i%5])
+                instance.subject = form.cleaned_data['subject']
+                instance.save()
+        else:
+            print(formset.errors)
+        return redirect('view') 
+    else:
+        formset = TimeTableSet()
 
     context = {
-        'courses': courses,
+        'formset': formset,
         'weekday': weekday,
     }
+
     return render(request, 'timetable/modify.html', context )
 
 def subject_view(request):
-    courses = []
+    formset = []
     weekday = ['월', '화', '수', '목', '금']
     for row in range(8):
         for col in range(5):
             form = TimeTable.objects.get(teacher=request.user, weekday=weekday[col], time=row+1)
-            courses.append(form)
+            formset.append(form)
     context = {
-        'courses': courses,
+        'formset': formset,
         'weekday': weekday,
     }
     return render(request, 'timetable/subject_view.html', context )
