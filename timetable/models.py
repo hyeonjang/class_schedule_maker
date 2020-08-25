@@ -6,12 +6,15 @@ from django.utils import timezone
 class TimeTable(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     classGrade = models.SmallIntegerField(default=0, blank=True)
-    classNumber = models.SmallIntegerField(default=1, blank=True)
+    classNumber = models.SmallIntegerField(default=0, blank=True)
     classRoom = models.SmallIntegerField(default=0, blank=True)
     subject = models.CharField(max_length=50, blank=True)
     time = models.SmallIntegerField(default=0)
     weekday = models.CharField(max_length=50)
     created_time = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ['weekday', 'time']
 
     def get_absolute_url(self):
         from django.urls import reverse
