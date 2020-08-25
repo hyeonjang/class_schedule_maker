@@ -1,13 +1,12 @@
-from django.conf import settings
 from django.db import models
+from django.conf import settings
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class TimeTable(models.Model):
     teacher = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    classGrade = models.SmallIntegerField(default=0, blank=True)
-    classNumber = models.SmallIntegerField(default=0, blank=True)
-    classRoom = models.SmallIntegerField(default=0, blank=True)
+    classRoom = models.ForeignKey('ClassRoom', on_delete=models.CASCADE, null=True, blank=True)
     subject = models.CharField(max_length=50, blank=True)
     time = models.SmallIntegerField(default=0)
     weekday = models.CharField(max_length=50)
@@ -31,9 +30,15 @@ class TimeTable(models.Model):
 # class Term(models.Model):
 #     code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 
-# class ClassRoom(models.Model):
-#     code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
+class ClassRoom(models.Model):
+    classGrade  = models.SmallIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(6)])
+    classNumber = models.SmallIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(20)])
 
+    def __str__(self):
+        return f'{self.classGrade}-{self.classNumber}'
+
+class RoomNumber(models.Model):
+    
 # class Teacher(models.Model):
 #     code = models.ForeignKey(TimeTable, on_delete=models.CASCADE)
 

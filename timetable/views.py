@@ -1,9 +1,8 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db import transaction
-from .forms import SubjectTableForm, TableForm, ArticleForm
-from .models import TimeTable
 from django.forms import formset_factory, modelformset_factory, inlineformset_factory
+from .forms import TableForm
+from .models import TimeTable
 
 def home(request):
     if request.user is None:
@@ -53,7 +52,8 @@ def modify(request):
         if formset.is_valid():
             for i, form in enumerate(formset):
                 instance = TimeTable.objects.get(teacher=request.user, time=(i//5)%8+1, weekday=weekday[i%5])
-                instance.subject = form.cleaned_data['subject']
+                instance.classRoom = form.cleaned_data.get('classRoom')
+                instance.subject = form.cleaned_data.get('subject')
                 instance.save()
         else:
             print(formset.errors)
