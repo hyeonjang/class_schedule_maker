@@ -1,8 +1,13 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.forms import formset_factory, modelformset_factory, inlineformset_factory
+
+from django.views.generic import CreateView, TemplateView, UpdateView
+
+from school.models import Term
 from .forms import TableForm
 from .models import TimeTable
+from .utils import monday_of_week
 
 def home(request):
     if request.user is None:
@@ -19,7 +24,9 @@ def classroom(request):
     return render(request, 'timetable/classroom.html', {'form': form} )
 
 def create(request):
+    semester = Term.objects.get(pk=1)
     weekday = ['월', '화', '수', '목', '금']
+    weeks   = (semester.end - semester.start).days
     TimeTableSet = inlineformset_factory(User, TimeTable, extra=40, form=TableForm)
     teacher = request.user
     if request.POST:
@@ -28,7 +35,7 @@ def create(request):
             for i, form in enumerate(formset):
                 instance = form.save(commit=False)
                 instance.time = (i//5)%8+1 # row major table input
-                instance.weekday = weekday[i%5]
+                instance.weekday = monday_of_week
                 instance.save()
         else:
             print(formset.errors)
@@ -37,6 +44,7 @@ def create(request):
         formset = TimeTableSet()
 
     context = {
+        'semester': semester,
         'formset': formset,
         'weekday': weekday,
     }
@@ -80,3 +88,5 @@ def subject_view(request):
         'weekday': weekday,
     }
     return render(request, 'timetable/subject_view.html', context )
+
+#@@todo class-based view
