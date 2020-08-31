@@ -1,0 +1,22 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<form action="{% url 'update' %}" method="post">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  {{ formset.non_form_errors.as_ul }} 
+  
+  <h2>forms</h2>
+  <div>{{ form.week }}</div>
+  <table border='1'>
+    {% for form in formset %}
+    {% cycle '<tr>' '' '' '' '' %}
+      <td> 
+        {{ forloop.counter0 }}
+        {{ form.as_p }}
+      </td>
+    {% cycle '' '' '' '' '</tr>' %}
+    {% endfor %}
+  </table>
+  <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
+</form>
+{% endblock %}

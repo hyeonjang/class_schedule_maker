@@ -1,0 +1,22 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<form action="{% url 'view' user.username %}" method="post">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  {{ formset.non_form_errors.as_ul }} 
+ 
+  <h2>forms</h2>
+  <div>{{ form.week }}</div>
+  <table border='1'>
+    {% for form in formset %}
+    {% cycle '<tr>' '' '' '' '' %}
+      <td> 
+        {{ form.as_p }}
+      </td>
+    {% cycle '' '' '' '' '</tr>' %}
+    {% endfor %}
+  </table>
+  <a href="{% url 'create' user.username %}">create</a>
+  <a href="{% url 'update' %}">update</a>
+</form>
+{% endblock %}

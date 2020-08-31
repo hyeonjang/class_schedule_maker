@@ -1,0 +1,27 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<form action="{% url 'create' user.username %}" method="post">
+  {% csrf_token %}
+  {{ formset.management_form }}
+  {{ formset.non_form_errors.as_ul }} 
+ 
+  <h2>forms</h2>
+  <table border='1'>
+    {% for form in formset %}
+
+    {% if forloop.first %}
+      {{ form.semester }}
+    {% endif %}
+
+    {% cycle '<tr>' '' '' '' '' %}
+      <td>
+        {{ forloop.counter0 }}
+        {{ form.classRoom }}
+        {{ form.subject }}
+      </td>
+    {% cycle '' '' '' '' '</tr>' %}
+    {% endfor %}
+  </table>
+  <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
+</form>
+{% endblock %}
