@@ -1,7 +1,7 @@
 import time
 from django.utils import timezone
 
-def monday_of_week(year, week):
+def mon_to_fri(year, week):
     """
     Returns a datetime for the monday of the given week of the given year.
     """
@@ -12,4 +12,13 @@ def monday_of_week(year, week):
         # ISO 8601 where week 1 is the first week that has at least 4 days in
         # the current year
         date -= timezone.timedelta(days=7)
-    return date
+    return [ date, 
+            date+timezone.timedelta(days=1), 
+            date+timezone.timedelta(days=2), 
+            date+timezone.timedelta(days=3), 
+            date+timezone.timedelta(days=4)]
+
+def expand_instance_to_term(instance):
+    copy = instance.copy()
+
+    return

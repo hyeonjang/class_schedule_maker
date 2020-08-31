@@ -1,24 +1,29 @@
-from django.forms import modelformset_factory
-from django import forms
+import datetime
 
+from django import forms
+from django.contrib.auth.models import User
+from django.forms import inlineformset_factory
+
+from school.models import Term
 from .models import TimeTable, ClassRoom
 
-class TableForm(forms.ModelForm):
-   subject = forms.CharField(max_length=64, required=False)
 
-   class Meta:
-      model = TimeTable
-      fields = ['id', 'classRoom', 'subject', 'weekday']
-      widgets = {
-        'weekday': forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'week'}),
-      }
+def year_choices():
+    return [(r,r) for r in range(1984, datetime.date.today().year+1)]
 
-# class ClassRoomChoiceField(forms.ModelChoiceField):
-#    def label_from_instance(self, obj):
-#       return "{} {}", (obj.classGrade, obj.classNumber)
+def current_year():
+    return datetime.date.today().year
 
-# class ClassRoomForm(forms.ModelForm):
-#    classRoomNumber = ClassRoomChoiceField(queryset=ClassRoom.objects.all())
-#    class Meta:
-#       model = ClassRoom
-#       fields=['classGrade', 'classNumber']
+class TermSelectForm(forms.Form):
+  CHOICE = [
+    Term.objects.all()
+  ]
+  semester = forms.ChoiceField(choices=CHOICE)
+
+class TimeTableForm(forms.ModelForm):
+  class Meta:
+    model = TimeTable
+    fields = ['classRoom', 'subject', 'semester']
+
+TimeTableInlineFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm)
+
