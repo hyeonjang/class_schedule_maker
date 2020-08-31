@@ -26,9 +26,3 @@ class TimeTable(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('view', args=[str(self.id)])
-    
-    def save(self, *args, **kwargs):
-        self.created_time = timezone.now()
-        super(TimeTable, self).save(*args, **kwargs)
-        print("new saved at {}", self.created_time)
-

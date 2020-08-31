@@ -6,7 +6,7 @@ from django.utils import timezone
 from school.models import Term, ClassRoom, Subject
 from .forms  import TermSelectForm, TimeTableForm, TimeTableInlineFormset
 from .models import TimeTable
-from .utils  import mon_to_fri
+from .utils  import mon_to_fri, expand_inst_to_term
 
 def home(request):
     if request.user is None:
@@ -36,6 +36,7 @@ class SubjectCreate(CreateView):
         context = self.get_context_data()
         semester = Term.objects.get(pk=1)
         week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
+        weeks = semester.end.isocalendar()[1]-semester.start.isocalendar()[1]
         formset = context['formset']
         if formset.is_valid():
             for i, form in enumerate(formset):
@@ -44,6 +45,7 @@ class SubjectCreate(CreateView):
                 instance.time = (i//5)%8+1 # row major table input
                 instance.weekday = week[i%5]
                 instance.save()
+                expand_inst_to_term(instance, week[i%5], weeks)
             return redirect(self.get_success_url())
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -97,7 +99,7 @@ class SubjectUpdate(UpdateView):
     formset_class = TimeTableInlineFormset
     context_object_name = 'table'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
          return self.request.user
 
     def get_success_url(self):
@@ -105,28 +107,14 @@ class SubjectUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context= super(SubjectUpdate, self).get_context_data(**kwargs)
-        qs = TimeTable.objects.filter(teacher=self.request.user)
-        formset = TimeTableInlineFormset(queryset=qs)
+        qs = TimeTable.objects.filter(teacher=self.request.user, classRoom=2)
+        formset = TimeTableInlineFormset(instance=self.request.user, queryset=qs)
         context['formset'] = formset
         return context
 
-    # Validate forms
     def form_valid(self, form):
-        context = self.get_context_data()
-        weekform = context['form'].data['week']
-        year = int(context['form'].data['week'][0:4])
-        week = int(context['form'].data['week'][6:8])
-        monday = mon_to_fri(year, week)
-        formset = context['formset']
-        if formset.is_valid():
-            for i, form in enumerate(formset):
-                instance = form.save(commit=False)
-                instance.time = (i//5)%8+1 # row major table input
-                instance.weekday = monday + timezone.timedelta(days=i)
-                instance.save()
-            return redirect(self.get_success_url())
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+        formset = self.get_context_data()['formset']
+        return redirect(self.get_success_url())
 
     def form_invalid(self, form):
         context = self.get_context_data()

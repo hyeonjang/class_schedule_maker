@@ -18,7 +18,9 @@ def mon_to_fri(year, week):
             date+timezone.timedelta(days=3), 
             date+timezone.timedelta(days=4)]
 
-def expand_instance_to_term(instance):
-    copy = instance.copy()
-
-    return
+def expand_inst_to_term(instance, day, iter):
+    for i in range(1, iter):
+        copy = instance
+        copy.pk = None
+        copy.weekday = day+timezone.timedelta(days=7*i)
+        copy.save()

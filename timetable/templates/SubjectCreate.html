@@ -1,6 +1,6 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
-<form action="{% url 'create' user.username %}" method="post">
+<form action="{% url 'create' user.id %}" method="post">
   {% csrf_token %}
   {{ formset.management_form }}
   {{ formset.non_form_errors.as_ul }} 

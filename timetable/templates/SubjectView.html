@@ -16,7 +16,7 @@
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
   </table>
-  <a href="{% url 'create' user.username %}">create</a>
+  <a href="{% url 'create' user.id %}">create</a>
   <a href="{% url 'update' %}">update</a>
 </form>
 {% endblock %}
