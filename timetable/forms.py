@@ -10,13 +10,8 @@ from .models import TimeTable, ClassRoom
 class TimeTableForm(forms.ModelForm):
   class Meta:
     model = TimeTable
-    fields = '__all__'
-    widgets = {
-          'semester' : forms.HiddenInput(),
-          'weekday' : forms.HiddenInput(),
-          'time'    : forms.HiddenInput(),
-          'created_time' : forms.HiddenInput(),
-        }
+    fields = ['classRoom', 'subject', 'semester', 'weekday', 'time']
+    
 class TimeTableViewForm(forms.ModelForm):
   class Meta:
     model = TimeTable
