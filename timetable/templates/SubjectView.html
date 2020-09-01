@@ -1,21 +1,31 @@
 {% extends 'accounts/base.html' %}
+
+{% block scripts %}
+{% endblock %}
+
+{% load static %}
 {% block content %}
-<form action="{% url 'view' user.username %}" method="post">
+<form action="{% url 'view' %}" method="get" id="Table-View-form">
   {% csrf_token %}
-  {{ formset.management_form }}
-  {{ formset.non_form_errors.as_ul }} 
  
   <h2>forms</h2>
-  <div>{{ form.week }}</div>
-  <table border='1'>
-    {% for form in formset %}
+  <table border='1' id="TimeTable">
+    <td align="center">월</td>
+    <td align="center">화</td>
+    <td align="center">수</td>
+    <td align="center">목</td>
+    <td align="center">금</td>
+    {% for course in TimeTables %}
     {% cycle '<tr>' '' '' '' '' %}
-      <td> 
-        {{ form.as_p }}
+      <td align="center"> 
+        {{ course.classRoom }}
+        {{ course.subject }}
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
   </table>
+  {{ TimeTables.management_form }}
+  {{ TimeTables.non_form_errors.as_ul }} 
   <a href="{% url 'create' user.id %}">create</a>
   <a href="{% url 'update' %}">update</a>
 </form>

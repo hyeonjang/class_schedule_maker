@@ -6,7 +6,12 @@
   {{ formset.non_form_errors.as_ul }} 
  
   <h2>forms</h2>
-  <table border='1'>
+  <table border='1' id="TimeTable">
+    <td align="center">월</td>
+    <td align="center">화</td>
+    <td align="center">수</td>
+    <td align="center">목</td>
+    <td align="center">금</td>
     {% for form in formset %}
 
     {% if forloop.first %}
@@ -16,8 +21,7 @@
     {% cycle '<tr>' '' '' '' '' %}
       <td>
         {{ forloop.counter0 }}
-        {{ form.classRoom }}
-        {{ form.subject }}
+        {{ form.as_p }}
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
