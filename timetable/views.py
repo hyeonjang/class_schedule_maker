@@ -2,11 +2,12 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, UpdateView, TemplateView, WeekArchiveView
 from django.utils import timezone
-import json
+from django.http import JsonResponse
+from django.core import serializers
 
 from school.models import Term, ClassRoom, Subject
-from .forms import WeekSelectForm, TermSelectForm, TimeTableForm 
-from .forms import TimeTableCreateFormset, TimeTableUpdateFormset
+from .forms import TimeTableForm, TimeTableViewForm 
+from .forms import TimeTableCreateFormset, TimeTableUpdateFormset, TimeTableViewFormset
 from .models import TimeTable
 from .utils  import mon_to_fri, expand_inst_to_term
 
@@ -27,10 +28,8 @@ class SubjectCreate(CreateView):
     def get_context_data(self, **kwargs):
         context= super(SubjectCreate, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['select'] = TermSelectForm(self.request.POST)
             context['formset'] = TimeTableCreateFormset(self.request.POST, instance=self.request.user)
         else:
-            context['select'] = TermSelectForm()
             context['formset'] = TimeTableCreateFormset()
         return context
 
@@ -70,25 +69,36 @@ class SubjectUpdate(UpdateView):
         return redirect('view') 
 
     def get_context_data(self, **kwargs):
-        week = self.request.GET.get('date')
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
         qs = TimeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04"))
+        
+        if self.request.is_ajax:
+            startdate = self.request.GET.get('startdate')
+            enddate = self.request.GET.get('enddate')
+            if startdate and enddate:
+                startdate = startdate[0:10] # iso format
+                enddate = enddate[0:10]
+                qs = TimeTable.objects.filter(teacher=self.request.user, weekday__range=(startdate, enddate))
+
         if self.request.POST:
-            context['select'] = WeekSelectForm(self.request.POST)
-            context['formset'] = TimeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
+            context['TimeTables'] = TimeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
-            context['select'] = WeekSelectForm()
-            context['formset'] = TimeTableUpdateFormset(instance=self.request.user, queryset=qs)
+            context['TimeTables'] = TimeTableUpdateFormset(instance=self.request.user, queryset=qs)
+        # print(context['TimeTables'])
         return context
     
     def form_valid(self, form):
-        formset = self.get_context_data()['formset']
-        formset.save()
-        return redirect(self.get_success_url())
+        context = self.get_context_data()
+        formset = context['TimeTables']
+        if formset.is_valid():
+            formset.save()
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
     def form_invalid(self, form):
         context = self.get_context_data()
-        formset = context['formset']
+        formset = context['TimeTables']
         print(formset.errors)
         return self.render_to_response(self.get_context_data(form=form))
 
@@ -102,31 +112,11 @@ class SubjectView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectView, self).get_context_data(**kwargs)
-        if self.request.POST:
-            context['formset'] = TimeTableCreateFormset(self.request.POST, instance=self.request.user)
-        else:
-            context['formset'] = TimeTableCreateFormset()
+        qs = TimeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04"))
+        context['TimeTables'] = TimeTableViewFormset(instance=self.request.user, queryset=qs)
+        # print(context['TimeTables'])
         return context
 
-    def form_valid(self, form):
-        context = self.get_context_data()
-        weekform = context['form'].data['week']
-        yw = (int(weekform[0:4]), int(weekform[6:8]))
-        monday = mon_to_fri(yw[0], yw[1])
-        formset = context['formset']
-        for i, form in enumerate(formset):
-            instance = form.save(commit=False)
-            instance.semester = formset[0].semester
-            instance.time = (i//5)%8+1 # row major table input
-            instance.weekday = monday + timezone.timedelta(days=i)
-            instance.save()
-        return redirect(self.get_success_url())
-
-    def form_invalid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
-        print(formset.errors)
-        return self.render_to_response(self.get_context_data(form=form))
 # class HomeRoomCreate(CreateView):
 #     template_name = 'SubjectCreate.html'
 #     model = TimeTable
