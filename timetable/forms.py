@@ -7,23 +7,17 @@ from django.forms import inlineformset_factory
 from school.models import Term
 from .models import TimeTable, ClassRoom
 
-
-def year_choices():
-    return [(r,r) for r in range(1984, datetime.date.today().year+1)]
-
-def current_year():
-    return datetime.date.today().year
+class WeekSelectForm(forms.Form):
+  week = forms.DateField(widget = forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'week'}))
 
 class TermSelectForm(forms.Form):
-  CHOICE = [
-    Term.objects.all()
-  ]
-  semester = forms.ChoiceField(choices=CHOICE)
+  week = forms.DateField(widget = forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'week'}))
 
 class TimeTableForm(forms.ModelForm):
   class Meta:
     model = TimeTable
-    fields = ['classRoom', 'subject', 'semester']
+    fields = ['classRoom', 'subject', 'semester', 'weekday', 'time']
 
-TimeTableInlineFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm)
+TimeTableCreateFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm)
+TimeTableUpdateFormset = inlineformset_factory(User, TimeTable, extra=0, form=TimeTableForm)
 

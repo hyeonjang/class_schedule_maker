@@ -1,7 +1,84 @@
 {% extends 'accounts/base.html' %}
+
+{% load static %}
+
 {% block content %}
 <form action="{% url 'update' %}" method="post">
   {% csrf_token %}
+
+  <input type="text" placeholder="Select a date"  id="date"/>
+  <input type="radio" placeholder="Select a date"  id="dat"/>
+  <input type="text" placeholder="Select a date"  id="weekpick"/>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script type="text/javascript" src="{% static 'js/weekPicker.js' %}"> </script>
+  <script>
+    convertToWeekPicker($("#weekpick"))
+  </script>
+    <script type="text/javascript">
+        csrf_token = "{{csrf_token}}"
+        /*
+            HTML : 레이아웃, 컨텐츠
+            CSS : 꾸미기
+            JavaScript : 동작
+            1. 언제 : 페이지가 로드가 끝났을 떄? 사용자가 어떤 액션을 취했을 때냐?
+                event - 마우스 클릭 or 키보드 입력 or 스크롤
+            2. 무엇을 : 어떤 요소를? 브라우저 객체를?
+            3. 어떻게 : 삭제? 추가? 변경? 숨기기? 보이기?
+        */
+        $(function() {
+            //https://forum.jquery.com/topic/datepicker-select-week
+            $('#date').datepicker({onSelect: function() {
+                var mon = $(this).datepicker('getDate');
+                mon.setDate(mon.getDate() + 1 - (mon.getDay() || 7));
+                var sun = new Date(mon.getTime());
+                sun.setDate(sun.getDate() + 6);
+                alert(mon + ' ' + sun);
+                $.ajax({
+                  url: "{% url 'update' %}",
+                  type: "GET",           // 서버에서 보내줄 데이터의 타입(default값으로 json으로 되어있다.)
+                  data: { date: $('#date').val() },   // HTTP 요청과 함께 서버로 보낼 데이터
+                  success : function(json) {
+                      $('#date').val(''); // remove the value from the input
+                      console.log(json); // log the returned json to the console
+                      console.log("success"); // another sanity check
+                  },
+                  error : function(xhr,errmsg,err) {
+                      $('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                          " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                      console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+                  }})
+              }});
+            $('#dat').click(function() {
+                alert('a 태그를 클릭하셨습니다.');
+            });
+        });
+
+        /*
+        데이터를 전송하는 페이지(HTML), 데이터를 전송받는 페이지(django view)
+        HTML - 회원가입, 좋아요 데이터 전송 
+        -> 장고측 뷰가 데이터를 받아 모델 처리, 로직 처리
+        -> 모델처리가 완료되면 메시지, 혹은 처리 결과 데이터를 다시 HTML로 전송
+        -> HTML은 응답받은 데이터를 가지고 화면에 정보 출력
+        
+        $.ajax({
+            url: "클라이언트가 요청 보낼 서버의 URL 주소",
+            method:"POST",          // HTTP 요청 방식(GET, POST)
+            type: "json",           // 서버에서 보내줄 데이터의 타입(default값으로 json으로 되어있다.)
+            data: {name: "홍길동"}   // HTTP 요청과 함께 서버로 보낼 데이터
+
+        }).done(function(data) {    // HTTP 요청 성공 시, 요청한 데이터가 done() 메소드로 전달
+
+        }).fail(function(xhr, data) {     // HTTP 요청 실패 시, 오류와 상태에 관한 정보가 fail() 메소드로 전달
+
+        }).always(function(xhr, data) {   // HTTP 요청의 성공여부와는 상관없이 언제나 always()메소드 실행
+
+        });
+        */
+    </script>
+  
+  
   {{ formset.management_form }}
   {{ formset.non_form_errors.as_ul }} 
   

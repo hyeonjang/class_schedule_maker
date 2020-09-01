@@ -2,9 +2,11 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, UpdateView, TemplateView, WeekArchiveView
 from django.utils import timezone
+import json
 
 from school.models import Term, ClassRoom, Subject
-from .forms  import TermSelectForm, TimeTableForm, TimeTableInlineFormset
+from .forms import WeekSelectForm, TermSelectForm, TimeTableForm 
+from .forms import TimeTableCreateFormset, TimeTableUpdateFormset
 from .models import TimeTable
 from .utils  import mon_to_fri, expand_inst_to_term
 
@@ -26,10 +28,10 @@ class SubjectCreate(CreateView):
         context= super(SubjectCreate, self).get_context_data(**kwargs)
         if self.request.POST:
             context['select'] = TermSelectForm(self.request.POST)
-            context['formset'] = TimeTableInlineFormset(self.request.POST, instance=self.request.user)
+            context['formset'] = TimeTableCreateFormset(self.request.POST, instance=self.request.user)
         else:
             context['select'] = TermSelectForm()
-            context['formset'] = TimeTableInlineFormset()
+            context['formset'] = TimeTableCreateFormset()
         return context
 
     def form_valid(self, form):
@@ -56,6 +58,40 @@ class SubjectCreate(CreateView):
         print(formset.errors)
         return self.render_to_response(self.get_context_data(form=form))
 
+class SubjectUpdate(UpdateView):
+    template_name = 'SubjectUpdate.html'
+    model = TimeTable
+    form_class = TimeTableForm
+
+    def get_object(self, queryset=None):
+         return self.request.user
+
+    def get_success_url(self):
+        return redirect('view') 
+
+    def get_context_data(self, **kwargs):
+        week = self.request.GET.get('date')
+        context = super(SubjectUpdate, self).get_context_data(**kwargs)
+        qs = TimeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04"))
+        if self.request.POST:
+            context['select'] = WeekSelectForm(self.request.POST)
+            context['formset'] = TimeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
+        else:
+            context['select'] = WeekSelectForm()
+            context['formset'] = TimeTableUpdateFormset(instance=self.request.user, queryset=qs)
+        return context
+    
+    def form_valid(self, form):
+        formset = self.get_context_data()['formset']
+        formset.save()
+        return redirect(self.get_success_url())
+
+    def form_invalid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+        print(formset.errors)
+        return self.render_to_response(self.get_context_data(form=form))
+
 class SubjectView(TemplateView):
     template_name = 'SubjectView.html'
     model = TimeTable
@@ -65,11 +101,11 @@ class SubjectView(TemplateView):
         return redirect('view') 
 
     def get_context_data(self, **kwargs):
-        context= super(SubjectView, self).get_context_data(**kwargs)
+        context = super(SubjectView, self).get_context_data(**kwargs)
         if self.request.POST:
-            context['formset'] = TimeTableInlineFormset(self.request.POST, instance=self.request.user)
+            context['formset'] = TimeTableCreateFormset(self.request.POST, instance=self.request.user)
         else:
-            context['formset'] = TimeTableInlineFormset()
+            context['formset'] = TimeTableCreateFormset()
         return context
 
     def form_valid(self, form):
@@ -91,76 +127,45 @@ class SubjectView(TemplateView):
         formset = context['formset']
         print(formset.errors)
         return self.render_to_response(self.get_context_data(form=form))
+# class HomeRoomCreate(CreateView):
+#     template_name = 'SubjectCreate.html'
+#     model = TimeTable
+#     form_class = TimeTableForm
 
-class SubjectUpdate(UpdateView):
-    template_name = 'SubjectUpdate.html'
-    model = TimeTable
-    form_class = TimeTableForm
-    formset_class = TimeTableInlineFormset
-    context_object_name = 'table'
+#     def get_success_url(self):
+#         return redirect('view') 
 
-    def get_object(self, queryset=None):
-         return self.request.user
+#     def get_context_data(self, **kwargs):
+#         context= super(HomeRoomCreate, self).get_context_data(**kwargs)
+#         if self.request.POST:
+#             context['form']    = TermSelectForm(self.request.POST)
+#             context['formset'] = TimeTableInlineFormset(self.request.POST, instance=self.request.user)
+#         else:
+#             context['form']    = TermSelectForm()
+#             context['formset'] = TimeTableInlineFormset()
+#         return context
 
-    def get_success_url(self):
-        return redirect('view') 
+#     def form_valid(self, form):
+#         context = self.get_context_data()
+#         weekform = context['form'].data['week']
+#         yw = (int(weekform[0:4]), int(weekform[6:8]))
+#         monday = mon_to_fri(yw[0], yw[1])
+#         formset = context['formset']
+#         if formset.is_valid():
+#             for i, form in enumerate(formset):
+#                 instance = form.save(commit=False)
+#                 instance.time = (i//5)%8+1 # row major table input
+#                 instance.weekday = monday + timezone.timedelta(days=i)
+#                 instance.save()
+#             return redirect(self.get_success_url())
+#         else:
+#             return self.render_to_response(self.get_context_data(form=form))
 
-    def get_context_data(self, **kwargs):
-        context= super(SubjectUpdate, self).get_context_data(**kwargs)
-        qs = TimeTable.objects.filter(teacher=self.request.user, classRoom=2)
-        formset = TimeTableInlineFormset(instance=self.request.user, queryset=qs)
-        context['formset'] = formset
-        return context
-
-    def form_valid(self, form):
-        formset = self.get_context_data()['formset']
-        return redirect(self.get_success_url())
-
-    def form_invalid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
-        print(formset.errors)
-        return self.render_to_response(self.get_context_data(form=form))
-
-class HomeRoomCreate(CreateView):
-    template_name = 'SubjectCreate.html'
-    model = TimeTable
-    form_class = TimeTableForm
-
-    def get_success_url(self):
-        return redirect('view') 
-
-    def get_context_data(self, **kwargs):
-        context= super(HomeRoomCreate, self).get_context_data(**kwargs)
-        if self.request.POST:
-            context['form']    = TermSelectForm(self.request.POST)
-            context['formset'] = TimeTableInlineFormset(self.request.POST, instance=self.request.user)
-        else:
-            context['form']    = TermSelectForm()
-            context['formset'] = TimeTableInlineFormset()
-        return context
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        weekform = context['form'].data['week']
-        yw = (int(weekform[0:4]), int(weekform[6:8]))
-        monday = mon_to_fri(yw[0], yw[1])
-        formset = context['formset']
-        if formset.is_valid():
-            for i, form in enumerate(formset):
-                instance = form.save(commit=False)
-                instance.time = (i//5)%8+1 # row major table input
-                instance.weekday = monday + timezone.timedelta(days=i)
-                instance.save()
-            return redirect(self.get_success_url())
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
-
-    def form_invalid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
-        print(formset.errors)
-        return self.render_to_response(self.get_context_data(form=form))
+#     def form_invalid(self, form):
+#         context = self.get_context_data()
+#         formset = context['formset']
+#         print(formset.errors)
+#         return self.render_to_response(self.get_context_data(form=form))
 
 # Subject role Teacher view
 # class SubjectView(WeekArchiveView):
