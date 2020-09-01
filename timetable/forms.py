@@ -7,17 +7,30 @@ from django.forms import inlineformset_factory
 from school.models import Term
 from .models import TimeTable, ClassRoom
 
-class WeekSelectForm(forms.Form):
-  week = forms.DateField(widget = forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'week'}))
-
-class TermSelectForm(forms.Form):
-  week = forms.DateField(widget = forms.DateInput(format=('%m/%d/%Y'), attrs={'class':'form-control', 'placeholder':'Select a date', 'type':'week'}))
-
 class TimeTableForm(forms.ModelForm):
   class Meta:
     model = TimeTable
-    fields = ['classRoom', 'subject', 'semester', 'weekday', 'time']
+    fields = '__all__'
+    widgets = {
+          'semester' : forms.HiddenInput(),
+          'weekday' : forms.HiddenInput(),
+          'time'    : forms.HiddenInput(),
+          'created_time' : forms.HiddenInput(),
+        }
+class TimeTableViewForm(forms.ModelForm):
+  class Meta:
+    model = TimeTable
+    fields = '__all__'
+    widgets = {
+      'semester' : forms.HiddenInput(),
+      'weekday' : forms.HiddenInput(),
+      'time'    : forms.HiddenInput(),
+      'created_time' : forms.HiddenInput(),
+      'classRoom' : forms.Select(attrs={'disabled': True}),
+      'subject' : forms.Select(attrs={'disabled': True}),
+    }
 
-TimeTableCreateFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm)
-TimeTableUpdateFormset = inlineformset_factory(User, TimeTable, extra=0, form=TimeTableForm)
+TimeTableCreateFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm, can_delete=False)
+TimeTableUpdateFormset = inlineformset_factory(User, TimeTable, extra=0, form=TimeTableForm, can_delete=False)
+TimeTableViewFormset   = inlineformset_factory(User, TimeTable, extra=0, form=TimeTableViewForm, can_delete=False)
 
