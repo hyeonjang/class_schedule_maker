@@ -5,10 +5,7 @@
 
 {% load static %}
 {% block content %}
-
-<a href="{% url 'home_view' user.id %}">temporal</a>
-
-<form action="{% url 'sub_view' user.id %}" method="get" id="Table-View-form">
+<form action="{% url 'home_view' user.id %}" method="get" id="Table-View-form">
   {% csrf_token %}
  
   <h2>forms</h2>
@@ -23,13 +20,14 @@
       <td align="center"> 
         {{ course.classRoom }}
         {{ course.subject }}
+        {{ course.teacher }}
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
   </table>
   {{ TimeTables.management_form }}
   {{ TimeTables.non_form_errors.as_ul }} 
-  <a href="{% url 'sub_create' user.id %}">create</a>
-  <a href="{% url 'sub_update' user.id %}">update</a>
+  <a href="{% url 'home_create' user.id %}">create</a>
+  <a href="{% url 'home_update' user.id %}">update</a>
 </form>
 {% endblock %}

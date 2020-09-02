@@ -6,7 +6,6 @@
 $(function() {
       var startDate;
       var endDate;
-  
       var selectCurrentWeek = function() {
           window.setTimeout(function () {
               $('.week-picker').find('.ui-datepicker-current-day a').addClass('ui-state-active')
@@ -23,7 +22,7 @@ $(function() {
               var dateFormat = inst.settings.dateFormat || $.datepicker._defaults.dateFormat;
               $('#startDate').text($.datepicker.formatDate( dateFormat, startDate, inst.settings ));
               $('#endDate').text($.datepicker.formatDate( dateFormat, endDate, inst.settings ));
-  
+     
               selectCurrentWeek();
 
               $.ajax({
@@ -45,6 +44,9 @@ $(function() {
                   console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
               }})
           },
+          onClose: function() {
+            $(this).data('datepicker').inline = false;
+          },
           beforeShowDay: function(date) {
               var cssClass = '';
               if(date >= startDate && date <= endDate)
@@ -54,10 +56,13 @@ $(function() {
           onChangeMonthYear: function(year, month, inst) {
               selectCurrentWeek();
           }
-      });
-  
+      }).datepicker('widget').addClass('ui-weekpicker');
+
       $('.week-picker .ui-datepicker-calendar tr').live('mousemove', function() { $(this).find('td a').addClass('ui-state-hover'); });
       $('.week-picker .ui-datepicker-calendar tr').live('mouseleave', function(){ $(this).find('td a').removeClass('ui-state-hover'); });
+      
+      $('<span class="displayDate" style="display:none">' + week + '</span>').insertBefore('.week-picker');
+  
   });
 </script>
 {% endblock scripts %}
@@ -73,9 +78,9 @@ $(function() {
   <label>Week :</label> <span id="startDate"></span> - <span id="endDate"></span>
 </div>
 
-<form action="{% url 'update' %}" method="post" id="Table-Update-form">
+<form action="{% url 'sub_update' user.id %}" method="post" id="Table-Update-form">
   {% csrf_token %}
-  <table border='1' id="TimeTable">
+  <table border='1' id="TimeTableUpdate">
     <td align="center">월</td>
     <td align="center">화</td>
     <td align="center">수</td>
@@ -90,7 +95,15 @@ $(function() {
     {% endfor %}
   </table>
   {{ TimeTables.management_form }}
-  {{ TimeTables.non_form_errors.as_ul }} 
+  {{ TimeTables.non_form_errors.as_ul }}
   <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
 </form>
 {% endblock content %}
+
+{% if messages %}
+  <ul class="messages">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %}

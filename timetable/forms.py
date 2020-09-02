@@ -1,16 +1,16 @@
 import datetime
 
 from django import forms
-from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 
+from accounts.models import User
 from school.models import Term
 from .models import TimeTable, ClassRoom
 
 class TimeTableForm(forms.ModelForm):
   class Meta:
     model = TimeTable
-    fields = ['classRoom', 'subject', 'semester', 'weekday', 'time']
+    fields = ['classRoom', 'subject', 'semester', 'weekday', 'time'] # DO NOT change
     
 class TimeTableViewForm(forms.ModelForm):
   class Meta:
