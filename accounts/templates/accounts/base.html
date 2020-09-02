@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}Simple is Better Than Complex{% endblock %}</title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"></script>
   </head>
   <body>
     <header>
@@ -15,9 +16,13 @@
       {% endif %}
       <hr>
     </header>
-    <main>
       {% block content %}
       {% endblock %}
-    </main>
+
+      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      {% block scripts %}
+      {% endblock %}
+      
   </body>
 </html>
