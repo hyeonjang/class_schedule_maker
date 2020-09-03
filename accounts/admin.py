@@ -12,16 +12,17 @@ class UserAdmin(BaseUserAdmin):
     list_display = ('name', 'email', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('name', 'email', 'password')}),
-        ('Role', {'fields': ('classRoom', 'subject') }),
-        ('Permissions', {'fields': ('is_admin','is_subject','is_homeroom')}),
+        ( None, {'fields': ('name', 'email', 'password')}),
+        ('Role', {'fields': ('is_homeroom', 'classRoom', ) }),
+        ('Role', {'fields': ('is_subject', 'assigned_subjects_number', 'subject1', 'subject2', 'subject3', 'subject4', 'subject5', 'subject6') }),
+        ('Permissions', {'fields': ('is_admin',)}),
     )
 
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('name', 'email', 'password1', 'password2', 'classRoom', 'subject')}
-         ),
+        ( None,  {'fields': ('name', 'email', 'password1', 'password2',)}),
+        ('Role', {'fields': ('is_homeroom', 'classRoom', ) }),
+        ('Role', {'fields': ('is_subject', 'subject1', 'subject2', 'subject3', 'subject4', 'subject5', 'subject6') }),
+        ('Permissions', {'fields': ('is_admin',)}),
     )
     search_fields = ('email',)
     ordering = ('email',)

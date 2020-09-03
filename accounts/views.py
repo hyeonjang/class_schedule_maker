@@ -5,7 +5,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from . import models, forms
 
 # Create your views here.
-
 def signup(request):
     if request.method == 'POST':
         form = forms.SignUpForm(request.POST)

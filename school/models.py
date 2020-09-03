@@ -36,7 +36,13 @@ class Subject(models.Model):
     lessonNumber = models.IntegerField(default=272, validators=[MinValueValidator(128), MaxValueValidator(448)]) # 2018년도 교육과정 기준
 
     def __str__(self):
-        return  f'{self.grade}'+'학년 ' + self.name
+        return  self.name + f'({self.grade}G)'
+
+    def to_string(self):
+        return self.name
 
     class Meta:
         unique_together = ('name', 'grade')
+
+class Holiday(models.Model):
+    day = models.DateField()

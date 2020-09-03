@@ -16,13 +16,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from timetable import views
+from django.shortcuts import render, redirect
+
+def home(request):
+    if request.user is None:
+        return render(request, 'accounts/login.html')
+    else:
+        return redirect('sub_view', request.user)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', home, name='home'),
 
     path('accounts/', include('accounts.urls')),
+    path('school/', include('school.urls')),
     path('timetable/', include('timetable.urls')),
 
 ]

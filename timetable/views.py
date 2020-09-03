@@ -10,12 +10,6 @@ from .forms import TimeTableCreateFormset, TimeTableUpdateFormset, TimeTableView
 from .models import TimeTable
 from .utils  import mon_to_fri, expand_inst_to_term
 
-def home(request):
-    if request.user is None:
-        return render(request, 'accounts/login.html')
-    else:
-        return redirect('sub_view', request.user)
-
 ##########################################################
 ### Teacher Roles == Subject Features
 class SubjectCreate(CreateView):
@@ -106,15 +100,14 @@ class SubjectUpdate(UpdateView):
 class SubjectView(TemplateView):
     template_name = 'SubjectView.html'
     model = TimeTable
-    form_class = TimeTableForm
+    form_class = TimeTableViewForm
 
     def get_success_url(self):
         return redirect('sub_view') 
 
     def get_context_data(self, **kwargs):
         context = super(SubjectView, self).get_context_data(**kwargs)
-        qs = TimeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04"))
-        context['TimeTables'] = TimeTableViewFormset(instance=self.request.user, queryset=qs)
+        context['TimeTables'] = TimeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04"))
         # print(context['TimeTables'])
         return context
 
@@ -197,65 +190,17 @@ class HomeRoomUpdate(UpdateView):
 class HomeRoomView(TemplateView):
     template_name = 'HomeRoomView.html'
     model = TimeTable
-    form_class = TimeTableForm
+    form_class = TimeTableViewForm
 
     def get_success_url(self):
         return redirect('view') 
 
     def get_context_data(self, **kwargs):
         context = super(HomeRoomView, self).get_context_data(**kwargs)
-
         classNum = self.request.user.get_classRoom()
 
         qs = TimeTable.objects.filter(classRoom=1, weekday__range=("2020-08-31", "2020-09-04"))
         context['TimeTables'] = TimeTableViewFormset(instance=self.request.user, queryset=qs)
-        # print(context['TimeTables'])
+        
+        print(context['TimeTables'])
         return context
-
-# class HomeRoomCreate(CreateView):
-#     template_name = 'SubjectCreate.html'
-#     model = TimeTable
-#     form_class = TimeTableForm
-
-#     def get_success_url(self):
-#         return redirect('view') 
-
-#     def get_context_data(self, **kwargs):
-#         context= super(HomeRoomCreate, self).get_context_data(**kwargs)
-#         if self.request.POST:
-#             context['form']    = TermSelectForm(self.request.POST)
-#             context['formset'] = TimeTableInlineFormset(self.request.POST, instance=self.request.user)
-#         else:
-#             context['form']    = TermSelectForm()
-#             context['formset'] = TimeTableInlineFormset()
-#         return context
-
-#     def form_valid(self, form):
-#         context = self.get_context_data()
-#         weekform = context['form'].data['week']
-#         yw = (int(weekform[0:4]), int(weekform[6:8]))
-#         monday = mon_to_fri(yw[0], yw[1])
-#         formset = context['formset']
-#         if formset.is_valid():
-#             for i, form in enumerate(formset):
-#                 instance = form.save(commit=False)
-#                 instance.time = (i//5)%8+1 # row major table input
-#                 instance.weekday = monday + timezone.timedelta(days=i)
-#                 instance.save()
-#             return redirect(self.get_success_url())
-#         else:
-#             return self.render_to_response(self.get_context_data(form=form))
-
-#     def form_invalid(self, form):
-#         context = self.get_context_data()
-#         formset = context['formset']
-#         print(formset.errors)
-#         return self.render_to_response(self.get_context_data(form=form))
-
-# Subject role Teacher view
-# class SubjectView(WeekArchiveView):
-#     template_name = 'SubjectView.html'
-#     queryset = TimeTable.objects.all()
-#     date_field = "weekday"
-#     week_format = "%W"
-#     allow_future = True

@@ -1,4 +1,4 @@
-{% extends 'accounts/base.html' %}
+{% extends 'base.html' %}
 
 {% block scripts %}
 {% endblock %}
@@ -12,17 +12,21 @@
   {% csrf_token %}
  
   <h2>forms</h2>
-  <table border='1' id="TimeTableView">
-    <td align="center">월</td>
-    <td align="center">화</td>
-    <td align="center">수</td>
-    <td align="center">목</td>
-    <td align="center">금</td>
+  <table class="table table-hover" id="TimeTableView">
+    <thead class="thead-light">
+      <th scope="col">#</th> 
+      <th scope="col">Mon</th>
+      <th scope="col">Tue</th>
+      <th scope="col">Wed</th>
+      <th scope="col">Thr</th>
+      <th scope="col">Fri</th>
+    </thead>
     {% for course in TimeTables %}
-    {% cycle '<tr>' '' '' '' '' %}
+    {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
       <td align="center"> 
         {{ course.classRoom }}
         {{ course.subject }}
+        {{ course.teacher }}
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}

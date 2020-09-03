@@ -1,0 +1,11 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<h2>Login</h2>
+<form action="{% url 'manage_view' user.id %}"method="get">
+
+{{ Users }}
+
+<button type="submit">Login</button>
+</form>
+{% endblock %}

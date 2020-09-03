@@ -7,7 +7,7 @@ from school.models import Term, ClassRoom, Subject
 
 # Create your models here.
 class TimeTable(models.Model):
-    teacher   = models.ForeignKey(User, on_delete=models.CASCADE)
+    teacher   = models.ForeignKey(User,      on_delete=models.CASCADE, null=True, blank=True)
     semester  = models.ForeignKey(Term,      on_delete=models.CASCADE, blank=True) # works in view.py
     classRoom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE, null=True, blank=True) #user choice
     subject   = models.ForeignKey(Subject,   on_delete=models.CASCADE, null=True, blank=True) #user choice

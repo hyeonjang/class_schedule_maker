@@ -38,14 +38,25 @@ class User(AbstractBaseUser):
 
     is_active = models.BooleanField(default=True)
     
-    # permssion and role
+    # permssion
     is_admin = models.BooleanField(default=False)
-    is_subject = models.BooleanField(default=True)
+
+    # role
+    is_manager = models.BooleanField(default=False)
+    is_subject = models.BooleanField(default=False)
     is_homeroom = models.BooleanField(default=True)
 
     classRoom = models.OneToOneField(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
-    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    assigned_subjects_number = models.SmallIntegerField(default=1, null=True, blank=True)
 
+    subject1 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='one')
+    subject2 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='two')
+    subject3 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='three')
+    subject4 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='four')
+    subject5 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='five')
+    subject6 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='six')
+  
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

@@ -23,6 +23,7 @@ class TimeTableViewForm(forms.ModelForm):
       'created_time' : forms.HiddenInput(),
       'classRoom' : forms.Select(attrs={'disabled': True}),
       'subject' : forms.Select(attrs={'disabled': True}),
+      'teacher' : forms.Select(attrs={'disabled':True}),
     }
 
 TimeTableCreateFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm, can_delete=False)
