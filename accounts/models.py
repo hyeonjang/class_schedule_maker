@@ -3,29 +3,24 @@ from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 
 from school.models import ClassRoom, Subject
 
-#https://dev-yakuza.github.io/ko/django/custom-user-model/
 class UserManager(BaseUserManager):
-    def create_user(self, email, name, classRoom, subject, password=None):
+    def create_user(self, email, name, password=None):
         if not email:
             raise ValueError('Users must have an email address')
 
         user = self.model(
             email=self.normalize_email(email), 
             name=name, 
-            classRoom=classRoom, 
-            subject=subject,
         )
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, name, classRoom, subject, password):
+    def create_superuser(self, email, name, password):
         user = self.create_user(
             email,
             name=name,
             password=password,
-            classRoom=classRoom, 
-            subject=subject,
         )
         user.is_admin = True
         user.save(using=self._db)
