@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block scripts %}
+<script type="text/javascript">
+    $(document).ready(function() {
+    
+        $(".signup-btn").modalForm({
+            formURL: "/accounts/signup/"
+      });
+    
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>Login</h2>
+<button class="signup-btn btn btn-primary" type="button" name="button">Sign up</button>
+<form action="." method="get">
+
+    <a href="{% url 'manage_school' %}"> manage </a>
+    <a href="{% url 'sub_view' user.id %}"> subject </a>
+    <a href="{% url 'home_view' user.id %}"> homeroom </a>
+
+</form>
+{% endblock %}
