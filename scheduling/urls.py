@@ -22,14 +22,14 @@ def home(request):
     if request.user is None:
         return render(request, 'accounts/login.html')
     else:
-        return redirect('sub_view', request.user)
+        return render(request, 'index.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name='home'),
+    path('', home, name='index'),
 
-    path('accounts/', include('accounts.urls')),
     path('school/', include('school.urls')),
+    path('accounts/', include('accounts.urls')),
     path('timetable/', include('timetable.urls')),
 
 ]
