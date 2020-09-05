@@ -11,6 +11,4 @@ urlpatterns = [
     path(r'(?P<userid>\d+)/home/create/$', views.HomeRoomCreate.as_view(), name='home_create'),
     path(r'(?P<userid>\d+)/home/view/$', views.HomeRoomView.as_view(), name='home_view'),
     path(r'(?P<userid>\d+)/home/update/$', views.SubjectUpdate.as_view(), name='home_update'),
-
-    # path('<int:year>/view/<int:week>/',   views.SubjectView.as_view(), name='view'),
 ]

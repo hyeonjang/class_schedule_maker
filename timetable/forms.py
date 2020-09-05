@@ -1,7 +1,7 @@
 import datetime
 
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 
 from accounts.models import User
 from school.models import Term
@@ -10,7 +10,7 @@ from .models import TimeTable, ClassRoom
 class TimeTableForm(forms.ModelForm):
   class Meta:
     model = TimeTable
-    fields = ['classRoom', 'subject', 'semester', 'weekday', 'time'] # DO NOT change
+    fields = ['classRoom', 'subject', 'weekday', 'semester'] # DO NOT change
     
 class TimeTableViewForm(forms.ModelForm):
   class Meta:

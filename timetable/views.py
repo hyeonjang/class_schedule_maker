@@ -68,6 +68,7 @@ class SubjectUpdate(UpdateView):
         if self.request.is_ajax:
             startdate = self.request.GET.get('startdate')
             enddate = self.request.GET.get('enddate')
+            print(startdate, enddate)
             if startdate and enddate:
                 startdate = startdate[0:10] # iso format
                 enddate = enddate[0:10]
@@ -88,7 +89,7 @@ class SubjectUpdate(UpdateView):
             messages.success(self.request, 'success', extra_tags='alert')
             return redirect(self.get_success_url())
         else:
-            messages.warning(self.request, 'dd')
+            messages.warning(self.request, 'warning message')
             return self.render_to_response(self.get_context_data(form=form))
 
     def form_invalid(self, form):
