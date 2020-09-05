@@ -1,0 +1,38 @@
+<table id="subject-table" class="table">
+    <thead>
+    <tr>
+      <th class="text-center" scope="col">#</th>
+      <th class="text-center" scope="col">Grade</th>
+      <th class="text-center" scope="col">Name</th>
+      <th class="text-center" scope="col">Teacher 1</th>
+      <th class="text-center" scope="col">Teacher 2</th>
+      <th class="text-center" scope="col">Teacher 3</th>
+      <th class="text-center" scope="col">Teacher 4</th>
+      <th class="text-center" scope="col">Count</th>
+      <th class="text-center" scope="col">Update / Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for subject in subjects %}
+      <tr>
+        <th class="text-center" scope="row">{{ forloop.counter }}</th>
+        <td class="text-center">{{ subject.grade }}</td>
+        <td class="text-center">{{ subject.name }}</td>
+        <td class="text-center">{{ subject.teacher1 }}</td>
+        <td class="text-center">{{ subject.teacher2 }}</td>
+        <td class="text-center">{{ subject.teacher3 }}</td>
+        <td class="text-center">{{ subject.teacher4 }}</td>
+        <td class="text-center">{{ subject.count }}</td>
+        <td class="text-center">
+          <button type="button" class="update-book btn btn-sm btn-primary" data-form-url="{% url 'update_subject' subject.pk %}">
+            <span class="fa fa-pencil"></span>
+          </button>
+          <!-- Delete book buttons -->
+          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'delete_subject' subject.pk %}">
+            <span class="fa fa-trash"></span>
+          </button>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>

@@ -1,0 +1,29 @@
+<table id="classroom-table" class="table">
+    <thead>
+    <tr>
+      <th class="text-center" scope="col">#</th>
+      <th class="text-center" scope="col">Year</th>
+      <th class="text-center" scope="col">Month</th>
+      <th class="text-center" scope="col">Day</th>
+      <th class="text-center" scope="col">Weekday</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for day in holidays %}
+      <tr>
+        <th class="text-center" scope="row">{{ forloop.counter }}</th>
+        <td class="text-center">{{ day }}</td>
+        <td class="text-center">
+          <!-- Update book buttons -->
+          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'update_holiday' day.pk %}">
+            <span class="fa fa-pencil"></span>
+          </button>
+          <!-- Delete book buttons -->
+          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'delete_holiday' day.pk %}">
+            <span class="fa fa-trash"></span>
+          </button>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% include "_modal.html" %}
+
+  <div class="container mt-3">
+    <form action="">
+    <div class="row">
+      <div class="col">
+        <p class="text-primary">Management</p>
+        <h4>
+          <strong>1. Semester</strong>
+        </h4>
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="select-semester" class="btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Select Semester
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            {% if semester %}
+            {% else %}
+              <p class="no-semester text-primary">No Semester selected yet.</p>
+            {% endif %}
+          </div>
+        </div>
+        <h4>
+          <strong>2. Holidays in this Semester</strong>
+        </h4>
+
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="create-holiday" class="btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Add Holidays
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            {% if holidays %}
+              {% include "holiday/_table.html" %}
+            {% else %}
+              <p class="no-holidays text-primary">No holidays added yet.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <h4>
+          <strong>3. ClassRoom</strong>
+        </h4>
+
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="create-classroom" class="btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Create ClassRoom
+            </button>
+            <button id="filter-book" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'filter_classroom' %}">
+              <span class="fa fa-filter mr-2"></span>Filter by Grade
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            {% if classrooms %}
+              {% include "classroom/_table.html" %}
+            {% else %}
+              <p class="no-classroom text-primary">No classroom added yet.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        <h4>
+          <strong>4. Subject</strong>
+        </h4>
+
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="create-subject" class="btn btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Create Subject
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            {% if subjects %}
+              {% include "subject/_table.html" %}
+            {% else %}
+              <p class="no-subjects text-primary">No subjects added yet.</p>
+            {% endif %}
+          </div>
+        </div>
+        
+      </div>
+    </div>
+      <button id="create-subje" class="btn btn-primary btn-lg" type="button" name="button">
+        <span class="fa mr-1"></span>Submit
+      </button>
+    </form>
+  </div>
+
+{% endblock content %}
+
+{% block extrascripts %}
+  <script type="text/javascript">
+      $(function () {
+          // Log in & Sign up buttons
+          // The formURL is given explicitly
+          // Create book button opens modal with id="create-modal"
+          $("#create-holiday").modalForm({
+            formURL: "{% url 'create_holiday' %}",
+            modalID: "#create-modal"
+          });
+          
+          $("#create-classroom").modalForm({
+            formURL: "{% url 'create_classroom' %}",
+            modalID: "#create-modal"
+          });
+
+          $("#create-subject").modalForm({
+            formURL: "{% url 'create_subject' %}",
+            modalID: "#create-modal"
+          });
+          
+          var asyncSuccessMessage = [
+            "<div ",
+            "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+            "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
+            "Success: Book was updated.",
+            "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
+            "<span aria-hidden='true'>&times;</span>",
+            "</button>",
+            "</div>",
+            "<script>",
+            "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
+            "<\/script>"
+          ].join("");
+
+          function updateClassRoomModalForm() {
+            $(".update-classroom").each(function () {
+              $(this).modalForm({
+                formURL: $(this).data("form-url"),
+                asyncUpdate: true,
+                asyncSettings: {
+                  closeOnSubmit: false,
+                  successMessage: asyncSuccessMessage,
+                  dataUrl:"{% url 'classrooms' %}",
+                  dataElementId: "#classroom-table",
+                  dataKey: "table",
+                  addModalFormFunction: updateClassRoomModalForm
+                }
+              });
+            });
+          }
+          updateClassRoomModalForm();
+
+          // Read and Delete book buttons open modal with id="modal"
+          // The formURL is retrieved from the data of the element
+          $(".bs-modal").each(function () {
+              $(this).modalForm({formURL: $(this).data("form-url")});
+          });
+
+          // Hide message
+          $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".alert").slideUp(500);
+          });
+      });
+  </script>
+{% endblock extrascripts %}
