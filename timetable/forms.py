@@ -1,32 +1,37 @@
-import datetime
-
+'''
+modul doc
+'''
 from django import forms
-from django.forms import inlineformset_factory, modelformset_factory
+from django.forms import inlineformset_factory
 
 from accounts.models import User
-from school.models import Term
-from .models import TimeTable, ClassRoom
+from .models import TimeTable, SubjectTable, HomeTable
 
 class TimeTableForm(forms.ModelForm):
-  class Meta:
-    model = TimeTable
-    fields = ['classRoom', 'subject', 'weekday', 'semester'] # DO NOT change
-    
-class TimeTableViewForm(forms.ModelForm):
-  class Meta:
-    model = TimeTable
-    fields = '__all__'
-    widgets = {
-      'semester' : forms.HiddenInput(),
-      'weekday' : forms.HiddenInput(),
-      'time'    : forms.HiddenInput(),
-      'created_time' : forms.HiddenInput(),
-      'classRoom' : forms.Select(attrs={'disabled': True}),
-      'subject' : forms.Select(attrs={'disabled': True}),
-      'teacher' : forms.Select(attrs={'disabled':True}),
-    }
+    '''
+    class doc
+    '''
+    class Meta:
+        model = TimeTable
+        fields = ['classRoom', 'subject']
 
-TimeTableCreateFormset = inlineformset_factory(User, TimeTable, extra=40, form=TimeTableForm, can_delete=False)
-TimeTableUpdateFormset = inlineformset_factory(User, TimeTable, extra=0, form=TimeTableForm, can_delete=False)
-TimeTableViewFormset   = inlineformset_factory(User, TimeTable, extra=0, form=TimeTableViewForm, can_delete=False)
+class SubjectTableForm(forms.ModelForm):
+    '''
+    class doc
+    '''
+    class Meta:
+        model = SubjectTable
+        fields = ['classRoom', 'subject']
 
+class HomeTableForm(forms.ModelForm):
+    '''
+    class doc
+    '''
+    class Meta:
+        model = HomeTable
+        fields = ['classRoom', 'subject']
+
+SubjectTableCreateFormset = inlineformset_factory(User, SubjectTable, extra=40, form=SubjectTableForm, can_delete=False)
+SubjectTableUpdateFormset = inlineformset_factory(User, SubjectTable, extra=0, form=SubjectTableForm, can_delete=False)
+HomeTableCreateFormset = inlineformset_factory(User, HomeTable, extra=40, form=HomeTableForm, can_delete=False)
+HomeTableUpdateFormset = inlineformset_factory(User, HomeTable, extra=0, form=HomeTableForm, can_delete=False)

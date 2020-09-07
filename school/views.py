@@ -1,52 +1,89 @@
-from django.http import JsonResponse
+'''
+module doc
+'''
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
-from django.contrib.messages.views import SuccessMessageMixin
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
 from bootstrap_modal_forms.generic import (
-    BSModalLoginView,
+    #BSModalLoginView,
     BSModalFormView,
     BSModalCreateView,
     BSModalUpdateView,
-    BSModalReadView,
+    #BSModalReadView,
     BSModalDeleteView
 )
 
-from .models import Holiday, ClassRoom, Subject
-from .forms import GradeFilterForm, TermModelForm, HolidayModelForm, ClassRoomModelForm, SubjectModelForm
-from .utils import expand_inst_to_term
+from .models import Term, Holiday, ClassRoom, Subject
+from .forms import (
+    GradeFilterForm,
+    TermModelForm,
+    HolidayModelForm,
+    ClassRoomModelForm,
+    SubjectModelForm,
+    )
+from .forms import TimeTableCreation
+from .utils import instantiate_classroom_timetable, instantiate_teacher_timetable
 
-class SchoolManageListView(generic.ListView):
+def admin(request):
+    '''
+    module doc
+    '''
+    if request.POST:
+        form = TimeTableCreation(request.POST)
+        if form.is_valid():
+            semester = form.cleaned_data.get('semester')
+            classroom = form.cleaned_data.get('classroom')
+            teacher = form.cleaned_data.get('teacher')
+            if semester and classroom:
+                instantiate_classroom_timetable(semester, classroom)
+            if semester and teacher:
+                instantiate_teacher_timetable(semester, teacher)
+            return redirect('school:admin_view')
+    else:
+        form = TimeTableCreation()
+
+    context = {
+        'form' : form,
+    }
+
+    return render(request, 'admin_view.html', context)
+
+
+class SchoolManageListView(LoginRequiredMixin, generic.ListView):
+    '''
+    module doc
+    '''
     context_object_name = 'subjects'
     template_name = 'manage_school.html'
-    form_class = TermModelForm
 
     def get_queryset(self):
         return Subject.objects.order_by('grade')
-    
+
     def get_context_data(self, **kwargs):
         context = super(SchoolManageListView, self).get_context_data()
+        qs_t = Term.objects.all()
         qs_h = Holiday.objects.all()
         qs_c = ClassRoom.objects.all()
         qs_s = Subject.objects.all()
         if 'grade' in self.request.GET:
             qs_c = ClassRoom.objects.filter(grade=int(self.request.GET['grade']))
             qs_s = Subject.objects.filter(grade=int(self.request.GET['grade']))
-       
         context.update({
+            'semester' : qs_t,
             'holidays' : qs_h,
             'classrooms' : qs_c,
             'subjects' : qs_s,
-            'form' : self.form_class,
         })
-       
         return context
-    
-    def form_valid(self, form):
-        return reverse_lazy('index')
 
 class GradeFilterView(BSModalFormView):
+    '''
+    module doc
+    '''
     template_name = 'classroom/filter.html'
     form_class = GradeFilterForm
 
@@ -60,60 +97,114 @@ class GradeFilterView(BSModalFormView):
         return response
 
     def get_success_url(self):
-        return reverse_lazy('manage_school') + self.filter
+        return reverse_lazy('school:manage_school') + self.filter
 
 ########################################################
 ### Holiday Features
 
+class SemesterCreateView(BSModalCreateView):
+    '''
+    module doc
+    '''
+    template_name = "semester/create.html"
+    form_class = TermModelForm
+    success_message = 'Success: Semester was added.'
+    success_url = reverse_lazy('school:manage_school')
+
+class SemesterUpdateView(BSModalUpdateView):
+    '''
+    module doc
+    '''
+    model = Term
+    template_name = 'semester/update.html'
+    form_class = TermModelForm
+    success_message = 'Success: Semester was updated.'
+    success_url = reverse_lazy('school:manage_school')
+
+class SemesterDeleteView(BSModalDeleteView):
+    '''
+    module doc
+    '''
+    model = Term
+    template_name = 'semester/delete.html'
+    success_message = 'Success: Semester was deleted.'
+    success_url = reverse_lazy('school:manage_school')
+
+### the end of subject feautures
+########################################################
+########################################################
+### Holiday Features
+
 class HolidayCreateView(BSModalCreateView):
+    '''
+    module doc
+    '''
     template_name = "holiday/create.html"
     form_class = HolidayModelForm
     success_message = 'Success: Holiday was added.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 class HolidayUpdateView(BSModalUpdateView):
+    '''
+    module doc
+    '''
     model = Holiday
     template_name = 'holiday/update.html'
     form_class = HolidayModelForm
     success_message = 'Success: Holiday was updated.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 class HolidayDeleteView(BSModalDeleteView):
+    '''
+    module doc
+    '''
     model = Holiday
     template_name = 'holiday/delete.html'
     success_message = 'Success: Holiday was deleted.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 ### the end of subject feautures
 ########################################################
 ### ClassRoom Features
 
 class ClassRoomCreateView(BSModalCreateView):
+    '''
+    module doc
+    '''
     template_name = "classroom/create.html"
     form_class = ClassRoomModelForm
     success_message = 'Success: Subject was created.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 class ClassRoomUpdateView(BSModalUpdateView):
+    '''
+    module doc
+    '''
     model = ClassRoom
     template_name = 'classroom/update.html'
     form_class = ClassRoomModelForm
     success_message = 'Success: Book was updated.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 class ClassRoomDeleteView(BSModalDeleteView):
+    '''
+    module doc
+    '''
     model = ClassRoom
     template_name = 'classroom/delete.html'
     success_message = 'Success: Book was deleted.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 def classrooms(request):
+    '''
+    module doc
+    '''
     data = dict()
     if request.method == 'GET':
-        classrooms = ClassRoom.objects.all()
+        clss = ClassRoom.objects.all()
         data['table'] = render_to_string(
             'classroom/_table.html',
-            {'classrooms': classrooms},
+            {'classrooms': clss},
             request=request
         )
         return JsonResponse(data)
@@ -123,23 +214,32 @@ def classrooms(request):
 ### Subject Features
 
 class SubjectCreateView(BSModalCreateView):
+    '''
+    module doc
+    '''
     template_name = "subject/create.html"
     form_class = SubjectModelForm
     success_message = 'Success: Subject was created.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 class SubjectUpdateView(BSModalUpdateView):
+    '''
+    module doc
+    '''
     model = Subject
     template_name = 'subject/update.html'
     form_class = SubjectModelForm
     success_message = 'Success: Subject was updated.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 class SubjectDeleteView(BSModalDeleteView):
+    '''
+    module doc
+    '''
     model = Subject
     template_name = 'subject/delete.html'
     success_message = 'Success: Subject was deleted.'
-    success_url = reverse_lazy('manage_school')
+    success_url = reverse_lazy('school:manage_school')
 
 ### the end of subject feautures
 ########################################################

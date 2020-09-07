@@ -20,6 +20,17 @@
     <!-- Navbar -->
     <!-- Important: columns can be used directly in navbar since it is d-flex -->
     <nav class="navbar navbar-expand-md navbar-light p-0 py-2">
+      <div class="col-12 mb-3">
+        {% if not user.is_anonymous %}
+          <span>
+            Your are logged in as
+            <strong>{{ user }}</strong>.
+          </span>
+          <a href="{% url 'logout' %}" id="logout-btn" class="btn btn-danger" role="button">Log out</a>
+        {% else %}
+          <button id="login-btn" class="btn btn-primary" type="button" name="button">Log in</button>
+        {% endif %}
+      </div>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>

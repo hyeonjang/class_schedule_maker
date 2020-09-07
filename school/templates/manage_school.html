@@ -5,7 +5,6 @@
   {% include "_modal.html" %}
 
   <div class="container mt-3">
-    <form action="">
     <div class="row">
       <div class="col">
         <p class="text-primary">Management</p>
@@ -14,14 +13,15 @@
         </h4>
         <div class="row">
           <div class="col-12 mb-3">
-            <button id="select-semester" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Select Semester
+            <button id="add-semester" class="btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Add Semester
             </button>
           </div>
           <div class="col-12 mb-3">
             {% if semester %}
+              {% include "semester/_table.html" %}
             {% else %}
-              <p class="no-semester text-primary">No Semester selected yet.</p>
+              <p class="no-semester text-primary">No semester added yet.</p>
             {% endif %}
           </div>
         </div>
@@ -31,7 +31,7 @@
 
         <div class="row">
           <div class="col-12 mb-3">
-            <button id="create-holiday" class="btn btn-outline-primary btn-sm" type="button" name="button">
+            <button id="add-holiday" class="btn btn-outline-primary btn-sm" type="button" name="button">
               <span class="fa fa-plus mr-2"></span>Add Holidays
             </button>
           </div>
@@ -53,7 +53,7 @@
             <button id="create-classroom" class="btn btn-outline-primary btn-sm" type="button" name="button">
               <span class="fa fa-plus mr-2"></span>Create ClassRoom
             </button>
-            <button id="filter-book" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'filter_classroom' %}">
+            <button id="filter-book" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
               <span class="fa fa-filter mr-2"></span>Filter by Grade
             </button>
           </div>
@@ -84,13 +84,8 @@
             {% endif %}
           </div>
         </div>
-        
       </div>
     </div>
-      <button id="create-subje" class="btn btn-primary btn-lg" type="button" name="button">
-        <span class="fa mr-1"></span>Submit
-      </button>
-    </form>
   </div>
 
 {% endblock content %}
@@ -101,18 +96,23 @@
           // Log in & Sign up buttons
           // The formURL is given explicitly
           // Create book button opens modal with id="create-modal"
-          $("#create-holiday").modalForm({
-            formURL: "{% url 'create_holiday' %}",
+          $("#add-semester").modalForm({
+            formURL: "{% url 'school:create_semester' %}",
+            modalID: "#create-modal"
+          });
+
+          $("#add-holiday").modalForm({
+            formURL: "{% url 'school:create_holiday' %}",
             modalID: "#create-modal"
           });
           
           $("#create-classroom").modalForm({
-            formURL: "{% url 'create_classroom' %}",
+            formURL: "{% url 'school:create_classroom' %}",
             modalID: "#create-modal"
           });
 
           $("#create-subject").modalForm({
-            formURL: "{% url 'create_subject' %}",
+            formURL: "{% url 'school:create_subject' %}",
             modalID: "#create-modal"
           });
           
@@ -138,7 +138,7 @@
                 asyncSettings: {
                   closeOnSubmit: false,
                   successMessage: asyncSuccessMessage,
-                  dataUrl:"{% url 'classrooms' %}",
+                  dataUrl:"{% url 'school:classrooms' %}",
                   dataElementId: "#classroom-table",
                   dataKey: "table",
                   addModalFormFunction: updateClassRoomModalForm

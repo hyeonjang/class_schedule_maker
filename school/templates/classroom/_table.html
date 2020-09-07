@@ -19,11 +19,11 @@
         <td class="text-center">{{ classroom.student_number }}</td>
         <td class="text-center">
           <!-- Update book buttons -->
-          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'update_classroom' classroom.pk %}">
+          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_classroom' classroom.pk %}">
             <span class="fa fa-pencil"></span>
           </button>
           <!-- Delete book buttons -->
-          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'delete_classroom' classroom.pk %}">
+          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_classroom' classroom.pk %}">
             <span class="fa fa-trash"></span>
           </button>
         </td>

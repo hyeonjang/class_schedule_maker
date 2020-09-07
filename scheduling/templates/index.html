@@ -17,9 +17,9 @@
 <button class="signup-btn btn btn-primary" type="button" name="button">Sign up</button>
 <form action="." method="get">
 
-    <a href="{% url 'manage_school' %}"> manage </a>
-    <a href="{% url 'sub_view' user.id %}"> subject </a>
-    <a href="{% url 'home_view' user.id %}"> homeroom </a>
+    <a href="{% url 'school:admin_view' %}"> manage </a>
+    <a href="{% url 'timetable:sub_view' user.id %}"> subject </a>
+    <a href="{% url 'timetable:home_view' user.id %}"> homeroom </a>
 
 </form>
 {% endblock %}

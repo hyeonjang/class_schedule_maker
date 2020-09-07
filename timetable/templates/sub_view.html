@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+<div class="container mt-3">
+<form action="{% url 'timetable:sub_view' user.id %}" method="get" id="Table-View-form">
+  {% csrf_token %}
+ 
+  <h2>Subject</h2>
+  <a href="{% url 'timetable:home_view' user.id %}">temporal</a>
+  <table class="table table-bordered table-hover" id="TimeTableView">
+    <thead class="thead-light">
+      <th scope="col">#</th> 
+      <th scope="col">Mon</th>
+      <th scope="col">Tue</th>
+      <th scope="col">Wed</th>
+      <th scope="col">Thr</th>
+      <th scope="col">Fri</th>
+    </thead>
+    <tbody>
+    {% for course in TimeTables %}
+    {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
+      <td>
+          <div class="col"> 
+            <div class="col"> 
+              {% if course.classRoom %}{{ course.classRoom }}{% endif %}
+            </div>
+            <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
+        </div>
+      </td>
+    {% cycle '' '' '' '' '</tr>' %}
+    {% endfor %}
+    </tbody>
+    </table>
+  {{ TimeTables.management_form }}
+  {{ TimeTables.non_form_errors.as_ul }} 
+  <a href="{% url 'timetable:sub_create' user.id %}">create</a>
+  <a href="{% url 'timetable:sub_update' user.id %}">update</a>
+</form>
+</div>
+{% endblock %}

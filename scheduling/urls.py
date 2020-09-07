@@ -15,21 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
 
 from django.shortcuts import render, redirect
+from django.urls import reverse
 
 def home(request):
-    if request.user is None:
-        return render(request, 'accounts/login.html')
+    if not request.user.is_authenticated:
+        return redirect('login')
     else:
-        return render(request, 'index.html')
+        if request.user.is_admin:
+            return render(request, 'index.html')
+            #return redirect('school:admin_view')
+        elif request.user.is_homeroom:
+            return render(request, 'timetable/sub_create')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='index'),
 
+    path('', include('accounts.urls')),
     path('school/', include('school.urls')),
-    path('accounts/', include('accounts.urls')),
     path('timetable/', include('timetable.urls')),
 
 ]

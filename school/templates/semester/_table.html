@@ -9,17 +9,17 @@
     </tr>
     </thead>
     <tbody>
-    {% for day in holidays %}
+    {% for term in semester %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
-        <td class="text-center">{{ day }}</td>
+        <td class="text-center">{{ term }}</td>
         <td class="text-center">
           <!-- Update book buttons -->
-          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_holiday' day.pk %}">
+          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_semester' term.pk %}">
             <span class="fa fa-pencil"></span>
           </button>
           <!-- Delete book buttons -->
-          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_holiday' day.pk %}">
+          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_semester' term.pk %}">
             <span class="fa fa-trash"></span>
           </button>
         </td>

@@ -43,12 +43,11 @@ $(function() {
 {% endblock extrascripts %}
 
 {% block content %}
-<h2>Subject Update</h2>
+<div class="container mt-3">
+<h2>Subject</h2>
 <div>
   <input id="weekpicker" type="text" data-provide="datepicker" class="form-control">
 </div>
-<form action="{% url 'sub_update' user.id %}" method="post" id="Table-Update-form">
-  {% csrf_token %}
   <div class="table-wrap">
   <table class="table table-sm" id="TimeTableUpdate">
     <thead class="thead-light">
@@ -60,12 +59,16 @@ $(function() {
       <th scope="col">Fri</th>
     </thead>
     <tbody>
+    <form action="{% url 'timetable:sub_update' user.id %}" method="post" id="Table-Update-form">
+    {% csrf_token %}
     {% for course in TimeTables %}
     {% cycle '<tr scope="row"><th> 1 </th>' '' '' '' '' %}
-      <td>  
-        {{ course.classRoom }}
-        {{ course.subject }}
-        {{ course.weekday }}
+      <td> 
+        {% for field in course %}
+        {% if field %}
+        {{ field }}
+        {% endif %}
+        {% endfor %}
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
@@ -75,13 +78,6 @@ $(function() {
   {{ TimeTables.management_form }}
   {{ TimeTables.non_form_errors.as_ul }}
   <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
+</div>
 </form>
 {% endblock content %}
-
-{% if messages %}
-  <ul class="messages">
-      {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-      {% endfor %}
-  </ul>
-  {% endif %}

@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, Group
 from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect
-from . import models, forms
 
+from django.contrib.auth.views import LoginView
+
+from .forms import UserForm, UserCreationForm, UserChangeForm
+from .models import User
 # Create your views here.
 def signup(request):
     if request.method == 'POST':
@@ -19,20 +22,12 @@ def signup(request):
         form = forms.SignUpForm()
     return render(request, 'accounts/signup.html', {'form':form })
 
-def login(request):
-    if request.POST:
-        form = forms.LoginForm(request.POST)
-        username = request.POST['username']
-        password = request.POST['password']
-        user = auth.authenticate(username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return redirect('home')
-        else:
-            form.add_error(None, 'invalid Username or Password')
-    else:
-        form = forms.LoginForm()
-    return render(request, 'accounts/login.html', {'form':form })
+class UserLogin(LoginView):           # 로그인
+    template_name = 'login.html'
+    success_url = '/'
+
+    def form_invalid(self, form):
+        return super().form_invalid(form)
 
 def logout(request):
     auth.logout(request)

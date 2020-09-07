@@ -1,22 +1,13 @@
 {% extends 'base.html' %}
 
-{% block scripts %}
-<script>
-  $(function(){
-    $('#Table-Create-Form').on('submit', function(){
-      alert();
-    })
-  });
-</script>
-{% endblock %}
-
 {% block content %}
-<form action="{% url 'sub_create' user.id %}" method="post" id="Table-Create-Form">
+<div class="container mt-3">
+<form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Create-Form">
   {% csrf_token %}
   {{ formset.management_form }}
   {{ formset.non_form_errors.as_ul }} 
  
-  <h2>forms</h2>
+  <h2>Subject</h2>
   <table class="table table-hover" id="TimeTableUpdate">
     <thead class="thead-light">
       <th scope="col">#</th>
@@ -30,7 +21,9 @@
     {% for course in formset %}
     {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
       <td>  
-        {{ course.as_p }}
+        {% for field in course %}
+        {{ field.label }}{{ field }}
+        {% endfor %}
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
@@ -38,4 +31,5 @@
   </table>
   <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
 </form>
+</div>
 {% endblock %}

@@ -11,12 +11,12 @@
 {% endblock %}
 
 {% block content %}
-<form action="{% url 'sub_create' user.id %}" method="post" id="Table-Create-Form">
+<form action="{% url 'timetable:home_create' user.id %}" method="post" id="Table-Create-Form">
   {% csrf_token %}
   {{ formset.management_form }}
   {{ formset.non_form_errors.as_ul }} 
  
-  <h2>forms</h2>
+  <h2>Homeroom</h2>
   <table border='1' id="TimeTableCreate">
     <td align="center">월</td>
     <td align="center">화</td>

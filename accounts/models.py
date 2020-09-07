@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 
 from school.models import ClassRoom, Subject
 
@@ -27,7 +28,7 @@ class UserManager(BaseUserManager):
         return user
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(verbose_name='email', max_length=255, unique=True)
     name = models.CharField(default='', max_length=53)
 
@@ -41,17 +42,6 @@ class User(AbstractBaseUser):
     is_subject = models.BooleanField(default=False)
     is_homeroom = models.BooleanField(default=True)
 
-    classRoom = models.OneToOneField(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
-    
-    assigned_subjects_number = models.SmallIntegerField(default=1, null=True, blank=True)
-
-    subject1 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='one')
-    subject2 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='two')
-    subject3 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='three')
-    subject4 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='four')
-    subject5 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='five')
-    subject6 = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='six')
-  
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
@@ -70,7 +60,3 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-
-    ### get properties
-    def get_classRoom(self):
-        return self.classRoom.pk

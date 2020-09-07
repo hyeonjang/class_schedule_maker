@@ -29,14 +29,28 @@ def expand_inst_to_term(instance, day, iter):
         copy.save()
 
 
-def instantiate_term_timetable(semester, classRoom):
-        week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
-        weeks = semester.end.isocalendar()[1]-semester.start.isocalendar()[1]
-        
-        for i, in range(0, weeks):
-            instance = TimeTable.objects.create(
-                classRoom=classRoom, 
-                semester=semester, 
-                weekday= week[i%5]
-                )
-            expand_inst_to_term(instance, week[i%5], weeks)
+def instantiate_classroom_timetable(semester, classRoom):
+    week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
+    weeks = semester.end.isocalendar()[1]-semester.start.isocalendar()[1]
+    
+    for i in range(0, 40):
+        instance, is_follow = TimeTable.objects.get_or_create(
+            classRoom = classRoom, 
+            semester = semester, 
+            weekday = week[i%5],
+            time = (i//5)%8+1
+            )
+        expand_inst_to_term(instance, week[i%5], weeks)
+
+def instantiate_teacher_timetable(semester, teacher):
+    week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
+    weeks = semester.end.isocalendar()[1]-semester.start.isocalendar()[1]
+    
+    for i in range(0, 40):
+        instance, is_follow = TimeTable.objects.get_or_create(
+            teacher = teacher, 
+            semester = semester, 
+            weekday = week[i%5],
+            time = (i//5)%8+1
+            )
+        expand_inst_to_term(instance, week[i%5], weeks)
