@@ -2,13 +2,15 @@
 
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+
 <div class="container mt-3">
 <form action="{% url 'timetable:home_view' user.id %}" method="get" id="Table-View-form">
   {% csrf_token %}
  
   <h2>Homeroom</h2>
   <a href="{% url 'timetable:sub_view' user.id %}">temporal</a>
-  <table class="table table-hover" id="TimeTableView">
+  <table class="table table-bordered table-hover" id="TimeTableView">
     <thead class="">
       <th scope="col">#</th> 
       <th scope="col">Mon</th>
@@ -17,16 +19,19 @@
       <th scope="col">Thr</th>
       <th scope="col">Fri</th>
     </thead>
+    <tbody>
     {% for course in TimeTables %}
     {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
       <td>
-          <div> 
-            <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
-            <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
+        <div class="col"> 
+          <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
+          <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
+          <p>{% if course.sub_teacher %}{{ course.sub_teacher }}{% endif %}</p>
         </div>
       </td>
     {% cycle '' '' '' '' '</tr>' %}
     {% endfor %}
+  </tbody>
   </table>
   {{ TimeTables.management_form }}
   {{ TimeTables.non_form_errors.as_ul }} 

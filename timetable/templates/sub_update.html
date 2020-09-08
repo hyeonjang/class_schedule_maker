@@ -1,7 +1,11 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
 {% load static %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+
 <div class="container mt-3">
 <h2>Subject</h2>
   <div class="table-wrap">
@@ -21,9 +25,15 @@
     {% cycle '<tr scope="row"><th> 1 </th>' '' '' '' '' %}
       <td> 
         {% for field in course %}
-        {% if field %}
-          {{ field }}
-        {% endif %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% render_field field class="form-control" placeholder=field.label %}
+          <div class="{% if field.errors %} invalid {% endif %}">
+            {% for error in field.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+          </div>
+        </div>
         {% endfor %}
       </td>
     {% cycle '' '' '' '' '</tr>' %}

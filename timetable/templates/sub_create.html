@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
+{% load static %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+
 <div class="container mt-3">
 <form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Create-Form">
   {% csrf_token %}
@@ -8,7 +13,7 @@
   {{ formset.non_form_errors.as_ul }} 
  
   <h2>Subject</h2>
-  <table class="table table-hover" id="TimeTableUpdate">
+  <table class="table table-bordered table-hover" id="TimeTableUpdate">
     <thead class="thead-light">
       <th scope="col">#</th>
       <th scope="col">Mon</th>
@@ -22,7 +27,15 @@
     {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
       <td>  
         {% for field in course %}
-        {{ field.label }}{{ field }}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% render_field field class="form-control" placeholder=field.label %}
+          <div class="{% if field.errors %} invalid {% endif %}">
+            {% for error in field.errors %}
+              <p class="help-block">{{ error }}</p>
+            {% endfor %}
+          </div>
+        </div>
         {% endfor %}
       </td>
     {% cycle '' '' '' '' '</tr>' %}

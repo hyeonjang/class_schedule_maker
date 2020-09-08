@@ -2,6 +2,8 @@
 
 {% load static %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+
 <div class="container mt-3">
 <form action="{% url 'timetable:sub_view' user.id %}" method="get" id="Table-View-form">
   {% csrf_token %}
@@ -9,7 +11,7 @@
   <h2>Subject</h2>
   <a href="{% url 'timetable:home_view' user.id %}">temporal</a>
   <table class="table table-bordered table-hover" id="TimeTableView">
-    <thead class="thead-light">
+    <thead class="">
       <th scope="col">#</th> 
       <th scope="col">Mon</th>
       <th scope="col">Tue</th>
@@ -23,7 +25,7 @@
       <td>
           <div class="col"> 
             <div class="col"> 
-              {% if course.classRoom %}{{ course.classRoom }}{% endif %}
+              {% if course.classroom %}{{ course.classroom }}{% endif %}
             </div>
             <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
         </div>
