@@ -9,12 +9,13 @@ from django.shortcuts import redirect
 from django.views import generic
 from django.urls import reverse_lazy
 
+from accounts.models import HomeTeacher, SubjectTeacher
 from school.models import Term, ClassRoom, Subject
 
 from .models import SubjectTable, HomeTable
 from .forms import (SubjectTableForm, HomeTableForm, SubjectTableCreateFormset, SubjectTableUpdateFormset, HomeTableCreateFormset, HomeTableUpdateFormset)
 
-from .utils import mon_to_fri
+from .utils import mon_to_fri, expand_inst_to_term, copy_sub_to_home
 
 ##########################################################
 ### Teacher Roles == Subject Features
@@ -76,14 +77,6 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     def get_context_data(self, **kwargs):
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
         qs = SubjectTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04"))
-        if self.request.is_ajax:
-            startdate = self.request.GET.get('startdate')
-            enddate = self.request.GET.get('enddate')
-            if startdate and enddate:
-                startdate = startdate[0:10] # iso format
-                enddate = enddate[0:10]
-                qs = SubjectTable.objects.filter(teacher=self.request.user, weekday__range=(startdate, enddate))
-
         if self.request.POST:
             context['TimeTables'] = SubjectTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
@@ -94,7 +87,11 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         context = self.get_context_data()
         formset = context['TimeTables']
         if formset.is_valid():
-            formset.save()
+            for form in formset:
+                instance = form.save(commit=False)
+                instance.save()
+                if instance.classroom and instance.subject:
+                    copy_sub_to_home(instance)
             messages.success(self.request, 'success', extra_tags='alert')
             return redirect(self.get_success_url())
         else:
@@ -145,7 +142,7 @@ class HomeRoomCreate(generic.CreateView):
     form_class = HomeTableForm
 
     def get_success_url(self):
-        return redirect('timetable:home_view', kwargs={'user_id':self.request.user.id})
+        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id})
 
     def get_context_data(self, **kwargs):
         context = super(HomeRoomCreate, self).get_context_data(**kwargs)
@@ -159,19 +156,17 @@ class HomeRoomCreate(generic.CreateView):
         context = self.get_context_data()
         semester = Term.objects.get(pk=1)
         week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
-        classroom = ClassRoom.objects.get(teacher=self.request.user)
+        #weeks = semester.end.isocalendar()[1] - semester.start.isocalendar()[1]
         formset = context['formset']
         if formset.is_valid():
             for i, form in enumerate(formset):
-                queryset = Subject.objects.filter(
-                    semester=semester,
-                    classRoom=classroom.id,
-                    weekday=week[i%5],
-                    time=(i//5)%8+1
-                    )
-                teacher = self.request.user
-                subject = form.cleaned_data.get('subject')
-                queryset.update(teacher=teacher, subject=subject)
+                instance = form.save(commit=False)
+                instance.classroom = HomeTeacher.objects.get(user=self.request.user).classroom
+                instance.semester = semester
+                instance.time = (i//5)%8+1 # row major table input
+                instance.weekday = week[i%5]
+                instance.save()
+                #expand_inst_to_term(instance, week[i%5], weeks)
             messages.success(self.request, 'success', extra_tags='alert')
             return redirect(self.get_success_url())
         else:
@@ -188,7 +183,7 @@ class HomeRoomUpdate(generic.UpdateView):
     '''
     class doc
     '''
-    template_name = 'SubjectUpdate.html'
+    template_name = 'home_update.html'
     model = HomeTable
     form_class = HomeTableForm
     success_url = '/'
@@ -205,14 +200,31 @@ class HomeRoomUpdate(generic.UpdateView):
             if startdate and enddate:
                 startdate = startdate[0:10] # iso format
                 enddate = enddate[0:10]
-                qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=(startdate, enddate))
+                qs = HomeTable.objects.filter(hometeacher=self.request.user, weekday__range=(startdate, enddate))
 
         if self.request.POST:
-            context['TimeTables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs).order_by("time", "weekday")
+            context['TimeTables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
             context['TimeTables'] = HomeTableUpdateFormset(instance=self.request.user, queryset=qs)
         # print(context['TimeTables'])
         return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['TimeTables']
+        if formset.is_valid():
+            formset.save()
+            messages.success(self.request, 'success', extra_tags='alert')
+            return redirect(self.get_success_url())
+        else:
+            messages.warning(self.request, formset.errors)
+            return self.render_to_response(self.get_context_data(form=form))
+
+    def form_invalid(self, form):
+        context = self.get_context_data()
+        formset = context['TimeTables']
+        print(formset.errors)
+        return self.render_to_response(self.get_context_data(form=form))
 
 class HomeRoomView(generic.TemplateView):
     '''
@@ -229,7 +241,6 @@ class HomeRoomView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeRoomView, self).get_context_data(**kwargs)
-        classroom = ClassRoom.objects.get(teacher=self.request.user)
-        qs = HomeTable.objects.filter(classRoom=classroom.id, weekday__range=("2020-08-31", "2020-09-04")).order_by("time", "weekday")
+        qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04")).order_by("time", "weekday")
         context['TimeTables'] = qs
         return context

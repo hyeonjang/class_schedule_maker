@@ -4,7 +4,7 @@ modul doc
 from django import forms
 from django.forms import inlineformset_factory
 
-from accounts.models import User
+from accounts.models import User, SubjectTeacher, HomeTeacher
 from .models import TimeTable, SubjectTable, HomeTable
 
 class TimeTableForm(forms.ModelForm):
@@ -13,7 +13,7 @@ class TimeTableForm(forms.ModelForm):
     '''
     class Meta:
         model = TimeTable
-        fields = ['classRoom', 'subject']
+        fields = ['classroom', 'subject']
 
 class SubjectTableForm(forms.ModelForm):
     '''
@@ -21,7 +21,7 @@ class SubjectTableForm(forms.ModelForm):
     '''
     class Meta:
         model = SubjectTable
-        fields = ['classRoom', 'subject']
+        fields = ['classroom', 'subject']
 
 class HomeTableForm(forms.ModelForm):
     '''
@@ -29,9 +29,9 @@ class HomeTableForm(forms.ModelForm):
     '''
     class Meta:
         model = HomeTable
-        fields = ['classRoom', 'subject']
+        fields = ['subject', 'sub_teacher']
 
 SubjectTableCreateFormset = inlineformset_factory(User, SubjectTable, extra=40, form=SubjectTableForm, can_delete=False)
 SubjectTableUpdateFormset = inlineformset_factory(User, SubjectTable, extra=0, form=SubjectTableForm, can_delete=False)
-HomeTableCreateFormset = inlineformset_factory(User, HomeTable, extra=40, form=HomeTableForm, can_delete=False)
-HomeTableUpdateFormset = inlineformset_factory(User, HomeTable, extra=0, form=HomeTableForm, can_delete=False)
+HomeTableCreateFormset = inlineformset_factory(User, HomeTable, fk_name='teacher', extra=40, form=HomeTableForm, can_delete=False)
+HomeTableUpdateFormset = inlineformset_factory(User, HomeTable, fk_name='teacher', extra=0, form=HomeTableForm, can_delete=False)

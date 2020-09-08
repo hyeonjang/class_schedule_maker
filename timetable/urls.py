@@ -14,5 +14,5 @@ urlpatterns = [
     path('<int:user_id>/sub/update/', views.SubjectUpdate.as_view(), name='sub_update'),
     path('<int:user_id>/home/view/', views.HomeRoomView.as_view(), name='home_view'),
     path('<int:user_id>/home/create/', views.HomeRoomCreate.as_view(), name='home_create'),
-    path('<int:user_id>/home/update/', views.SubjectUpdate.as_view(), name='home_update'),
+    path('<int:user_id>/home/update/', views.HomeRoomUpdate.as_view(), name='home_update'),
 ]
