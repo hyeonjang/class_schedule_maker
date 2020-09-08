@@ -47,8 +47,8 @@ class ClassRoom(models.Model):
 
     grade = models.PositiveSmallIntegerField(default=1, choices=GRADE_RANGE)
     number = models.PositiveSmallIntegerField(default=1, validators=[MinValueValidator(0), MaxValueValidator(20)])
-    teacher = models.OneToOneField("accounts.User", on_delete=models.CASCADE, default=1)
-    semester = models.ForeignKey(Term, on_delete=models.CASCADE, default=1)
+    #teacher = models.OneToOneField("accounts.User", on_delete=models.CASCADE, default=1)
+    #semester = models.ForeignKey(Term, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f'{self.grade}-{self.number}'
@@ -73,11 +73,11 @@ class Subject(models.Model):
     grade = models.PositiveSmallIntegerField(choices=GRADE_RANGE)
     count = models.IntegerField(default=272, validators=[MinValueValidator(128), MaxValueValidator(448)]) # 2018년도 교육과정 기준
 
-    teacher1 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='one')
-    teacher2 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='two')
-    teacher3 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='three')
-    teacher4 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='four')
-    semester = models.ForeignKey(Term, on_delete=models.CASCADE, default=1)
+    # teacher1 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='one')
+    # teacher2 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='two')
+    # teacher3 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='three')
+    # teacher4 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='four')
+    # semester = models.ForeignKey(Term, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return  self.name + f'({self.grade}G)'
