@@ -1,13 +1,10 @@
-from django.urls import path
-from .views import signup, logout, UserLogin
+from django.urls import include, path
+from .views import IndexView, HomeroomSignUpView, SubjectSignUpView, CustomLoginView, logout_view
 
 urlpatterns = [
-    path('signup/', signup, name='signup'),
-    path('login/' , UserLogin.as_view(), name='login'),
-    path('logout/', logout, name='logout'),
-    # path('password_change', views.login, name='password_change'),
-    # path('password_change', views.login, name='password_change'),
-    # path('password_change', views.login, name='password_change'),
-    # path('password_change', views.login, name='password_change'),
-    # path('password_change', views.login, name='password_change'),
+    path('accounts/', IndexView.as_view(), name='index'),
+    path('accounts/signup/home/', HomeroomSignUpView.as_view(), name='homeroom_signup'),
+    path('accounts/signup/sub/', SubjectSignUpView.as_view(), name='subject_signup'),
+    path('accounts/login/', CustomLoginView.as_view(), name='login'),
+    path('accounts/logout/', logout_view, name='logout'),
 ]

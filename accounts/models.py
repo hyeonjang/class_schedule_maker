@@ -1,62 +1,50 @@
-from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.contrib.auth.models import PermissionsMixin
+from django.db import models
 
 from school.models import ClassRoom, Subject
 
-class UserManager(BaseUserManager):
-    def create_user(self, email, name, password=None):
-        if not email:
-            raise ValueError('Users must have an email address')
+class User(AbstractUser):
+    '''
+    todo doc
+    '''
+    HOMEROOM = 1
+    SUBJECT = 2
+    INVITED = 3
+    SUPERVISOR = 4
+    ADMIN = 5
 
-        user = self.model(
-            email=self.normalize_email(email), 
-            name=name, 
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+    USER_TYPE_CHOICES = [
+        (HOMEROOM, 'homeroom'),
+        (SUBJECT, 'subject'),
+        (INVITED, 'invited'),
+        (SUPERVISOR, 'supervisor'),
+        (ADMIN, 'admin'),
+    ]
+    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
 
-    def create_superuser(self, email, name, password):
-        user = self.create_user(
-            email,
-            name=name,
-            password=password,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
+    def to_string(self):
+        '''
+        return name
+        '''
+        return self.username
 
-
-class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(verbose_name='email', max_length=255, unique=True)
-    name = models.CharField(default='', max_length=53)
-
-    is_active = models.BooleanField(default=True)
-    
-    # permssion
-    is_admin = models.BooleanField(default=False)
-
-    # role
-    is_manager = models.BooleanField(default=False)
-    is_subject = models.BooleanField(default=False)
-    is_homeroom = models.BooleanField(default=True)
-
-    objects = UserManager()
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name']
+class HomeTeacher(models.Model):
+    '''
+    homeroom
+    '''
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    classroom = models.OneToOneField(ClassRoom, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.user.username
 
-    ### permission properties
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.is_admin
+class SubjectTeacher(models.Model):
+    '''
+    homeroom
+    '''
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    subject = models.ManyToManyField(Subject, related_name='teaching_subject')
+    
+    def __str__(self):
+        return self.user.username
