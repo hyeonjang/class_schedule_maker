@@ -50,6 +50,9 @@ class SubjectCreate(LoginRequiredMixin, generic.CreateView): # actullay update i
                 instance.time = (i//5)%8+1 # row major table input
                 instance.weekday = week[i%5]
                 instance.save()
+                ## todo move to form or model save()
+                if instance.classroom and instance.subject:
+                    copy_sub_to_home(instance)
             return redirect(self.get_success_url())
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -90,8 +93,8 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
             for form in formset:
                 instance = form.save(commit=False)
                 instance.save()
-                if instance.classroom and instance.subject:
-                    copy_sub_to_home(instance)
+                #if instance.classroom and instance.subject:
+                #    copy_sub_to_home(instance)
             messages.success(self.request, 'success', extra_tags='alert')
             return redirect(self.get_success_url())
         else:
@@ -200,7 +203,8 @@ class HomeRoomUpdate(generic.UpdateView):
             if startdate and enddate:
                 startdate = startdate[0:10] # iso format
                 enddate = enddate[0:10]
-                qs = HomeTable.objects.filter(hometeacher=self.request.user, weekday__range=(startdate, enddate))
+                print(startdate, enddate)
+                qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=(startdate, enddate))
 
         if self.request.POST:
             context['TimeTables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)

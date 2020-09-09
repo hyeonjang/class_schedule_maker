@@ -71,13 +71,7 @@ class Subject(models.Model):
 
     name = models.CharField(max_length=64)
     grade = models.PositiveSmallIntegerField(choices=GRADE_RANGE)
-    count = models.IntegerField(default=272, validators=[MinValueValidator(128), MaxValueValidator(448)]) # 2018년도 교육과정 기준
-
-    # teacher1 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='one')
-    # teacher2 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='two')
-    # teacher3 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='three')
-    # teacher4 = models.ForeignKey("accounts.User", on_delete=models.SET_NULL, null=True, blank=True, related_name='four')
-    # semester = models.ForeignKey(Term, on_delete=models.CASCADE, default=1)
+    count = models.IntegerField(default=272, validators=[MinValueValidator(64), MaxValueValidator(448)]) # 2018년도 교육과정 기준
 
     def __str__(self):
         return  self.name + f'({self.grade}G)'

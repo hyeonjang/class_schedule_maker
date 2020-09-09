@@ -1,34 +1,35 @@
-{% extends 'base.html' %}
+{% load widget_tweaks %}
 
-{% block content %}
-<div class="container md-3">
-  <div class="card" style="width: 20rem;">
-    <div class="card-header">
-      <h2> SignUp </h2>
-    </div>
-      <div class="card-body">
-        <form method="post" novalidate>
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
-        <fieldset class="module aligned">
-          {% for field in form %}
-          <div class="form-group">
-            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-            <div class="form-row">{{ field }}</div>
-            <small class="form-text text-muted">{{ field.help_text|safe }}</small>
-            <div class="{% if field.errors %} invalid {% endif %}">
-              {% for error in field.errors %}
-                <p class="help-block">{{ error }}</p>
-              {% endfor %}
-            </div>
-          </div>
-          {% endfor %}
-        </fieldset>
-        <div class="col"><button type="submit" class="btn btn-success">
-          Sign up</button>
-        </div>
-      </form>
+<form method="post" action="">
+{% csrf_token %}
+
+  <div class="modal-header">
+    <h3 class="modal-title">Sign Up</h3>
   </div>
-</div>
-</div>
-{% endblock %}
+
+  <div class="modal-body">
+
+    <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+      {% for error in form.non_field_errors %}
+        {{ error }}
+      {% endfor %}
+    </div>
+
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% render_field field class="form-control" placeholder=field.label %}
+        <div class="{% if field.errors %} invalid {% endif %}">
+          {% for error in field.errors %}
+            <p class="help-block">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="submit-btn btn btn-success">Sign Up</button>
+  </div>
+
+</form>

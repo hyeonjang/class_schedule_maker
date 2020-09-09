@@ -20,7 +20,6 @@ $(function() {
               var startDate = new Date($(this).val());
               var endDate = new Date();
               endDate.setDate(startDate.getDate() + 4);
-
               $.ajax({
                 type: $(this).attr('method'),         
                 url: $(this).attr('action'),
@@ -48,7 +47,7 @@ $(function() {
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
 <div class="container mt-3">
-<h2>Subject</h2>
+<h2>Homeroom</h2>
 <div>
   <input id="weekpicker" type="text" data-provide="datepicker" class="form-control">
 </div>
@@ -66,7 +65,7 @@ $(function() {
     <form action="{% url 'timetable:home_update' user.id %}" method="post" id="Table-Update-form">
     {% csrf_token %}
     {% for course in TimeTables %}
-    {% cycle '<tr scope="row"><th> 1 </th>' '' '' '' '' %}
+    {% cycle '<tr scope="row"><th class="align-middle"> 1 </th>' '' '' '' '' %}
       <td> 
         {% for field in course %}
         <div class="form-group">
@@ -88,6 +87,7 @@ $(function() {
   {{ TimeTables.management_form }}
   {{ TimeTables.non_form_errors.as_ul }}
   <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
-</div>
 </form>
+</div>
+
 {% endblock content %}

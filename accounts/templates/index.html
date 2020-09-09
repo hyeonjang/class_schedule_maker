@@ -1,50 +1,56 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% load widget_tweaks %}
 
+{% block content %}
 {% include "_modal.html" %}
 
   <div class="container mt-3">
     <div class="card">
+      
       <div class="card-header">
-        <h2> SignUp </h2>
+        <h2>  </h2>
       </div>
-        <div class="card-body">
-            <div class="row no-gutters">
-              <div class="col">
-                  <button id="login-btn" class="btn btn-primary">Login</button>
-              </div>
-              <div class="col">
-                <div class="col">
-                  <a id="signup-btn" class="btn btn-primary" role="button" href="{% url 'homeroom_signup' %}">
-                      homeroom teacher signup
-                  </a>
-                </div>
-                <div class="col">
-                  <a id="signup-btn" class="btn btn-primary" role="button" href="{% url 'subject_signup' %}">
-                      subject teacher signup
-                  </a>
-                </div>
-                <div class="col">
-                  <a id="signup-btn" class="btn btn-primary" role="button" href="{% url 'subject_signup' %}">
-                      subject teacher signup
-                  </a>
-                </div>
-              </div>
-            </div>
+        
+      <div class="card-body">
+        <div class="row no-gutters">
+          <div class=""> 
+            {% include 'login.html' %}
           </div>
         </div>
       </div>
+         
+      <div class="card-footer">
+        <a id="su-home-btn" class="">
+          homeroom
+        </a>
+
+        <a id="su-sub-btn" class="">
+          subject
+        </a>
+
+        <a id="su-inv-btn" class="">
+          invited
+        </a>
+
+      </div>
     </div>
   </div>
+</div>
 {% endblock %}
 
 {% block extrascripts %}
   <script type="text/javascript">
       $(function () {
-        $("#login-btn").modalForm({
-            formURL: "{% url 'login' %}"
-          });
+        $("#su-home-btn").modalForm({
+          formURL: "{% url 'homeroom_signup' %}"
+        });
+        $("#su-sub-btn").modalForm({
+          formURL: "{% url 'subject_signup' %}"
+        });
+        $("#su-inv-btn").modalForm({
+          formURL: "{% url 'invited_signup' %}"
+        });
         })
  </script>
  {% endblock extrascripts %}

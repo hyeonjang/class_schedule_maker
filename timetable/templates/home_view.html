@@ -5,38 +5,39 @@
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
 <div class="container mt-3">
-<form action="{% url 'timetable:home_view' user.id %}" method="get" id="Table-View-form">
-  {% csrf_token %}
- 
-  <h2>Homeroom</h2>
-  <a href="{% url 'timetable:sub_view' user.id %}">temporal</a>
-  <table class="table table-bordered table-hover" id="TimeTableView">
-    <thead class="">
-      <th scope="col">#</th> 
-      <th scope="col">Mon</th>
-      <th scope="col">Tue</th>
-      <th scope="col">Wed</th>
-      <th scope="col">Thr</th>
-      <th scope="col">Fri</th>
-    </thead>
-    <tbody>
-    {% for course in TimeTables %}
-    {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
-      <td>
-        <div class="col"> 
-          <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
-          <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
-          <p>{% if course.sub_teacher %}{{ course.sub_teacher }}{% endif %}</p>
-        </div>
-      </td>
-    {% cycle '' '' '' '' '</tr>' %}
-    {% endfor %}
-  </tbody>
-  </table>
-  {{ TimeTables.management_form }}
-  {{ TimeTables.non_form_errors.as_ul }} 
-  <a href="{% url 'timetable:home_create' user.id %}">create</a>
-  <a href="{% url 'timetable:home_update' user.id %}">update</a>
-</form>
+  <div class="row">
+    <form action="{% url 'timetable:home_view' user.id %}" method="get" id="Table-View-form">
+      {% csrf_token %}
+      <h2>Homeroom</h2>
+      <a href="{% url 'timetable:sub_view' user.id %}">temporal</a>
+        <table class="table table-bordered table-hover" id="TimeTableView">
+          <thead class="">
+            <th scope="col">#</th> 
+            <th scope="col">Mon</th>
+            <th scope="col">Tue</th>
+            <th scope="col">Wed</th>
+            <th scope="col">Thr</th>
+            <th scope="col">Fri</th>
+          </thead>
+          <tbody>
+          {% for course in TimeTables %}
+            {% cycle '<tr scope="row"><th class="align-middle">1</th>' '' '' '' '' %}
+              <td class="min">
+                <div class="col"> 
+                  <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
+                  <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
+                  <p>{% if course.sub_teacher %}{{ course.sub_teacher }}{% endif %}</p>
+                </div>
+              </td>
+            {% cycle '' '' '' '' '</tr>' %}
+          {% endfor %}
+          </tbody>
+        </table>
+        {{ TimeTables.management_form }}
+        {{ TimeTables.non_form_errors.as_ul }} 
+        <a href="{% url 'timetable:home_create' user.id %}">create</a>
+        <a href="{% url 'timetable:home_update' user.id %}">update</a>
+    </form>
+  </div>
 </div>
 {% endblock %}

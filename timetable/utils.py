@@ -3,6 +3,7 @@ util functions
 """
 import time
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
 from .models import SubjectTable, HomeTable
 
@@ -46,7 +47,8 @@ def copy_sub_to_home(subtable):
     teacher = subtable.teacher
     subject = subtable.subject
 
-    queryset = HomeTable.objects.filter(classroom=classroom, weekday=weekday, time=sub_time)
-    print(queryset)
+    queryset = HomeTable.objects.get(classroom=classroom, weekday=weekday, time=sub_time)
+    if queryset.sub_teacher is not teacher:
+        raise ValidationError(f"already {queryset.sub_teacher}")
     queryset.update(sub_teacher=teacher, subject=subject)
     

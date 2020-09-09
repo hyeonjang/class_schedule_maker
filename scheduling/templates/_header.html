@@ -34,10 +34,11 @@
           </li>
         </ul>
           {% if not user.is_anonymous %}
-          <div>
-            <p>Your are logged in as <strong>{{ user }}</strong></p>
-            <a href="{% url 'logout' %}" id="logout-btn" class="" role="button">Log out</a>
-          </div>
+            <p class="text-muted ml-auto m-0"
+              >Your are logged in as <strong>{{ user }}</strong>
+              <a href="{% url 'logout' %}" id="logout-btn" class="" role="button">Log out</a>
+            </p>
+
           {% endif %}
       </div>
     </nav>

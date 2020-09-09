@@ -3,8 +3,9 @@ Abstract TimeTable model
 '''
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 
-from accounts.models import User, SubjectTeacher, HomeTeacher
+from accounts.models import User
 from school.models import Term, ClassRoom, Subject
 
 # Create your models here.
@@ -50,13 +51,39 @@ class SubjectTable(TimeTable):
         result += f', {self.weekday}'
         return result
 
+    def copy_to_hometable(self):
+        queryset = HomeTable.objects.filter(
+            classroom=self.classroom,
+            weekday=self.weekday,
+            time=self.time,
+            )
+        # print(instance)
+        # if queryset.exists():
+        #     if (queryset.get().sub_teacher is not self.teacher):
+        #         raise ValidationError(f"already {queryset.get().sub_teacher}")
+        queryset.update(sub_teacher=self.teacher, subject=self.subject)
+
+    def save(self, *args, **kwargs):
+        '''
+        save with copy to Hometable
+        '''
+        self.copy_to_hometable()
+        super(SubjectTable, self).save(*args, **kwargs)
+
+class Invited(TimeTable):
+    """
+    for Invited Teacher
+    """
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='invited_teacher')
+    available = models.BooleanField()
+
 class HomeTable(TimeTable):
     """
     for Homeroom Teacher
     """
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='main_home_teacher')
     sub_teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='subject_teacher')
-
+    inv_teacher = models.OneToOneField(Invited, on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         result = super().teacher.to_string() + ', '
         if self.classroom:
@@ -66,6 +93,7 @@ class HomeTable(TimeTable):
         if self.subject:
             result += self.subject.name + ', '
         if self.sub_teacher:
-            result +=  self.sub_teacher.to_string() + ', '
+            result += self.sub_teacher.to_string() + ', '
         result += f'{self.weekday}'
         return result
+

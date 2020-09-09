@@ -48,3 +48,11 @@ class SubjectTeacher(models.Model):
     
     def __str__(self):
         return self.user.username
+
+class InvitedTeacher(models.Model):
+    '''
+    Invited
+    '''
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    start = models.DateField()
+    end = models.DateField()
