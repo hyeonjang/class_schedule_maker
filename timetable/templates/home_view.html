@@ -6,10 +6,13 @@
 
 <div class="container mt-3">
   <div class="row">
+
+    {% include 'sidebar.html' %}
+
+    <div class="col-10 offset-2">
     <form action="{% url 'timetable:home_view' user.id %}" method="get" id="Table-View-form">
       {% csrf_token %}
       <h2>Homeroom</h2>
-      <a href="{% url 'timetable:sub_view' user.id %}">temporal</a>
         <table class="table table-bordered table-hover" id="TimeTableView">
           <thead class="">
             <th scope="col">#</th> 
@@ -38,6 +41,7 @@
         <a href="{% url 'timetable:home_create' user.id %}">create</a>
         <a href="{% url 'timetable:home_update' user.id %}">update</a>
     </form>
+    </div>
   </div>
 </div>
 {% endblock %}
