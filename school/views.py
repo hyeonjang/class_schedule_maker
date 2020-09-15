@@ -26,7 +26,7 @@ from .forms import (
     SubjectModelForm,
     )
 from .forms import TimeTableCreation
-from .utils import instantiate_classroom_timetable, instantiate_teacher_timetable
+from .utils import create_classroom_timetable
 
 def admin(request):
     '''
@@ -39,9 +39,7 @@ def admin(request):
             classroom = form.cleaned_data.get('classroom')
             teacher = form.cleaned_data.get('teacher')
             if semester and classroom:
-                instantiate_classroom_timetable(semester, classroom)
-            if semester and teacher:
-                instantiate_teacher_timetable(semester, teacher)
+                create_classroom_timetable(semester, classroom)
             return redirect('school:admin_view')
     else:
         form = TimeTableCreation()

@@ -1,13 +1,16 @@
 '''
-doct
+School informations - Semester, Hoilday, ...
 '''
+import time
+from django.utils import timezone
+
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 class Holiday(models.Model):
     '''
-    doct
+    Hoilday Datatable
     '''
     day = models.DateField()
 
@@ -16,7 +19,7 @@ class Holiday(models.Model):
 
 class Term(models.Model):
     '''
-    doct
+    Semester Datatable
     '''
     start = models.DateField()
     end = models.DateField()
@@ -31,6 +34,31 @@ class Term(models.Model):
         else:
             self.semester = 2
         super(Term, self).save(*args, **kwargs)
+
+    def get_starting_week(self):
+        '''
+        return a starting week of this semester
+        '''
+        year = self.start.year
+        week = self.start.isocalendar()[1]
+        str_time = time.strptime('{0} {1} 1'.format(year, week), '%Y %W %w')
+        date = timezone.datetime(year=str_time.tm_year, month=str_time.tm_mon,
+                                 day=str_time.tm_mday, tzinfo=timezone.utc)
+        if timezone.datetime(year, 1, 4).isoweekday() > 4:
+            # ISO 8601 where week 1 is the first week that has at least 4 days in
+            # the current year
+            date -= timezone.timedelta(days=7)
+        return [date,
+                date+timezone.timedelta(days=1),
+                date+timezone.timedelta(days=2),
+                date+timezone.timedelta(days=3),
+                date+timezone.timedelta(days=4)]
+
+    def get_weeks(self):
+        '''
+        return the count of weeks
+        '''
+        return self.end.isocalendar()[1]-self.start.isocalendar()[1]
 
 class ClassRoom(models.Model):
     '''
@@ -53,13 +81,19 @@ class ClassRoom(models.Model):
     def __str__(self):
         return f'{self.grade}-{self.number}'
 
-    def c_str(self):
+    def to_string(self):
+        '''
+        public string return function
+        '''
         return f'{self.grade}-{self.number}'
 
     class Meta:
         unique_together = ('grade', 'number')
 
 class Subject(models.Model):
+    '''
+    Subjects Model
+    '''
     GRADE_RANGE = [
         (1, '1학년'),
         (2, '2학년'),
@@ -77,6 +111,9 @@ class Subject(models.Model):
         return  self.name + f'({self.grade}G)'
 
     def to_string(self):
+        '''
+        public string return function
+        '''
         return self.name
 
     class Meta:
