@@ -47,47 +47,53 @@ $(function() {
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
 <div class="container mt-3">
-<h2>Homeroom</h2>
-<div>
-  <input id="weekpicker" type="text" data-provide="datepicker" class="form-control">
-</div>
-  <div class="table-wrap">
-  <table class="table table-bordered table-sm" id="TimeTableUpdate">
-    <thead class="thead-light">
-      <th scope="col">#</th>
-      <th scope="col">Mon</th>
-      <th scope="col">Tue</th>
-      <th scope="col">Wed</th>
-      <th scope="col">Thr</th>
-      <th scope="col">Fri</th>
-    </thead>
-    <tbody>
+  <div class="row">
+
+    {% include '_sidebar.html' %}
+
+    <div class="col-10 offset-2">
     <form action="{% url 'timetable:home_update' user.id %}" method="post" id="Table-Update-form">
     {% csrf_token %}
-    {% for course in TimeTables %}
-    {% cycle '<tr scope="row"><th class="align-middle"> 1 </th>' '' '' '' '' %}
-      <td> 
-        {% for field in course %}
-        <div class="form-group">
-          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-          {% render_field field class="form-control" placeholder=field.label %}
-          <div class="{% if field.errors %} invalid {% endif %}">
-            {% for error in field.errors %}
-              <p class="help-block">{{ error }}</p>
-            {% endfor %}
-          </div>
+      <h2>Homeroom</h2>
+      <div>
+        <input id="weekpicker" type="text" data-provide="datepicker" class="form-control">
+      </div>
+        <div class="table-wrap">
+        <table class="table table-bordered table-sm" id="TimeTableUpdate">
+          <thead class="thead-light">
+            <th scope="col">#</th>
+            <th scope="col">Mon</th>
+            <th scope="col">Tue</th>
+            <th scope="col">Wed</th>
+            <th scope="col">Thr</th>
+            <th scope="col">Fri</th>
+          </thead>
+          <tbody>
+          {% for course in TimeTables %}
+          {% cycle '<tr scope="row"><th class="align-middle"> 1 </th>' '' '' '' '' %}
+            <td> 
+              {% for field in course %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% render_field field class="form-control" placeholder=field.label %}
+                <div class="{% if field.errors %} invalid {% endif %}">
+                  {% for error in field.errors %}
+                    <p class="help-block">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endfor %}
+            </td>
+          {% cycle '' '' '' '' '</tr>' %}
+          {% endfor %}
+          </tbody>
+        </table>
         </div>
-        {% endfor %}
-      </td>
-    {% cycle '' '' '' '' '</tr>' %}
-    {% endfor %}
-    </tbody>
-  </table>
+        {{ TimeTables.management_form }}
+        {{ TimeTables.non_form_errors.as_ul }}
+        <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
+      </form>
+    </div>
   </div>
-  {{ TimeTables.management_form }}
-  {{ TimeTables.non_form_errors.as_ul }}
-  <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
-</form>
 </div>
-
 {% endblock content %}
