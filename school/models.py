@@ -54,7 +54,7 @@ class Term(models.Model):
                 date+timezone.timedelta(days=3),
                 date+timezone.timedelta(days=4)]
 
-    def get_weeks(self):
+    def get_count_of_weeks(self):
         '''
         return the count of weeks
         '''
@@ -75,8 +75,8 @@ class ClassRoom(models.Model):
 
     grade = models.PositiveSmallIntegerField(default=1, choices=GRADE_RANGE)
     number = models.PositiveSmallIntegerField(default=1, validators=[MinValueValidator(0), MaxValueValidator(20)])
-    #teacher = models.OneToOneField("accounts.User", on_delete=models.CASCADE, default=1)
-    #semester = models.ForeignKey(Term, on_delete=models.CASCADE, default=1)
+    teacher = models.OneToOneField("accounts.HomeTeacher", on_delete=models.CASCADE, default=0, related_name="teacher_name")
+    student_count = models.PositiveSmallIntegerField(default=1, null=True)
 
     def __str__(self):
         return f'{self.grade}-{self.number}'

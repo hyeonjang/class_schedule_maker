@@ -9,11 +9,9 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from bootstrap_modal_forms.generic import (
-    #BSModalLoginView,
     BSModalFormView,
     BSModalCreateView,
     BSModalUpdateView,
-    #BSModalReadView,
     BSModalDeleteView
 )
 
@@ -49,7 +47,6 @@ def admin(request):
     }
 
     return render(request, 'admin_view.html', context)
-
 
 class SchoolManageListView(LoginRequiredMixin, generic.ListView):
     '''
@@ -173,6 +170,12 @@ class ClassRoomCreateView(BSModalCreateView):
     form_class = ClassRoomModelForm
     success_message = 'Success: Subject was created.'
     success_url = reverse_lazy('school:manage_school')
+
+    def form_valid(self, form):
+        instance = form.save()
+        instance.save()
+        create_classroom_timetable(Term.objects.get(pk=1), instance) #@@todo
+        return redirect(self.get_success_url())
 
 class ClassRoomUpdateView(BSModalUpdateView):
     '''

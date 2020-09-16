@@ -1,5 +1,4 @@
-from django.contrib.auth.models import BaseUserManager, AbstractUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from school.models import ClassRoom, Subject
@@ -34,7 +33,7 @@ class HomeTeacher(models.Model):
     homeroom
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    classroom = models.OneToOneField(ClassRoom, on_delete=models.CASCADE)
+    #classroom = models.OneToOneField(ClassRoom, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
