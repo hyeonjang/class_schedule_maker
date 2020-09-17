@@ -110,7 +110,7 @@ class ClassRoomManageListView(LoginRequiredMixin, generic.ListView):
         })
         return context
 
-class GradeFilterView(BSModalFormView):
+class ClassRoomGradeFilterView(BSModalFormView):
     '''
     module doc
     '''
@@ -127,8 +127,29 @@ class GradeFilterView(BSModalFormView):
         return response
 
     def get_success_url(self):
-        return reverse_lazy('school:manage_school') + self.filter
+        return reverse_lazy('school:manage_classroom') + self.filter
 
+class SubjectGradeFilterView(BSModalFormView):
+    '''
+    module doc
+    '''
+    template_name = 'subject/filter.html'
+    form_class = GradeFilterForm
+
+    def form_valid(self, form):
+        if 'clear' in self.request.POST:
+            self.filter = ''
+        else:
+            self.filter = '?grade=' + form.cleaned_data['grade']
+
+        response = super().form_valid(form)
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_subject') + self.filter
+
+### the end of management feautures
+########################################################
 ########################################################
 ### Holiday Features
 

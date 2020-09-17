@@ -16,6 +16,9 @@
             <button id="create-subject" class="btn btn btn-outline-primary btn-sm" type="button" name="button">
               <span class="fa fa-plus mr-2"></span>Create Subject
             </button>
+            <button id="filter-subject" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_subject' %}">
+              <span class="fa fa-filter mr-2"></span>Filter by Grade
+            </button>
           </div>
           <div class="col-12 mb-3">
             {% if subjects %}
@@ -28,29 +31,12 @@
       </div>
     </div>
   </div>
-
 {% endblock content %}
 
+{% load static %}
 {% block extrascripts %}
   <script type="text/javascript">
       $(function () {
-          // Log in & Sign up buttons
-          // The formURL is given explicitly
-          // Create book button opens modal with id="create-modal"
-          $("#add-semester").modalForm({
-            formURL: "{% url 'school:create_semester' %}",
-            modalID: "#create-modal"
-          });
-
-          $("#add-holiday").modalForm({
-            formURL: "{% url 'school:create_holiday' %}",
-            modalID: "#create-modal"
-          });
-          
-          $("#create-classroom").modalForm({
-            formURL: "{% url 'school:create_classroom' %}",
-            modalID: "#create-modal"
-          });
 
           $("#create-subject").modalForm({
             formURL: "{% url 'school:create_subject' %}",

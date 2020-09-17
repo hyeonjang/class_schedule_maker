@@ -15,7 +15,7 @@
             <button id="create-classroom" class="btn btn-outline-primary btn-sm" type="button" name="button">
               <span class="fa fa-plus mr-2"></span>Create ClassRoom
             </button>
-            <button id="filter-book" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
+            <button id="filter-classroom" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
               <span class="fa fa-filter mr-2"></span>Filter by Grade
             </button>
           </div>
@@ -36,29 +36,12 @@
 {% block extrascripts %}
   <script type="text/javascript">
       $(function () {
-          // Log in & Sign up buttons
-          // The formURL is given explicitly
-          // Create book button opens modal with id="create-modal"
-          $("#add-semester").modalForm({
-            formURL: "{% url 'school:create_semester' %}",
-            modalID: "#create-modal"
-          });
-
-          $("#add-holiday").modalForm({
-            formURL: "{% url 'school:create_holiday' %}",
-            modalID: "#create-modal"
-          });
           
           $("#create-classroom").modalForm({
             formURL: "{% url 'school:create_classroom' %}",
             modalID: "#create-modal"
           });
 
-          $("#create-subject").modalForm({
-            formURL: "{% url 'school:create_subject' %}",
-            modalID: "#create-modal"
-          });
-          
           var asyncSuccessMessage = [
             "<div ",
             "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",

@@ -66,16 +66,6 @@
             modalID: "#create-modal"
           });
           
-          $("#create-classroom").modalForm({
-            formURL: "{% url 'school:create_classroom' %}",
-            modalID: "#create-modal"
-          });
-
-          $("#create-subject").modalForm({
-            formURL: "{% url 'school:create_subject' %}",
-            modalID: "#create-modal"
-          });
-          
           var asyncSuccessMessage = [
             "<div ",
             "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",

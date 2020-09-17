@@ -12,8 +12,9 @@ urlpatterns = [
     path('manage/subject', views.SubjectManageListView.as_view(), name='manage_subject'),
     path('manage/classroom', views.ClassRoomManageListView.as_view(), name='manage_classroom'),
   
-    path('filter_by_grade/', views.GradeFilterView.as_view(), name='filter_classroom'),
-  
+    path('filter_by_grade_cla/', views.ClassRoomGradeFilterView.as_view(), name='filter_classroom'),
+    path('filter_by_grade_sub/', views.SubjectGradeFilterView.as_view(), name='filter_subject'),
+
     path('create_semester/', views.SemesterCreateView.as_view(), name='create_semester'),
     path('update_semester/<int:pk>', views.SemesterUpdateView.as_view(), name='update_semester'),
     path('delete_semester/<int:pk>', views.SemesterDeleteView.as_view(), name='delete_semester'),
