@@ -8,7 +8,7 @@ app_name = 'school'
 
 urlpatterns = [
     path('', views.admin, name='admin_view'),
-    path('manage/term', views.TermManageListView.as_view(), name='manage_school'),
+    path('manage/term', views.TermManageListView.as_view(), name='manage_semester'),
     path('manage/subject', views.SubjectManageListView.as_view(), name='manage_subject'),
     path('manage/classroom', views.ClassRoomManageListView.as_view(), name='manage_classroom'),
   

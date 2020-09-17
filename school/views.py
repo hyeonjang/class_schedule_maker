@@ -160,7 +160,7 @@ class SemesterCreateView(BSModalCreateView):
     template_name = "semester/create.html"
     form_class = TermModelForm
     success_message = 'Success: Semester was added.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_semester')
 
 class SemesterUpdateView(BSModalUpdateView):
     '''
@@ -170,7 +170,7 @@ class SemesterUpdateView(BSModalUpdateView):
     template_name = 'semester/update.html'
     form_class = TermModelForm
     success_message = 'Success: Semester was updated.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_semester')
 
 class SemesterDeleteView(BSModalDeleteView):
     '''
@@ -179,7 +179,7 @@ class SemesterDeleteView(BSModalDeleteView):
     model = Term
     template_name = 'semester/delete.html'
     success_message = 'Success: Semester was deleted.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_semester')
 
 ### the end of subject feautures
 ########################################################
@@ -193,7 +193,7 @@ class HolidayCreateView(BSModalCreateView):
     template_name = "holiday/create.html"
     form_class = HolidayModelForm
     success_message = 'Success: Holiday was added.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_semester')
 
 class HolidayUpdateView(BSModalUpdateView):
     '''
@@ -203,7 +203,7 @@ class HolidayUpdateView(BSModalUpdateView):
     template_name = 'holiday/update.html'
     form_class = HolidayModelForm
     success_message = 'Success: Holiday was updated.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_semester')
 
 class HolidayDeleteView(BSModalDeleteView):
     '''
@@ -212,7 +212,7 @@ class HolidayDeleteView(BSModalDeleteView):
     model = Holiday
     template_name = 'holiday/delete.html'
     success_message = 'Success: Holiday was deleted.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_semester')
 
 ### the end of subject feautures
 ########################################################
@@ -225,7 +225,7 @@ class ClassRoomCreateView(BSModalCreateView):
     template_name = "classroom/create.html"
     form_class = ClassRoomModelForm
     success_message = 'Success: Subject was created.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_classroom')
 
     def form_valid(self, form):
         instance = form.save()
@@ -241,7 +241,7 @@ class ClassRoomUpdateView(BSModalUpdateView):
     template_name = 'classroom/update.html'
     form_class = ClassRoomModelForm
     success_message = 'Success: Book was updated.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_classroom')
 
 class ClassRoomDeleteView(BSModalDeleteView):
     '''
@@ -250,7 +250,7 @@ class ClassRoomDeleteView(BSModalDeleteView):
     model = ClassRoom
     template_name = 'classroom/delete.html'
     success_message = 'Success: Book was deleted.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_classroom')
 
 def classrooms(request):
     '''
@@ -277,7 +277,7 @@ class SubjectCreateView(BSModalCreateView):
     template_name = "subject/create.html"
     form_class = SubjectModelForm
     success_message = 'Success: Subject was created.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_subject')
 
 class SubjectUpdateView(BSModalUpdateView):
     '''
@@ -287,7 +287,7 @@ class SubjectUpdateView(BSModalUpdateView):
     template_name = 'subject/update.html'
     form_class = SubjectModelForm
     success_message = 'Success: Subject was updated.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_subject')
 
 class SubjectDeleteView(BSModalDeleteView):
     '''
@@ -296,7 +296,7 @@ class SubjectDeleteView(BSModalDeleteView):
     model = Subject
     template_name = 'subject/delete.html'
     success_message = 'Success: Subject was deleted.'
-    success_url = reverse_lazy('school:manage_school')
+    success_url = reverse_lazy('school:manage_subject')
 
 ### the end of subject feautures
 ########################################################
