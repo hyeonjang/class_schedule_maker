@@ -7,11 +7,7 @@
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
 <div class="container mt-3">
-  
   <div class="row">
-
-    {% include '_sidebar.html' %}
-
     <div class="col-10 offset-2">
       <form action="{% url 'timetable:home_create' user.id %}" method="post" id="Table-Update-form">
         {% csrf_token %}

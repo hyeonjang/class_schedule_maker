@@ -48,9 +48,6 @@ $(function() {
 
 <div class="container mt-3">
   <div class="row">
-
-    {% include '_sidebar.html' %}
-
     <div class="col-10 offset-2">
     <form action="{% url 'timetable:home_update' user.id %}" method="post" id="Table-Update-form">
     {% csrf_token %}
