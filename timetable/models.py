@@ -3,10 +3,9 @@ Abstract TimeTable model
 '''
 from django.db import models
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 
 from accounts.models import User
-from school.models import Term, ClassRoom, Subject
+from school.models import Term, Holiday, ClassRoom, Subject
 
 # Create your models here.
 class TimeTable(models.Model):
@@ -26,13 +25,18 @@ class TimeTable(models.Model):
 
     def __str__(self):
         if self.classroom:
-            result = self.classroom.c_str()+'반 '+f'{self.time}교시 '
+            result = self.classroom.to_string()+'반 '+f'{self.time}교시 '
         else:
             result = f'{self.time}교시 '
         if self.subject:
             result += self.subject.name
         result += f', {self.weekday}'
         return result
+
+    def save(self, *args, **kwargs):
+        if Holiday.objects.filter(day=self.weekday):
+            print("holiday exists") #@@todo marking holiday
+        return super(TimeTable, self).save(*args, **kwargs)
 
 class SubjectTable(TimeTable):
     """
@@ -43,7 +47,7 @@ class SubjectTable(TimeTable):
     def __str__(self):
         result = super().teacher.to_string() + ', '
         if self.classroom:
-            result += self.classroom.c_str()+'반, '+f'{self.time}교시 '
+            result += self.classroom.to_string()+'반, '+f'{self.time}교시 '
         else:
             result += f'{self.time}교시 '
         if self.subject:
@@ -82,18 +86,16 @@ class HomeTable(TimeTable):
     for Homeroom Teacher
     """
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='main_home_teacher')
-    sub_teacher = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='subject_teacher')
+    sub_teacher = models.OneToOneField(SubjectTable, on_delete=models.SET_NULL, null=True, blank=True)
     inv_teacher = models.OneToOneField(Invited, on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         result = super().teacher.to_string() + ', '
         if self.classroom:
-            result += self.classroom.c_str()+'반, '+f'{self.time}교시, '
+            result += self.classroom.to_string()+'반, '+f'{self.time}교시, '
         else:
             result += f'{self.time}교시, '
         if self.subject:
             result += self.subject.name + ', '
-        if self.sub_teacher:
-            result += self.sub_teacher.to_string() + ', '
         result += f'{self.weekday}'
         return result
 

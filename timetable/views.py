@@ -15,8 +15,6 @@ from school.models import Term, ClassRoom, Subject
 from .models import SubjectTable, HomeTable
 from .forms import (SubjectTableForm, HomeTableForm, SubjectTableCreateFormset, SubjectTableUpdateFormset, HomeTableCreateFormset, HomeTableUpdateFormset)
 
-from .utils import mon_to_fri, expand_inst_to_term, copy_sub_to_home
-
 ##########################################################
 ### Teacher Roles == Subject Features
 class SubjectCreate(LoginRequiredMixin, generic.CreateView): # actullay update instances
@@ -41,7 +39,7 @@ class SubjectCreate(LoginRequiredMixin, generic.CreateView): # actullay update i
     def form_valid(self, form):
         context = self.get_context_data()
         semester = Term.objects.get(pk=1)
-        week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
+        week = semester.get_starting_week()
         formset = context['formset']
         if formset.is_valid():
             for i, form in enumerate(formset):
@@ -50,9 +48,6 @@ class SubjectCreate(LoginRequiredMixin, generic.CreateView): # actullay update i
                 instance.time = (i//5)%8+1 # row major table input
                 instance.weekday = week[i%5]
                 instance.save()
-                ## todo move to form or model save()
-                if instance.classroom and instance.subject:
-                    copy_sub_to_home(instance)
             return redirect(self.get_success_url())
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -158,7 +153,7 @@ class HomeRoomCreate(generic.CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         semester = Term.objects.get(pk=1)
-        week = mon_to_fri(semester.start.year, semester.start.isocalendar()[1])
+        week = semester.get_starting_week()
         #weeks = semester.end.isocalendar()[1] - semester.start.isocalendar()[1]
         formset = context['formset']
         if formset.is_valid():
@@ -210,7 +205,6 @@ class HomeRoomUpdate(generic.UpdateView):
             context['TimeTables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
             context['TimeTables'] = HomeTableUpdateFormset(instance=self.request.user, queryset=qs)
-        # print(context['TimeTables'])
         return context
 
     def form_valid(self, form):
