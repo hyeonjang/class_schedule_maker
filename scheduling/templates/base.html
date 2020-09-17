@@ -39,8 +39,11 @@
     <!-- Includes -->
     {% include "_header.html" %}
 
+    <div class="row">
+    {% include "_sidebar.html" %}
     {% block content %}{% endblock content %}
-
+    </div>
+    
     <!-- Includes -->
     {% include "_footer.html" %}
 

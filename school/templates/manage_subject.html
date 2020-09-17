@@ -6,68 +6,9 @@
 
   <div class="container mt-3">
     <div class="row">
-      <div class="col">
-        <p class="text-primary">Management</p>
+      <div class="col-10 offset-2">
         <h4>
-          <strong>1. Semester</strong>
-        </h4>
-        <div class="row">
-          <div class="col-12 mb-3">
-            <button id="add-semester" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Add Semester
-            </button>
-          </div>
-          <div class="col-12 mb-3">
-            {% if semester %}
-              {% include "semester/_table.html" %}
-            {% else %}
-              <p class="no-semester text-primary">No semester added yet.</p>
-            {% endif %}
-          </div>
-        </div>
-        <h4>
-          <strong>2. Holidays in this Semester</strong>
-        </h4>
-
-        <div class="row">
-          <div class="col-12 mb-3">
-            <button id="add-holiday" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Add Holidays
-            </button>
-          </div>
-          <div class="col-12 mb-3">
-            {% if holidays %}
-              {% include "holiday/_table.html" %}
-            {% else %}
-              <p class="no-holidays text-primary">No holidays added yet.</p>
-            {% endif %}
-          </div>
-        </div>
-
-        <h4>
-          <strong>3. ClassRoom</strong>
-        </h4>
-
-        <div class="row">
-          <div class="col-12 mb-3">
-            <button id="create-classroom" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Create ClassRoom
-            </button>
-            <button id="filter-book" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
-              <span class="fa fa-filter mr-2"></span>Filter by Grade
-            </button>
-          </div>
-          <div class="col-12 mb-3">
-            {% if classrooms %}
-              {% include "classroom/_table.html" %}
-            {% else %}
-              <p class="no-classroom text-primary">No classroom added yet.</p>
-            {% endif %}
-          </div>
-        </div>
-
-        <h4>
-          <strong>4. Subject</strong>
+          <strong>Subjects</strong>
         </h4>
 
         <div class="row">

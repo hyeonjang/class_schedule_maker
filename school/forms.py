@@ -1,10 +1,13 @@
+'''
+School Information Form
+'''
 from django import forms
 from django.core.exceptions import ValidationError
 
 from bootstrap_modal_forms.forms import BSModalModelForm, BSModalForm
 
-from .models import Term, Holiday, ClassRoom, Subject
 from accounts.models import User
+from .models import Term, Holiday, ClassRoom, Subject
 
 class TimeTableCreation(forms.Form):
     semester = forms.ModelChoiceField(Term.objects.all())

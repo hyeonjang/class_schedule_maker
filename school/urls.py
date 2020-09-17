@@ -1,16 +1,19 @@
-from django.contrib import admin
-from django.urls import path, include
-
+'''
+School Information managemenet urls
+'''
+from django.urls import path
 from . import views
 
 app_name = 'school'
 
 urlpatterns = [
     path('', views.admin, name='admin_view'),
-    path('manage/', views.SchoolManageListView.as_view(), name='manage_school'),
-   
+    path('manage/term', views.TermManageListView.as_view(), name='manage_school'),
+    path('manage/subject', views.SubjectManageListView.as_view(), name='manage_subject'),
+    path('manage/classroom', views.ClassRoomManageListView.as_view(), name='manage_classroom'),
+  
     path('filter_by_grade/', views.GradeFilterView.as_view(), name='filter_classroom'),
-   
+  
     path('create_semester/', views.SemesterCreateView.as_view(), name='create_semester'),
     path('update_semester/<int:pk>', views.SemesterUpdateView.as_view(), name='update_semester'),
     path('delete_semester/<int:pk>', views.SemesterDeleteView.as_view(), name='delete_semester'),

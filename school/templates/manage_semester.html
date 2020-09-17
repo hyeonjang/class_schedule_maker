@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  {% include "_modal.html" %}
+
+  <div class="container mt-3">
+    <div class="row">
+      <div class="col-10 offset-2">
+        <h4>
+          <strong>Semester</strong>
+        </h4>
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="add-semester" class="btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Add Semester
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            {% if semester %}
+              {% include "semester/_table.html" %}
+            {% else %}
+              <p class="no-semester text-primary">No semester added yet.</p>
+            {% endif %}
+          </div>
+        </div>
+        <h4>
+          <strong>Holidays in this Semester</strong>
+        </h4>
+
+        <div class="row">
+          <div class="col-12 mb-3">
+            <button id="add-holiday" class="btn btn-outline-primary btn-sm" type="button" name="button">
+              <span class="fa fa-plus mr-2"></span>Add Holidays
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            {% if holidays %}
+              {% include "holiday/_table.html" %}
+            {% else %}
+              <p class="no-holidays text-primary">No holidays added yet.</p>
+            {% endif %}
+          </div>
+        </div>
+
+        
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+{% block extrascripts %}
+  <script type="text/javascript">
+      $(function () {
+          // Log in & Sign up buttons
+          // The formURL is given explicitly
+          // Create book button opens modal with id="create-modal"
+          $("#add-semester").modalForm({
+            formURL: "{% url 'school:create_semester' %}",
+            modalID: "#create-modal"
+          });
+
+          $("#add-holiday").modalForm({
+            formURL: "{% url 'school:create_holiday' %}",
+            modalID: "#create-modal"
+          });
+          
+          $("#create-classroom").modalForm({
+            formURL: "{% url 'school:create_classroom' %}",
+            modalID: "#create-modal"
+          });
+
+          $("#create-subject").modalForm({
+            formURL: "{% url 'school:create_subject' %}",
+            modalID: "#create-modal"
+          });
+          
+          var asyncSuccessMessage = [
+            "<div ",
+            "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+            "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
+            "Success: Book was updated.",
+            "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
+            "<span aria-hidden='true'>&times;</span>",
+            "</button>",
+            "</div>",
+            "<script>",
+            "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
+            "<\/script>"
+          ].join("");
+
+          function updateClassRoomModalForm() {
+            $(".update-classroom").each(function () {
+              $(this).modalForm({
+                formURL: $(this).data("form-url"),
+                asyncUpdate: true,
+                asyncSettings: {
+                  closeOnSubmit: false,
+                  successMessage: asyncSuccessMessage,
+                  dataUrl:"{% url 'school:classrooms' %}",
+                  dataElementId: "#classroom-table",
+                  dataKey: "table",
+                  addModalFormFunction: updateClassRoomModalForm
+                }
+              });
+            });
+          }
+          updateClassRoomModalForm();
+
+          // Read and Delete book buttons open modal with id="modal"
+          // The formURL is retrieved from the data of the element
+          $(".bs-modal").each(function () {
+              $(this).modalForm({formURL: $(this).data("form-url")});
+          });
+
+          // Hide message
+          $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+              $(".alert").slideUp(500);
+          });
+      });
+  </script>
+{% endblock extrascripts %}

@@ -47,31 +47,66 @@ def admin(request):
     }
 
     return render(request, 'admin_view.html', context)
+########################################################
+### management views
 
-class SchoolManageListView(LoginRequiredMixin, generic.ListView):
+class TermManageListView(LoginRequiredMixin, generic.ListView):
     '''
     module doc
     '''
     context_object_name = 'subjects'
-    template_name = 'manage_school.html'
+    template_name = 'manage_semester.html'
+
+    def get_queryset(self):
+        return Term.objects.order_by()
+
+    def get_context_data(self, **kwargs):
+        context = super(TermManageListView, self).get_context_data()
+        qs_t = Term.objects.all()
+        qs_h = Holiday.objects.all()
+        context.update({
+            'semester' : qs_t,
+            'holidays' : qs_h,
+        })
+        return context
+
+class SubjectManageListView(LoginRequiredMixin, generic.ListView):
+    '''
+    module doc
+    '''
+    context_object_name = 'subjects'
+    template_name = 'manage_subject.html'
 
     def get_queryset(self):
         return Subject.objects.order_by('grade')
 
     def get_context_data(self, **kwargs):
-        context = super(SchoolManageListView, self).get_context_data()
-        qs_t = Term.objects.all()
-        qs_h = Holiday.objects.all()
-        qs_c = ClassRoom.objects.all()
+        context = super(SubjectManageListView, self).get_context_data()
         qs_s = Subject.objects.all()
         if 'grade' in self.request.GET:
-            qs_c = ClassRoom.objects.filter(grade=int(self.request.GET['grade']))
             qs_s = Subject.objects.filter(grade=int(self.request.GET['grade']))
         context.update({
-            'semester' : qs_t,
-            'holidays' : qs_h,
-            'classrooms' : qs_c,
             'subjects' : qs_s,
+        })
+        return context
+
+class ClassRoomManageListView(LoginRequiredMixin, generic.ListView):
+    '''
+    module doc
+    '''
+    context_object_name = 'subjects'
+    template_name = 'manage_classroom.html'
+
+    def get_queryset(self):
+        return ClassRoom.objects.order_by('grade')
+
+    def get_context_data(self, **kwargs):
+        context = super(ClassRoomManageListView, self).get_context_data()
+        qs_c = ClassRoom.objects.all()
+        if 'grade' in self.request.GET:
+            qs_c = ClassRoom.objects.filter(grade=int(self.request.GET['grade']))
+        context.update({
+            'classrooms' : qs_c,
         })
         return context
 
