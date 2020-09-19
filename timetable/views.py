@@ -9,10 +9,10 @@ from django.shortcuts import redirect
 from django.views import generic
 from django.urls import reverse_lazy
 
-from accounts.models import HomeTeacher, SubjectTeacher
-from school.models import Term, ClassRoom, Subject
+from accounts.models import HomeTeacher
+from school.models import Term
 
-from .models import SubjectTable, HomeTable
+from .models import SubjectTable, HomeTable, Invited
 from .forms import (SubjectTableForm, HomeTableForm, SubjectTableCreateFormset, SubjectTableUpdateFormset, HomeTableCreateFormset, HomeTableUpdateFormset)
 
 ##########################################################
@@ -240,5 +240,26 @@ class HomeRoomView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomeRoomView, self).get_context_data(**kwargs)
         qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04")).order_by("time", "weekday")
+        context['TimeTables'] = qs
+        return context
+
+##########################################################
+### Teacher Roles == Invited
+class InvitedView(generic.TemplateView):
+    '''
+    class doc
+    '''
+    template_name = 'invited_view.html'
+    model = HomeTable
+
+    def get_success_url(self):
+        '''
+        class doc
+        '''
+        return redirect('timetable:invited_view')
+
+    def get_context_data(self, **kwargs):
+        context = super(InvitedView, self).get_context_data(**kwargs)
+        qs = Invited.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04")).order_by("time", "weekday")
         context['TimeTables'] = qs
         return context
