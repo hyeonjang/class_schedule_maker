@@ -18,6 +18,7 @@ class TimeTable(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True, blank=True) #user choice
     weekday = models.DateField(default=timezone.now, null=True, blank=True) # works in view.py
     time = models.SmallIntegerField(default=0, blank=True) # works in view.py
+    is_event_or_holi = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('weekday', 'time', 'teacher'),)
@@ -35,8 +36,11 @@ class TimeTable(models.Model):
 
     def save(self, *args, **kwargs):
         if Holiday.objects.filter(day=self.weekday):
-            print("holiday exists") #@@todo marking holiday
+            self.is_event_or_holi = True
         return super(TimeTable, self).save(*args, **kwargs)
+
+    def get_count_of_subject(self, sub):
+        self.objects.filter(subject=sub).count()
 
 class SubjectTable(TimeTable):
     """
