@@ -230,7 +230,7 @@ class ClassRoomCreateView(BSModalCreateView):
     def form_valid(self, form):
         instance = form.save()
         instance.save()
-        create_classroom_timetable(Term.objects.get(pk=1), instance) #@@todo
+        create_classroom_timetable(Term.objects.all().get(), instance) #@@todo
         return redirect(self.get_success_url())
 
 class ClassRoomUpdateView(BSModalUpdateView):
