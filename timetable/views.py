@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from accounts.models import HomeTeacher
 from school.models import Term
 
+from school.models import Subject
 from .models import SubjectTable, HomeTable, Invited
 from .forms import (SubjectTableForm, HomeTableForm, SubjectTableCreateFormset, SubjectTableUpdateFormset, HomeTableCreateFormset, HomeTableUpdateFormset)
 
@@ -241,6 +242,11 @@ class HomeRoomView(generic.TemplateView):
         context = super(HomeRoomView, self).get_context_data(**kwargs)
         qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04")).order_by("time", "weekday")
         context['TimeTables'] = qs
+
+        sub = Subject.objects.all()
+        count = HomeTable.objects.filter(teacher=self.request.user, subject__in=sub)
+        context['count'] = count
+
         return context
 
 ##########################################################
