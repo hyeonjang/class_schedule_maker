@@ -2,8 +2,8 @@
 util functions
 '''
 from django.utils import timezone
-from accounts.models import User
-from timetable.models import HomeTable
+import accounts
+import timetable
 
 def create_classroom_timetable(semester, classroom):
     '''
@@ -12,12 +12,16 @@ def create_classroom_timetable(semester, classroom):
     mon_to_fri = semester.get_starting_week()
     weeks = semester.get_count_of_weeks()
 
+    bulk_tables = []
     for i in range(0, weeks):
         for j in range(0, 40):
-            HomeTable.objects.create(
+            new_table = timetable.models.HomeTable(
                 classroom=classroom,
-                teacher=User.objects.get(pk=classroom.teacher.pk),
+                teacher=accounts.models.User.objects.get(pk=classroom.teacher.pk),
                 semester=semester,
                 weekday=mon_to_fri[j%5] + timezone.timedelta(days=7*i),
                 time=(j//5)%8+1,
                 )
+            bulk_tables.append(new_table)
+
+    timetable.models.HomeTable.objects.bulk_create(bulk_tables)
