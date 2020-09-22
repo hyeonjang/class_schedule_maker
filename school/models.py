@@ -7,6 +7,8 @@ from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from .utils import create_classroom_timetable
+
 # Create your models here.
 class Holiday(models.Model):
     '''
@@ -78,6 +80,9 @@ class ClassRoom(models.Model):
     teacher = models.OneToOneField("accounts.HomeTeacher", on_delete=models.CASCADE, default=0, related_name="teacher_name")
     student_count = models.PositiveSmallIntegerField(default=1, null=True)
 
+    class Meta:
+        unique_together = ('grade', 'number')
+
     def __str__(self):
         return f'{self.grade}-{self.number}'
 
@@ -87,8 +92,9 @@ class ClassRoom(models.Model):
         '''
         return f'{self.grade}-{self.number}'
 
-    class Meta:
-        unique_together = ('grade', 'number')
+    def save(self, *args, **kwargs):
+        super(ClassRoom, self).save(*args, **kwargs)
+        create_classroom_timetable(Term.objects.all().get(), self)
 
 class Subject(models.Model):
     '''
