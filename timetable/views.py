@@ -22,7 +22,7 @@ class SubjectCreate(LoginRequiredMixin, generic.CreateView): # actullay update i
     '''
     class doc
     '''
-    template_name = 'sub_create.html'
+    template_name = 'subject/create.html'
     model = SubjectTable
     form_class = SubjectTableForm
 
@@ -63,7 +63,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     '''
     class doc
     '''
-    template_name = 'sub_update.html'
+    template_name = 'subject/update.html'
     model = SubjectTable
     form_class = SubjectTableForm
 
@@ -107,7 +107,7 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
     '''
     class doc
     '''
-    template_name = 'sub_view.html'
+    template_name = 'subject/view.html'
     model = SubjectTable
 
     def get_success_url(self):
@@ -122,7 +122,10 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
             teacher=self.request.user,
             weekday__range=("2020-08-31", "2020-09-04")
             ).order_by("time", "weekday")
-        # print(context['TimeTables'])
+        context['counts'] = SubjectTable.objects.filter(
+            teacher=self.request.user,
+            subject__in=Subject.objects.all(),
+            ).count()
         return context
 
 ### the end of subject
@@ -136,7 +139,7 @@ class HomeRoomCreate(generic.CreateView):
     '''
     class doc
     '''
-    template_name = 'home_create.html'
+    template_name = 'home/create.html'
     model = HomeTable
     form_class = HomeTableForm
 
@@ -182,7 +185,7 @@ class HomeRoomUpdate(generic.UpdateView):
     '''
     class doc
     '''
-    template_name = 'home_update.html'
+    template_name = 'home/update.html'
     model = HomeTable
     form_class = HomeTableForm
     success_url = '/'
@@ -229,7 +232,7 @@ class HomeRoomView(generic.TemplateView):
     '''
     class doc
     '''
-    template_name = 'home_view.html'
+    template_name = 'home/view.html'
     model = HomeTable
 
     def get_success_url(self):
