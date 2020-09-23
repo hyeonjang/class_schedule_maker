@@ -227,12 +227,6 @@ class ClassRoomCreateView(BSModalCreateView):
     success_message = 'Success: Subject was created.'
     success_url = reverse_lazy('school:manage_classroom')
 
-    def form_valid(self, form):
-        instance = form.save()
-        instance.save()
-        create_classroom_timetable(Term.objects.all().get(), instance) #@@todo
-        return redirect(self.get_success_url())
-
 class ClassRoomUpdateView(BSModalUpdateView):
     '''
     module doc
