@@ -8,7 +8,14 @@
 
 <div class="container mt-3">
   <div class="row">
-    <div class="col-10 offset-2">
+
+    <div class="col-2">
+      {% if count %}
+        {% include '_count.html' %}
+      {% endif %}
+    </div>
+
+    <div class="col-10">
       <form action="{% url 'timetable:home_create' user.id %}" method="post" id="Table-Update-form">
         {% csrf_token %}
         <h2>Homeroom</h2>
@@ -27,7 +34,6 @@
               <td>  
                 {% for field in course %}
                 <div class="form-group">
-                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                   {% render_field field class="form-control" placeholder=field.label %}
                   <div class="{% if field.errors %} invalid {% endif %}">
                     {% for error in field.errors %}
@@ -41,10 +47,15 @@
             {% endfor %}
             </tbody>
           </table>
+         
+          <div class="modal-footer">
+            <button type="submit" class="submit-btn btn btn-primary">Create</button>
+          </div>
+
           </div>
           {{ formset.management_form }}
           {{ formset.non_form_errors.as_ul }}
-          <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
+         
       </form>
     </div>
   </div>
