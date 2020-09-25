@@ -135,13 +135,16 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
 
 ##########################################################
 ### Teacher Roles == Homeroom Features
-class HomeRoomCreate(generic.CreateView):
+class HomeRoomCreate(generic.UpdateView):
     '''
-    class doc
+    @@todo actually update view to expand to whole semester
     '''
     template_name = 'home/create.html'
     model = HomeTable
     form_class = HomeTableForm
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
     def get_success_url(self):
         return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id})
@@ -156,17 +159,13 @@ class HomeRoomCreate(generic.CreateView):
 
     def form_valid(self, form):
         context = self.get_context_data()
-        semester = Term.objects.get(pk=1)
+        semester = Term.objects.get(pk=1) # todo
         week = semester.get_starting_week()
         #weeks = semester.end.isocalendar()[1] - semester.start.isocalendar()[1]
         formset = context['formset']
         if formset.is_valid():
             for i, form in enumerate(formset):
                 instance = form.save(commit=False)
-                instance.classroom = HomeTeacher.objects.get(user=self.request.user).classroom
-                instance.semester = semester
-                instance.time = (i//5)%8+1 # row major table input
-                instance.weekday = week[i%5]
                 instance.save()
                 #expand_inst_to_term(instance, week[i%5], weeks)
             messages.success(self.request, 'success', extra_tags='alert')
@@ -246,9 +245,18 @@ class HomeRoomView(generic.TemplateView):
         qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=("2020-08-31", "2020-09-04")).order_by("time", "weekday")
         context['TimeTables'] = qs
 
-        sub = Subject.objects.all()
-        count = HomeTable.objects.filter(teacher=self.request.user, subject__in=sub)
-        context['count'] = count
+
+        ht_teacher = HomeTeacher.objects.get(user=self.request.user)
+        sub = Subject.objects.filter(grade=ht_teacher.get_grade())
+
+        sub_counter = dict()
+        for s in sub:
+            count = HomeTable.objects.filter(teacher=self.request.user, subject=s).count()
+            dic = {s:count}
+            sub_counter.update(dic)
+
+        count = HomeTable.objects.filter(teacher=self.request.user, subject__in=sub).count()
+        context['count'] = sub_counter
 
         return context
 
