@@ -65,11 +65,11 @@ class SubjectTable(TimeTable):
             weekday=self.weekday,
             time=self.time,
             )
-        # print(instance)
+        print(queryset)
         # if queryset.exists():
         #     if (queryset.get().sub_teacher is not self.teacher):
         #         raise ValidationError(f"already {queryset.get().sub_teacher}")
-        queryset.update(sub_teacher=self.teacher, subject=self.subject)
+        # queryset.update(sub_teacher=self.teacher, subject=self.subject)
 
     def save(self, *args, **kwargs):
         '''

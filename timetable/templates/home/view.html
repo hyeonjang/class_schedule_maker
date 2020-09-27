@@ -4,20 +4,14 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
 
-<div class="container mt-3">
+<div class="container mt-3 mr-auto">
+  <h2>Homeroom</h2>
   <div class="row">
 
-    <div class="col-2">
-    {% if count %}
-      {% include '_count.html' %}
-    {% endif %}
-    </div>
-
-    <div class="col-10">
-    
+    <div class="col-9">
     <form action="{% url 'timetable:home_view' user.id %}" method="get" id="Table-View-form">
     {% csrf_token %}
-      <h2>Homeroom</h2>
+      
         <table class="table table-bordered table-hover" id="TimeTableView">
           <thead class="">
             <th scope="col">#</th> 
@@ -30,8 +24,8 @@
           <tbody>
           {% for course in TimeTables %}
             {% cycle '<tr scope="row"><th class="align-middle">1</th>' '' '' '' '' %}
-              <td class="min">
-                <div class="col"> 
+              <td class="text-center {% if course.is_holi_or_event %} bg-danger {% endif %} {% if course.sub_teacher %} bg-warning {% endif %}">
+                <div class=""> 
                   <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
                   <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
                   <p>{% if course.sub_teacher %}{{ course.sub_teacher }}{% endif %}</p>
@@ -46,8 +40,14 @@
         <a href="{% url 'timetable:home_create' user.id %}">create</a>
         <a href="{% url 'timetable:home_update' user.id %}">update</a>
     </form>
-   
-  </div>
+    </div>
+  
+    <div class="col-3">
+      {% if count %}
+        {% include '_count.html' %}
+      {% endif %}
+    </div>
+    
   </div>
 </div>
 

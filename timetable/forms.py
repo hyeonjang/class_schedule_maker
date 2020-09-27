@@ -4,16 +4,8 @@ modul doc
 from django import forms
 from django.forms import inlineformset_factory
 
-from accounts.models import User, SubjectTeacher, HomeTeacher
-from .models import TimeTable, SubjectTable, HomeTable
-
-class TimeTableForm(forms.ModelForm):
-    '''
-    class doc
-    '''
-    class Meta:
-        model = TimeTable
-        fields = ['classroom', 'subject']
+from accounts.models import User, HomeTeacher
+from .models import SubjectTable, HomeTable
 
 class SubjectTableForm(forms.ModelForm):
     '''

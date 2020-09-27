@@ -1,10 +1,4 @@
-<div class="container mt-3">
-<div class="row">
-    <div class="col-10 offset-2">
-        {% for sub, s in count.items %}
-        {{ sub }}
-        {{ s }}
-        {% endfor %}
-        </div>
-    </div>
-</div>
+<h2></h2>
+{% for subject, count in count.items %}
+<div class="row">{{ subject }} {{ count }} </div>
+{% endfor %}

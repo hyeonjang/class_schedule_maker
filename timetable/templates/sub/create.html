@@ -16,9 +16,9 @@
     </div>
 
     <div class="col-10">
-      <form action="{% url 'timetable:home_create' user.id %}" method="post" id="Table-Update-form">
+      <form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Update-form">
         {% csrf_token %}
-        <h2>Homeroom</h2>
+        <h2>Subject</h2>
           <table class="table table-bordered table-sm" id="TimeTableUpdate">
             <thead class="thead-light">
               <th scope="col">#</th>
