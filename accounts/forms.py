@@ -10,8 +10,10 @@ from school.models import Subject, ClassRoom
 from .models import User, HomeTeacher, SubjectTeacher, InvitedTeacher
 
 class HomeroomPopForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
-    classroom = forms.ModelChoiceField(queryset=ClassRoom.objects.all(), required=True)
-    
+    '''
+    circular oneToone model referecing with classroom
+    '''
+
     class Meta:
         model = User
         fields = ['username', 'password1', 'password2']
@@ -73,3 +75,5 @@ class CustomAuthenticationForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+

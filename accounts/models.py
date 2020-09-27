@@ -33,10 +33,27 @@ class HomeTeacher(models.Model):
     homeroom
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    #classroom = models.OneToOneField(ClassRoom, on_delete=models.CASCADE)
+    classroom = models.OneToOneField(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
+
+    def get_classroom(self):
+        '''
+        get classroom method
+        '''
+        return self.classroom
+
+    def get_grade(self):
+        '''
+        get grade from class method
+        '''
+        if self.classroom is None:
+            return 0
+        return self.classroom.grade
+
+    def save(self, *args, **kwargs):
+        super(HomeTeacher, self).save()
 
 class SubjectTeacher(models.Model):
     '''
@@ -44,9 +61,12 @@ class SubjectTeacher(models.Model):
     '''
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     subject = models.ManyToManyField(Subject, related_name='teaching_subject')
-    
+
     def __str__(self):
         return self.user.username
+
+    def save(self, *args, **kwargs):
+        super(SubjectTeacher, self).save(*args, **kwargs)
 
 class InvitedTeacher(models.Model):
     '''
