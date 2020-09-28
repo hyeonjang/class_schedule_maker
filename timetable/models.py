@@ -19,6 +19,7 @@ class TimeTable(models.Model):
     weekday = models.DateField(default=timezone.now, null=True, blank=True) # works in view.py
     time = models.SmallIntegerField(default=0, blank=True) # works in view.py
     is_event_or_holi = models.BooleanField(default=False)
+    is_subject_time = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('weekday', 'time', 'teacher'),)
@@ -56,20 +57,18 @@ class SubjectTable(TimeTable):
             result += f'{self.time}교시 '
         if self.subject:
             result += self.subject.name
-        result += f', {self.weekday}'
         return result
 
     def copy_to_hometable(self):
+        semester = Term.get_current()
+        week = semester.get_weeks()
         queryset = HomeTable.objects.filter(
             classroom=self.classroom,
-            weekday=self.weekday,
+            weekday=week,
             time=self.time,
             )
         print(queryset)
-        # if queryset.exists():
-        #     if (queryset.get().sub_teacher is not self.teacher):
-        #         raise ValidationError(f"already {queryset.get().sub_teacher}")
-        # queryset.update(sub_teacher=self.teacher, subject=self.subject)
+        queryset.update(sub_teacher=self, subject=self.subject, is_subject_time=True)
 
     def save(self, *args, **kwargs):
         '''
@@ -83,7 +82,6 @@ class Invited(TimeTable):
     for Invited Teacher
     """
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='invited_teacher')
-    available = models.BooleanField()
 
 class HomeTable(TimeTable):
     """
@@ -103,3 +101,7 @@ class HomeTable(TimeTable):
         result += f'{self.weekday}'
         return result
 
+    def save(self, *args, **kwargs): #@@todo
+        if self.is_subject_time:
+            return
+        super(HomeTable, self).save(*args, **kwargs)
