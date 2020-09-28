@@ -4,16 +4,16 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/table.css' %}">
 
-<div class="container mt-3">
-  <div class="row">
-    <div class="col-10 offset-2">
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Subject</h1>
+    </div>
+
+    <div class="table-responsive">
     <form action="{% url 'timetable:sub_update' user.id %}" method="post" id="Table-Update-form">
-    <h2>Subject</h2>
-      <div class="table-wrap">
-      <table class="table table-bordered table-sm" id="TimeTableUpdate">
-        <thead class="thead-light">
+        <table class="table table-bordered table-hover" id="TimeTableUpdate">
+          <thead class="">
           <th scope="col">#</th>
           <th scope="col">Mon</th>
           <th scope="col">Tue</th>
@@ -28,7 +28,6 @@
           <td> 
             {% for field in course %}
             <div class="form-group">
-              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
               {% render_field field class="form-control" placeholder=field.label %}
               <div class="{% if field.errors %} invalid {% endif %}">
                 {% for error in field.errors %}
@@ -42,13 +41,14 @@
         {% endfor %}
         </tbody>
       </table>
-      </div>
       {{ TimeTables.management_form }}
       {{ TimeTables.non_form_errors.as_ul }}
-      <input type="submit" class="btn btn-primary" value="Go Go Gadget &rarr;">
-    </div>
-    </form>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-secondary btn-lg">Update</button>
+      </div>
 
-  </div>
-</div>
+    </form>
+    </div>
+
+  </main>
 {% endblock content %}

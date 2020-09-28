@@ -4,21 +4,14 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/table.css' %}">
-
-<div class="container mt-3">
-  <div class="row">
-
-    <div class="col-2">
-      {% if count %}
-        {% include '_count.html' %}
-      {% endif %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Subject</h1>
     </div>
 
-    <div class="col-10">
-      <form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Update-form">
-        {% csrf_token %}
-        <h2>Subject</h2>
+  <div class="table-responsive">
+    <form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Update-form">
+      {% csrf_token %}
           <table class="table table-bordered table-sm" id="TimeTableUpdate">
             <thead class="thead-light">
               <th scope="col">#</th>
@@ -49,7 +42,7 @@
           </table>
          
           <div class="modal-footer">
-            <button type="submit" class="submit-btn btn btn-primary">Create</button>
+          <button type="submit" class="btn btn-secondary btn-lg">Create</button>
           </div>
 
           </div>
@@ -58,6 +51,5 @@
          
       </form>
     </div>
-  </div>
 </div>
 {% endblock content %}
