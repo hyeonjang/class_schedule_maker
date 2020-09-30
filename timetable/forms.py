@@ -3,9 +3,9 @@ modul doc
 '''
 from django import forms
 from django.forms import inlineformset_factory
-
-from accounts.models import User, HomeTeacher
-from .models import SubjectTable, HomeTable
+from accounts.models import User
+from school.models import ClassRoom, Subject
+from .models import SubjectTable, HomeTable, Invited
 
 class SubjectTableForm(forms.ModelForm):
     '''
