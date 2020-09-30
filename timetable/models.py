@@ -16,13 +16,12 @@ class TimeTable(models.Model):
     semester = models.ForeignKey(Term, on_delete=models.CASCADE, blank=True) # works in view.py
     classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE, null=True, blank=True) #user choice
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True, blank=True) #user choice
-    weekday = models.DateField(default=timezone.now, null=True, blank=True) # works in view.py
+    day = models.DateField(default=timezone.now, null=True, blank=True) # works in view.py
     time = models.SmallIntegerField(default=0, blank=True) # works in view.py
     is_event_or_holi = models.BooleanField(default=False)
-    is_subject_time = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = (('weekday', 'time', 'teacher'),)
+        unique_together = (('day', 'time', 'teacher'),)
         abstract = True
 
     def __str__(self):
@@ -32,11 +31,11 @@ class TimeTable(models.Model):
             result = f'{self.time}교시 '
         if self.subject:
             result += self.subject.name
-        result += f', {self.weekday}'
+        result += f', {self.day}'
         return result
 
     def save(self, *args, **kwargs):
-        if Holiday.objects.filter(day=self.weekday):
+        if Holiday.objects.filter(day=self.day):
             self.is_event_or_holi = True
         return super(TimeTable, self).save(*args, **kwargs)
 
@@ -90,6 +89,7 @@ class HomeTable(TimeTable):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='main_home_teacher')
     sub_teacher = models.OneToOneField(SubjectTable, on_delete=models.SET_NULL, null=True, blank=True)
     inv_teacher = models.OneToOneField(Invited, on_delete=models.SET_NULL, null=True, blank=True)
+
     def __str__(self):
         result = super().teacher.to_string() + ', '
         if self.classroom:
