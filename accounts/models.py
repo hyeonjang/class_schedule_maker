@@ -1,7 +1,10 @@
+'''
+accounts
+'''
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 from school.models import ClassRoom, Subject
+import accounts.utils
 
 class User(AbstractUser):
     '''
@@ -28,6 +31,18 @@ class User(AbstractUser):
         '''
         return self.username
 
+    @staticmethod
+    def get_from(teacher):
+        return User.objects.get(pk=teacher.pk)
+
+    def return_by_type(self):
+        if self.user_type == User.HOMEROOM:
+            return HomeTeacher.objects.get(pk=self.pk)
+        elif self.user_type == User.SUBJECT:
+            return SubjectTeacher.objects.get(pk=self.pk)
+        elif self.user_type == User.INVITED:
+            return InvitedTeacher.objects.get(pk=self.pk)
+
 class HomeTeacher(models.Model):
     '''
     homeroom
@@ -51,9 +66,10 @@ class HomeTeacher(models.Model):
         if self.classroom is None:
             return 0
         return self.classroom.grade
-
-    def save(self, *args, **kwargs):
-        super(HomeTeacher, self).save()
+   
+    def save(self, *args, **kwargs):   
+        super(HomeTeacher, self).save(*args, **kwargs)
+        accounts.utils.create_homeroom_timetable(self)
 
 class SubjectTeacher(models.Model):
     '''
@@ -67,6 +83,7 @@ class SubjectTeacher(models.Model):
 
     def save(self, *args, **kwargs):
         super(SubjectTeacher, self).save(*args, **kwargs)
+        accounts.utils.create_subject_timetable(self)
 
 class InvitedTeacher(models.Model):
     '''
@@ -75,3 +92,14 @@ class InvitedTeacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     start = models.DateField()
     end = models.DateField()
+
+    def __str__(self):
+        return self.user.username
+
+    def save(self, *args, **kwargs):
+        super(InvitedTeacher, self).save(*args, **kwargs)
+        accounts.utils.create_invited_timetable(self.start, self.end, self)
+
+    @staticmethod
+    def get_from(pk):
+        return InvitedTeacher.objects.get(pk=pk)

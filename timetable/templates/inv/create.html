@@ -10,10 +10,11 @@
     </div>
 
   <div class="table-responsive">
-    <form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Update-form">
+    <form action="" method="post" id="Table-Update-form">
       {% csrf_token %}
         <table class="table table-bordered table-sm" id="TimeTableUpdate">
           <thead class="thead-light">
+            <th scope="col" style="width: 2.5%" >#</th> 
             <th scope="col" style="width: 12.5%">Mon</th>
             <th scope="col" style="width: 12.5%">Tue</th>
             <th scope="col" style="width: 12.5%">Wed</th>
@@ -45,8 +46,8 @@
           </div>
 
           </div>
-          {{ TimeTables.management_form }}
-          {{ TimeTables.non_form_errors.as_ul }}
+          {{ timetables.management_form }}
+          {{ timetables.non_form_errors.as_ul }}
          
       </form>
     </div>

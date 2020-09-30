@@ -7,7 +7,6 @@ from . import views
 app_name = 'school'
 
 urlpatterns = [
-    path('', views.admin, name='admin_view'),
     path('manage/term', views.TermManageListView.as_view(), name='manage_semester'),
     path('manage/subject', views.SubjectManageListView.as_view(), name='manage_subject'),
     path('manage/classroom', views.ClassRoomManageListView.as_view(), name='manage_classroom'),
@@ -31,6 +30,5 @@ urlpatterns = [
     path('create_subject/', views.SubjectCreateView.as_view(), name='create_subject'),
     path('update_subject/<int:pk>', views.SubjectUpdateView.as_view(), name='update_subject'),
     path('delete_subject/<int:pk>', views.SubjectDeleteView.as_view(), name='delete_subject'),
-   
 ]
 

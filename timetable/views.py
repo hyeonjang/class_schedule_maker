@@ -256,36 +256,32 @@ class InvitedCreate(LoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        start = week[0].strftime("%Y-%m-%d")
-        end = week[4].strftime("%Y-%m-%d")
-        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'start':start, 'end':end})
+        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
 
     def get_context_data(self, **kwargs):
         semester = Term.get_current()
-        week = semester.get_week()
+        start = self.request.user.return_by_type().start
+        week = semester.get_week(start)
         context = super(InvitedCreate, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(teacher=self.request.user, day__range=(week[0].strftime("%Y-%m-%d"), week[4].strftime("%Y-%m-%d")))
+        qs = Invited.objects.filter(semester=semester, teacher=self.request.user, day__range=(week[0].strftime("%Y-%m-%d"), week[4].strftime("%Y-%m-%d")))
         if self.request.POST:
-            context['timetables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
+            context['timetables'] = InvitedTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
-            context['timetables'] = HomeTableUpdateFormset(instance=self.request.user, queryset=qs)
+            context['timetables'] = InvitedTableUpdateFormset(instance=self.request.user, queryset=qs)
         context['list_weeks'] = create_list_for_weeks()
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
-        semester = Term.get_current()
-        week = Term.get_current().get_week()
-        weeks = semester.get_count_of_weeks()
-        #weeks = semester.end.isocalendar()[1] - semester.start.isocalendar()[1]
         formset = context['timetables']
         if formset.is_valid():
-            for i, form in enumerate(formset):
-                instance = form.save(commit=False)
-                instance.sememster = semester
-                instance.time = (i//5)%8+1 # row major table input
-                instance.day = week[i%5]
-                instance.save()
+            for form in formset:
+                inst = form.save(commit=False)
+                qs = Invited.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), time=inst.time)
+                for ins in qs:
+                    ins.subject = inst.subject
+                    ins.classroom = inst.classroom
+                    ins.save()
             return redirect(self.get_success_url())
         else:
             messages.warning(self.request, formset.errors)

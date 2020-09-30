@@ -6,14 +6,13 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db import transaction
 from bootstrap_modal_forms.mixins import PopRequestMixin, CreateUpdateAjaxMixin
 
-from school.models import Subject, ClassRoom
+from school.models import Subject
 from .models import User, HomeTeacher, SubjectTeacher, InvitedTeacher
 
 class HomeroomPopForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
     '''
     circular oneToone model referecing with classroom
     '''
-
     class Meta:
         model = User
         fields = ['username', 'password1', 'password2']

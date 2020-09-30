@@ -1,10 +1,9 @@
 '''
 util functions
 '''
-from django.utils import timezone
 import school
 import accounts
-from .models import HomeTable, SubjectTable
+from .models import HomeTable
 
 def create_information(user):
     '''

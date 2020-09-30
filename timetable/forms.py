@@ -46,7 +46,7 @@ class InvitedTableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(InvitedTableForm, self).__init__(*args, **kwargs)
         if isinstance(kwargs['instance'], Invited):
-            class_list = HomeTable.objects.filter(weekday=kwargs['instance'].weekday, time=kwargs['instance'].time, sub_teacher=None).distinct('classroom').values_list('classroom', flat=True)
+            class_list = HomeTable.objects.filter(day=kwargs['instance'].day, time=kwargs['instance'].time, sub_teacher=None).distinct('classroom').values_list('classroom', flat=True)
             self.fields['classroom'] = forms.ModelChoiceField(queryset=ClassRoom.objects.filter(pk__in=class_list), required=False)
 
 SubjectTableCreateFormset = inlineformset_factory(User, SubjectTable, extra=40, form=SubjectTableForm, can_delete=False)

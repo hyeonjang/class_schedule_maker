@@ -63,7 +63,7 @@ class SubjectTable(TimeTable):
         copy to HomeTable
         '''
         # 1. reset reference tables
-        HomeTable.objects.filter(sub_teacher=self, day=self.day, time=self.time).update(sub_teacher=None)
+        HomeTable.objects.filter(sub_teacher=self, day=self.day, time=self.time).update(sub_teacher=None, subject=None)
         # 2. find and update
         qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
         qs.update(sub_teacher=self, subject=None)
@@ -93,10 +93,10 @@ class Invited(TimeTable):
         copy to HomeTable
         '''
         # 1. reset reference tables
-        HomeTable.objects.filter(inv_teacher=self, day=self.day, time=self.time).update(sub_teacher=None)
+        HomeTable.objects.filter(inv_teacher=self, day=self.day, time=self.time).update(inv_teacher=None, subject=None)
         # 2. find and update
         qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
-        qs.update(inv_teacher=self, subject=self.subject)
+        qs.update(inv_teacher=self, subject=None)
 
     def save(self, *args, **kwargs):
         self.copy_to_hometable()

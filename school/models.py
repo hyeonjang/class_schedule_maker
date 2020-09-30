@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from .utils import create_classroom_timetable
+from .utils import update_classroom_timetable, add_user_to_hometeacher
 
 # Create your models here.
 class Holiday(models.Model):
@@ -15,6 +15,7 @@ class Holiday(models.Model):
     Hoilday Datatable
     '''
     day = models.DateField()
+    text = models.TextField(default="explanation")
 
     def __str__(self):
         return f"{self.day}"
@@ -37,15 +38,22 @@ class Term(models.Model):
             self.semester = 2
         super(Term, self).save(*args, **kwargs)
 
-    def get_starting_week(self):
+    @staticmethod
+    def get_current():
         '''
-        return a starting week of this semester
+        get current semester
         '''
-        year = self.start.year
-        week = self.start.isocalendar()[1]
+        now = timezone.datetime.today()
+        return Term.objects.filter(start__year=now.year).get()
+
+    @staticmethod
+    def get_current_week():
+        today = timezone.datetime.today()
+        year = today.year
+        week = today.isocalendar()[1]
         str_time = time.strptime('{0} {1} 1'.format(year, week), '%Y %W %w')
         date = timezone.datetime(year=str_time.tm_year, month=str_time.tm_mon,
-                                 day=str_time.tm_mday, tzinfo=timezone.utc)
+                                 day=str_time.tm_mday, tzinfo=timezone.utc).date()
         if timezone.datetime(year, 1, 4).isoweekday() > 4:
             # ISO 8601 where week 1 is the first week that has at least 4 days in
             # the current year
@@ -55,6 +63,43 @@ class Term(models.Model):
                 date+timezone.timedelta(days=2),
                 date+timezone.timedelta(days=3),
                 date+timezone.timedelta(days=4)]
+
+    def get_start(self, start=None):
+        '''
+        return a starting day of this semester
+        '''
+        year = self.start.year
+        week = self.start.isocalendar()[1]
+        if start is not None:
+            year = start.year
+            week = start.isocalendar()[1]
+        str_time = time.strptime('{0} {1} 1'.format(year, week), '%Y %W %w')
+        date = timezone.datetime(year=str_time.tm_year, month=str_time.tm_mon, day=str_time.tm_mday, tzinfo=timezone.utc).date()
+        if timezone.datetime(year, 1, 4).isoweekday() > 4:
+            # ISO 8601 where week 1 is the first week that has at least 4 days in
+            # the current year
+            date -= timezone.timedelta(days=7)
+        return date
+
+    def get_week(self, start=None):
+        '''
+        return a starting week of this semester
+        '''
+        date = self.get_start(start)
+        return [date, date+timezone.timedelta(days=1), date+timezone.timedelta(days=2), date+timezone.timedelta(days=3), date+timezone.timedelta(days=4)]
+
+    def get_weeks_start_end(self):
+        '''
+        return only the monday and friday of whole semester
+        '''
+        starting_week = self.get_week()
+        weeks = []
+        duration = self.end - self.start
+        for i in range(0, duration.days):
+            if (i%7) == 0:
+                week = (starting_week[0] + timezone.timedelta(days=i), starting_week[0] + timezone.timedelta(days=i+4))
+                weeks.append(week)
+        return weeks
 
     def get_count_of_weeks(self):
         '''
@@ -77,7 +122,7 @@ class ClassRoom(models.Model):
 
     grade = models.PositiveSmallIntegerField(default=1, choices=GRADE_RANGE)
     number = models.PositiveSmallIntegerField(default=1, validators=[MinValueValidator(0), MaxValueValidator(20)])
-    teacher = models.OneToOneField("accounts.HomeTeacher", on_delete=models.CASCADE, default=0, related_name="teacher_name")
+    teacher = models.OneToOneField("accounts.User", on_delete=models.CASCADE, default=0, related_name="teacher_name")
     student_count = models.PositiveSmallIntegerField(default=1, null=True)
 
     class Meta:
@@ -94,7 +139,11 @@ class ClassRoom(models.Model):
 
     def save(self, *args, **kwargs):
         super(ClassRoom, self).save(*args, **kwargs)
-        create_classroom_timetable(Term.objects.all().get(), self)
+        '''
+        instantiate timetable
+        '''
+        semester = Term
+        update_classroom_timetable(semester.get_current(), self.teacher, self)
 
 class Subject(models.Model):
     '''
@@ -114,7 +163,7 @@ class Subject(models.Model):
     count = models.IntegerField(default=272, validators=[MinValueValidator(64), MaxValueValidator(448)]) # 2018년도 교육과정 기준
 
     def __str__(self):
-        return  self.name + f'({self.grade}G)'
+        return  self.name + f"({self.grade}G)"
 
     def to_string(self):
         '''

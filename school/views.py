@@ -4,7 +4,6 @@ module doc
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -23,30 +22,7 @@ from .forms import (
     ClassRoomModelForm,
     SubjectModelForm,
     )
-from .forms import TimeTableCreation
-from .utils import create_classroom_timetable
 
-def admin(request):
-    '''
-    module doc
-    '''
-    if request.POST:
-        form = TimeTableCreation(request.POST)
-        if form.is_valid():
-            semester = form.cleaned_data.get('semester')
-            classroom = form.cleaned_data.get('classroom')
-            teacher = form.cleaned_data.get('teacher')
-            if semester and classroom:
-                create_classroom_timetable(semester, classroom)
-            return redirect('school:admin_view')
-    else:
-        form = TimeTableCreation()
-
-    context = {
-        'form' : form,
-    }
-
-    return render(request, 'admin_view.html', context)
 ########################################################
 ### management views
 

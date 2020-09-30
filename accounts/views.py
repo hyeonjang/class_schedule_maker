@@ -36,5 +36,8 @@ class CustomLoginView(LoginView):
         return reverse_lazy('home')
 
 def logout_view(request):
+    '''
+    logout view
+    '''
     logout(request)
     return redirect('index')

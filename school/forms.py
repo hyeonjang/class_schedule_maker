@@ -3,9 +3,7 @@ School Information Form
 '''
 from django import forms
 from django.core.exceptions import ValidationError
-
 from bootstrap_modal_forms.forms import BSModalModelForm, BSModalForm
-
 from accounts.models import User
 from .models import Term, Holiday, ClassRoom, Subject
 
@@ -20,7 +18,7 @@ class TimeTableCreation(forms.Form):
 
         if classroom and teacher:
             raise ValidationError('please select classroom or subject')
-        
+
         if classroom is None and teacher is None:
             raise ValidationError('please select classroom or subject')
 
@@ -34,16 +32,18 @@ class HolidayModelForm(BSModalModelForm):
         model = Holiday
         fields = '__all__'
         widgets = {
-          'day': forms.DateInput()
+            'day': forms.DateInput()
         }
 
 class GradeFilterForm(BSModalForm):
     grade = forms.ChoiceField(choices=ClassRoom.GRADE_RANGE)
-  
+
     class Meta:
         fields = ['grade', 'clear']
 
 class ClassRoomModelForm(BSModalModelForm):
+    teacher = forms.ModelChoiceField(User.objects.filter(user_type=User.HOMEROOM))
+
     class Meta:
         model = ClassRoom
         fields = '__all__'

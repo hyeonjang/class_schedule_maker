@@ -34,25 +34,24 @@
       {% csrf_token %}
         <table class="table table-bordered table-hover" id="TimeTableView">
           <thead class="">
-            <th scope="col" style="width: 12.5%">Mon</th>
-            <th scope="col" style="width: 12.5%">Tue</th>
-            <th scope="col" style="width: 12.5%">Wed</th>
-            <th scope="col" style="width: 12.5%">Thr</th>
-            <th scope="col" style="width: 12.5%">Fri</th>
+            <th scope="col" style="width: 12.5%;">Mon</th>
+            <th scope="col" style="width: 12.5%;">Tue</th>
+            <th scope="col" style="width: 12.5%;">Wed</th>
+            <th scope="col" style="width: 12.5%;">Thr</th>
+            <th scope="col" style="width: 12.5%;">Fri</th>
           </thead>
           <tbody>
           {% for course in timetables %}
-            {% cycle '<tr scope="row">' '' '' '' ''%}
+            {% cycle '<tr scope="row" style="height: 100px;">' '' '' '' ''%}
               <td class="text-center {% if course.is_holi_or_event %} bg-danger {% endif %} {% if course.sub_teacher %} bg-warning {% endif %} {% if course.inv_teacher %} bg-info {% endif %}">
                 <div class=""> 
                   <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
-                  <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
+                  <p>{% if course.subject %}{{ course.subject.name }}{% endif %}</p>
                   <p>{% if course.sub_teacher or course.inv_teacher %}
-                    {{ course.sub_teacher.teacher }}
-                    {{ course.sub_teacher.subject.name }}
+                    <p>{{ course.sub_teacher.subject.name }}{{ course.inv_teacher.subject.name }}</p>
+                    <p>{{ course.sub_teacher.teacher }} {{ course.inv_teacher.teacher }}</p>
                     {% endif %}
                   </p>
-                  <p>{% if course.inv_teacher %}{{ course.inv_teacher.teacher }}{% endif %}</p>
                 </div>
               </td>
             {% cycle '' '' '' '' '</tr>' %}
