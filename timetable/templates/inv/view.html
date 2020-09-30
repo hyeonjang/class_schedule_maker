@@ -36,20 +36,19 @@
 
   <div class="table-responsive">
 
-    <form action="{% url 'timetable:sub_view' user.id %}" method="get" id="Table-View-form">
+    <form action="" method="get" id="Table-View-form">
       {% csrf_token %}
       <table class="table table-bordered table-hover" id="TimeTableView">
         <thead class="">
-          <th scope="col">#</th> 
-          <th scope="col">Mon</th>
-          <th scope="col">Tue</th>
-          <th scope="col">Wed</th>
-          <th scope="col">Thr</th>
-          <th scope="col">Fri</th>
+          <th scope="col" style="width: 12.5%">Mon</th>
+          <th scope="col" style="width: 12.5%">Tue</th>
+          <th scope="col" style="width: 12.5%">Wed</th>
+          <th scope="col" style="width: 12.5%">Thr</th>
+          <th scope="col" style="width: 12.5%">Fri</th>
         </thead>
         <tbody>
         {% for course in timetables %}
-        {% cycle '<tr scope="row"><th></th>' '' '' '' '' %}
+        {% cycle '<tr scope="row">' '' '' '' '' %}
           <td>
               <div class="col"> 
                 <div class="col"> 

@@ -12,34 +12,33 @@
   <div class="table-responsive">
     <form action="{% url 'timetable:sub_create' user.id %}" method="post" id="Table-Update-form">
       {% csrf_token %}
-          <table class="table table-bordered table-sm" id="TimeTableUpdate">
-            <thead class="thead-light">
-              <th scope="col">#</th>
-              <th scope="col">Mon</th>
-              <th scope="col">Tue</th>
-              <th scope="col">Wed</th>
-              <th scope="col">Thr</th>
-              <th scope="col">Fri</th>
-            </thead>
-            <tbody>
-            {% for course in TimeTables %}
-            {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
-              <td>  
-                {% for field in course %}
-                <div class="form-group">
-                  {% render_field field class="form-control" placeholder=field.label %}
-                  <div class="{% if field.errors %} invalid {% endif %}">
-                    {% for error in field.errors %}
-                      <p class="help-block">{{ error }}</p>
-                    {% endfor %}
-                  </div>
+        <table class="table table-bordered table-sm" id="TimeTableUpdate">
+          <thead class="thead-light">
+            <th scope="col" style="width: 12.5%">Mon</th>
+            <th scope="col" style="width: 12.5%">Tue</th>
+            <th scope="col" style="width: 12.5%">Wed</th>
+            <th scope="col" style="width: 12.5%">Thr</th>
+            <th scope="col" style="width: 12.5%">Fri</th>
+          </thead>
+          <tbody>
+          {% for course in timetables %}
+          {% cycle '<tr scope="row"><th>1</th>' '' '' '' '' %}
+            <td>  
+              {% for field in course %}
+              <div class="form-group">
+                {% render_field field class="form-control" placeholder=field.label %}
+                <div class="{% if field.errors %} invalid {% endif %}">
+                  {% for error in field.errors %}
+                    <p class="help-block">{{ error }}</p>
+                  {% endfor %}
                 </div>
-                {% endfor %}
-              </td>
-            {% cycle '' '' '' '' '</tr>' %}
-            {% endfor %}
-            </tbody>
-          </table>
+              </div>
+              {% endfor %}
+            </td>
+          {% cycle '' '' '' '' '</tr>' %}
+          {% endfor %}
+          </tbody>
+        </table>
          
           <div class="modal-footer">
           <button type="submit" class="btn btn-secondary btn-lg">Create</button>

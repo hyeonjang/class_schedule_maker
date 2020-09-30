@@ -3,24 +3,20 @@
 <table class="table table-bordered table-hover" id="Detailed">
     <thead class="">
         <th scope="col">교과</th>
-        <th scope="col">학년</th>
         {% for week in list_weeks %}
         <th scope="col">{{ forloop.counter }} 주차</th>
         {% endfor %} 
         <th scope="col">현재시수</th>
-        <th scope="col">총시수</th>
     </thead>
       
     <tbody>
     {% for subject, count in information.items %}
         <tr>
-            <td>{{ subject.name }}</td>
-            <td>{{ count.0 }}</td> <!--grade-->
-            {% for count in count.1 %}
+            <td>{{ subject.name|make_list|first }}</td>
+            {% for count in count.0 %}
                 <td>{{ count }}</td> <!--count_per_week-->
             {% endfor %}
-            <td>{{ count.2 }}</td>
-            <td>{{ count.3 }}</td>
+            <td class="">{{ count.1 }}/{{ count.2 }}</td>
         </tr>
     {% endfor %}
     </tbody>
