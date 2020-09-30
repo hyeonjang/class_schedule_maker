@@ -59,20 +59,16 @@ class SubjectTable(TimeTable):
         return result
 
     def copy_to_hometable(self):
-        semester = Term.get_current()
-        week = semester.get_weeks()
-        queryset = HomeTable.objects.filter(
-            classroom=self.classroom,
-            weekday=week,
-            time=self.time,
-            )
-        print(queryset)
-        queryset.update(sub_teacher=self, subject=self.subject, is_subject_time=True)
+        '''
+        copy to HomeTable
+        '''
+        # 1. reset reference tables
+        HomeTable.objects.filter(sub_teacher=self, day=self.day, time=self.time).update(sub_teacher=None)
+        # 2. find and update
+        qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
+        qs.update(sub_teacher=self, subject=None)
 
     def save(self, *args, **kwargs):
-        '''
-        save with copy to Hometable
-        '''
         self.copy_to_hometable()
         super(SubjectTable, self).save(*args, **kwargs)
 
@@ -81,6 +77,30 @@ class Invited(TimeTable):
     for Invited Teacher
     """
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='invited_teacher')
+
+    def __str__(self):
+        result = super().teacher.to_string() + ', '
+        if self.classroom:
+            result += self.classroom.to_string()+'반, '+f'{self.time}교시 '
+        else:
+            result += f'{self.time}교시 '
+        if self.subject:
+            result += self.subject.name
+        return result
+
+    def copy_to_hometable(self):
+        '''
+        copy to HomeTable
+        '''
+        # 1. reset reference tables
+        HomeTable.objects.filter(inv_teacher=self, day=self.day, time=self.time).update(sub_teacher=None)
+        # 2. find and update
+        qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
+        qs.update(inv_teacher=self, subject=self.subject)
+
+    def save(self, *args, **kwargs):
+        self.copy_to_hometable()
+        super(Invited, self).save(*args, **kwargs)
 
 class HomeTable(TimeTable):
     """
@@ -98,10 +118,10 @@ class HomeTable(TimeTable):
             result += f'{self.time}교시, '
         if self.subject:
             result += self.subject.name + ', '
-        result += f'{self.weekday}'
+        result += f'{self.day}'
         return result
 
-    def save(self, *args, **kwargs): #@@todo
-        if self.is_subject_time:
-            return
-        super(HomeTable, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        # if (self.sub_teacher or self.inv_teacher) is not None:
+        #     return
+        return super(HomeTable, self).save(*args, **kwargs)
