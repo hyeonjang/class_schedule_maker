@@ -4,18 +4,17 @@
 
   {% include "_modal.html" %}
 
-  <div class="container mt-3">
-    <div class="row">
-      <div class="col-10 offset-2">
-        <h4>
-          <strong>Semester</strong>
-        </h4>
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Semester</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <button id="add-semester" class="btn btn-outline-secondary btn-sm" type="button" name="button">
+          <span class="fa fa-plus mr-2"></span>Add Semester
+        </button>
+      </div>
+    </div>
+
         <div class="row">
-          <div class="col-12 mb-3">
-            <button id="add-semester" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Add Semester
-            </button>
-          </div>
           <div class="col-12 mb-3">
             {% if semester %}
               {% include "semester/_table.html" %}
@@ -24,16 +23,17 @@
             {% endif %}
           </div>
         </div>
-        <h4>
-          <strong>Holidays in this Semester</strong>
-        </h4>
-
-        <div class="row">
-          <div class="col-12 mb-3">
-            <button id="add-holiday" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Add Holidays
-            </button>
+        
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Holidays in Semester</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button id="add-holiday" class="btn btn-outline-secondary btn-sm" type="button" name="button">
+                <span class="fa fa-plus mr-2"></span>Add Holidays
+              </button>
+            </div>
           </div>
+          
+        <div class="row">
           <div class="col-12 mb-3">
             {% if holidays %}
               {% include "holiday/_table.html" %}
@@ -43,11 +43,8 @@
           </div>
         </div>
 
-        
-      </div>
     </div>
-  </div>
-
+  </main>
 {% endblock content %}
 
 {% block extrascripts %}

@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
+ {% include "_modal.html" %}
 
-  {% include "_modal.html" %}
+  <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">ClassRoom</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <button id="create-classroom" class="btn btn-outline-secondary btn-sm" type="button" name="button">
+          <span class="fa fa-plus mr-2"></span>Create ClassRoom
+        </button>
+        <button id="filter-classroom" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
+          <span class="fa fa-filter mr-2"></span>Filter by Grade
+        </button>
+      </div>
+    </div>
 
-  <div class="container mt-3">
-    <div class="row">
-      <div class="col-10 offset-2">
-        <h4>
-          <strong>ClassRoom</strong>
-        </h4>
         <div class="row">
           <div class="col-12 mb-3">
-            <button id="create-classroom" class="btn btn-outline-primary btn-sm" type="button" name="button">
-              <span class="fa fa-plus mr-2"></span>Create ClassRoom
-            </button>
-            <button id="filter-classroom" class="bs-modal btn btn-outline-primary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
-              <span class="fa fa-filter mr-2"></span>Filter by Grade
-            </button>
+     
           </div>
           <div class="col-12 mb-3">
             {% if classrooms %}
@@ -27,11 +28,11 @@
             {% endif %}
           </div>
         </div>
-      </div>
+      
     </div>
-  </div>
-
+  </main>
 {% endblock content %}
+
 
 {% block extrascripts %}
   <script type="text/javascript">
