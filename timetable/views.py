@@ -254,7 +254,7 @@ class InvitedView(generic.TemplateView):
         return redirect('timetable:inv_view')
     def get_context_data(self, **kwargs):
         context = super(InvitedView, self).get_context_data(**kwargs)
-        qs = Invited.objects.filter(teacher=self.request.user, weekday__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "weekday")
+        qs = Invited.objects.filter(teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = create_list_for_weeks()
         return context
@@ -263,7 +263,7 @@ class InvitedCreate(LoginRequiredMixin, generic.UpdateView):
     '''
     @@todo actually update view to expand to whole semester
     '''
-    template_name = 'invcreate.html'
+    template_name = 'inv/create.html'
     model = HomeTable
     form_class = HomeTableForm
 
@@ -279,8 +279,8 @@ class InvitedCreate(LoginRequiredMixin, generic.UpdateView):
     def get_context_data(self, **kwargs):
         semester = Term.get_current()
         week = semester.get_week()
-        context = super(HomeRoomCreate, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(teacher=self.request.user, weekday__range=(week[0].strftime("%Y-%m-%d"), week[4].strftime("%Y-%m-%d")))
+        context = super(InvitedCreate, self).get_context_data(**kwargs)
+        qs = HomeTable.objects.filter(teacher=self.request.user, day__range=(week[0].strftime("%Y-%m-%d"), week[4].strftime("%Y-%m-%d")))
         if self.request.POST:
             context['timetables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
@@ -290,8 +290,8 @@ class InvitedCreate(LoginRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form):
         context = self.get_context_data()
-        semester = Term.get_current() # todo
-        week = semester.get_week()
+        semester = Term.get_current()
+        week = Term.get_current().get_week()
         weeks = semester.get_count_of_weeks()
         #weeks = semester.end.isocalendar()[1] - semester.start.isocalendar()[1]
         formset = context['timetables']
@@ -300,7 +300,7 @@ class InvitedCreate(LoginRequiredMixin, generic.UpdateView):
                 instance = form.save(commit=False)
                 instance.sememster = semester
                 instance.time = (i//5)%8+1 # row major table input
-                instance.weekday = week[i%5]
+                instance.day = week[i%5]
                 instance.save()
                 expand_to_term(instance, self.request.user, week[i%5], weeks) #@@todo
             return redirect(self.get_success_url())
@@ -325,7 +325,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(InvitedUpdate, self).get_context_data(**kwargs)
-        qs = Invited.objects.filter(teacher=self.request.user, weekday__range=(self.kwargs['start'], self.kwargs['end']))
+        qs = Invited.objects.filter(teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end']))
         if self.request.POST:
             context['timetables'] = InvitedTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:

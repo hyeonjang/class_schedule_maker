@@ -2,7 +2,7 @@
 module doc
 '''
 from django.contrib import admin
-from .models import SubjectTable, HomeTable
+from .models import SubjectTable, HomeTable, Invited
 
 class SubjectInline(admin.TabularInline):
     '''
@@ -25,3 +25,4 @@ class TableAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(SubjectTable)
 admin.site.register(HomeTable)
+admin.site.register(Invited)
