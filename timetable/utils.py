@@ -4,17 +4,7 @@ util functions
 from django.utils import timezone
 import school
 import accounts
-from .models import HomeTable
-
-def expand_to_term(instance, teacher, day, weeks):
-    """
-    copy to term
-    """
-    for i in range(1, weeks):
-        copy = HomeTable.objects.get(teacher=teacher, time=instance.time, weekday=day+timezone.timedelta(days=7*i))
-        copy.semester = instance.semester
-        copy.subject = instance.subject
-        copy.save()
+from .models import HomeTable, SubjectTable
 
 def create_information(user):
     '''
@@ -34,10 +24,9 @@ def create_information(user):
             start = week[0].strftime("%Y-%m-%d")
             end = week[1].strftime("%Y-%m-%d")
             count_per_week.append(
-                HomeTable.objects.filter(teacher=user, subject=subject, weekday__range=(start, end)).count()
+                HomeTable.objects.filter(teacher=user, subject=subject, day__range=(start, end)).count()
                 )
         dic = {subject:[
-            subject.grade,
             count_per_week,
             HomeTable.objects.filter(teacher=user, subject=subject).count(),
             subject.count
