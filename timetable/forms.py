@@ -27,10 +27,11 @@ class HomeTableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(HomeTableForm, self).__init__(*args, **kwargs)
         if isinstance(kwargs['instance'], self.Meta.model):
+            # 1. fields update
             hometeacher = kwargs['instance'].teacher.return_by_type()
             self.fields['subject'] = forms.ModelChoiceField(queryset=Subject.objects.filter(grade=hometeacher.get_grade()))
             
-            # disable to select subject when other teacher already exists
+            # 2. disable to select subject when other teacher already exists
             if kwargs['instance'].sub_teacher or kwargs['instance'].inv_teacher:
                 self.fields['subject'].widget.attrs.update({'disabled':'true'})
 
