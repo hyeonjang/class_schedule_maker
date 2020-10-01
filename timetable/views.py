@@ -6,11 +6,10 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.views import generic
 from django.urls import reverse_lazy
-from school.models import Term
+from school.models import Term, Subject
 from .models import SubjectTable, HomeTable, Invited
 from .forms import (SubjectTableForm, HomeTableForm, InvitedTableForm, SubjectTableUpdateFormset, HomeTableUpdateFormset, InvitedTableUpdateFormset)
-from .utils import create_list_for_weeks, create_information
-
+from .utils import create_list_for_weeks
 ##########################################################
 ### Teacher Roles == Subject Features
 class SubjectCreate(LoginRequiredMixin, generic.UpdateView): # actullay update instances
@@ -154,8 +153,12 @@ class HomeRoomCreate(LoginRequiredMixin, generic.UpdateView):
         if formset.is_valid():
             for form in formset:
                 instance = form.save(commit=False)
+                # 1. using django ORM
                 qs = HomeTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__iso_week_day=instance.day.isoweekday(), time=instance.time)
-                qs.update(subject=instance.subject)
+                # 2. excepting which has sub_teahcer or inv_teacher
+                query = qs.filter(sub_teacher=None)&qs.filter(inv_teacher=None)
+                # 3. update subject @@todo
+                query.update(subject=instance.subject)
             return redirect(self.get_success_url())
         else:
             messages.warning(self.request, formset.errors)
@@ -206,6 +209,24 @@ class HomeRoomView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'home/view.html'
     model = HomeTable
 
+    def create_information(self):
+        '''
+        Return TimeTable information to Templates
+        '''
+        information = dict()
+        teacher = self.request.user.return_by_type()
+        semester = Term.get_current()
+        subjects = Subject.objects.filter(grade=teacher.get_grade())
+
+        for subject in subjects:
+            weeks = semester.get_weeks_start_end()
+            count_per_week = []
+            for week in weeks:
+                count_per_week.append(HomeTable.objects.filter(teacher=self.request.user, subject=subject, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
+            dic = {subject:[count_per_week, HomeTable.objects.filter(teacher=self.request.user, subject=subject).count(), subject.count]}
+
+            information.update(dic)
+        return information
 
     def get_success_url(self):
         '''
@@ -218,7 +239,7 @@ class HomeRoomView(LoginRequiredMixin, generic.TemplateView):
         qs = HomeTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = create_list_for_weeks()
-        context['information'] = create_information(self.request.user)
+        context['information'] = self.create_information()
 
         return context
 ### the end of homeroom
