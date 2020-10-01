@@ -9,7 +9,7 @@
 
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4"><div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;"><div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div></div><div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;"><div style="position:absolute;width:200%;height:200%;left:0; top:0"></div></div></div>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">Homeroom </h1>
+      <h1 class="h2">Homeroom</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group mr-2">
           <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:home_create' user.id %}">
@@ -43,12 +43,11 @@
           <tbody>
           {% for course in timetables %}
             {% cycle '<tr scope="row" style="height: 100px;">' '' '' '' ''%}
-              <td class="text-center {% if course.is_holi_or_event %} bg-danger {% endif %} {% if course.sub_teacher %} bg-warning {% endif %} {% if course.inv_teacher %} bg-info {% endif %}">
+              <td class="text-center {% if course.is_holi_or_event %} table-dark {% endif %} {% if course.sub_teacher %} table-warning {% endif %} {% if course.inv_teacher %} table-info {% endif %}">
                 <div class=""> 
                   <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
                   <p>{% if course.subject %}{{ course.subject.name }}{% endif %}</p>
                   <p>{% if course.sub_teacher or course.inv_teacher %}
-                    <p>{{ course.sub_teacher.subject.name }}{{ course.inv_teacher.subject.name }}</p>
                     <p>{{ course.sub_teacher.teacher }} {{ course.inv_teacher.teacher }}</p>
                     {% endif %}
                   </p>
@@ -63,7 +62,7 @@
     </form>
     </div>
       {% if information %}
-        {% include '_count.html' %}
+        {% include 'home/_info.html' %}
       {% endif %}
   </main>
 
