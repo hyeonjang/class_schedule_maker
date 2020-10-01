@@ -20,9 +20,7 @@ from accounts.models import User, InvitedTeacher
 from school.models import Term
 
 def home(request):
-    if not request.user.is_authenticated:
-        return redirect('index')
-    else:
+    if request.user.is_authenticated:
         current_week = Term.get_current_week()
         if request.user.user_type is User.SUPERVISOR:
             return reverse_lazy('school:manage_school', kwargs={'user_id':request.user.id})
