@@ -66,7 +66,7 @@ class SubjectTable(TimeTable):
         HomeTable.objects.filter(sub_teacher=self, day=self.day, time=self.time).update(sub_teacher=None, subject=None)
         # 2. find and update
         qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
-        qs.update(sub_teacher=self, subject=None)
+        qs.update(sub_teacher=self, subject=self.subject)
 
     def save(self, *args, **kwargs):
         self.copy_to_hometable()
@@ -96,7 +96,7 @@ class Invited(TimeTable):
         HomeTable.objects.filter(inv_teacher=self, day=self.day, time=self.time).update(inv_teacher=None, subject=None)
         # 2. find and update
         qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
-        qs.update(inv_teacher=self, subject=None)
+        qs.update(inv_teacher=self, subject=self.subject)
 
     def save(self, *args, **kwargs):
         self.copy_to_hometable()
@@ -122,6 +122,6 @@ class HomeTable(TimeTable):
         return result
 
     def save(self, *args, **kwargs):
-        # if (self.sub_teacher or self.inv_teacher) is not None:
-        #     return
+        if (self.sub_teacher or self.inv_teacher) is not None:
+            return
         return super(HomeTable, self).save(*args, **kwargs)
