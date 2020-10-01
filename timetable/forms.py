@@ -26,14 +26,13 @@ class HomeTableForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(HomeTableForm, self).__init__(*args, **kwargs)
-        #self.fields['subject'].widget.attrs.update({'disabled':'true'})
-        #self.fields['sub_teacher'].widget.attrs.update({'disabled':'true'})
-
-    def save(self, commit=True, create=False):
-        instance = super(HomeTableForm, self).save(commit=False)
-        if commit:
-            instance.save(create=create)
-        return instance
+        if isinstance(kwargs['instance'], self.Meta.model):
+            hometeacher = kwargs['instance'].teacher.return_by_type()
+            self.fields['subject'] = forms.ModelChoiceField(queryset=Subject.objects.filter(grade=hometeacher.get_grade()))
+            
+            # disable to select subject when other teacher already exists
+            if kwargs['instance'].sub_teacher or kwargs['instance'].inv_teacher:
+                self.fields['subject'].widget.attrs.update({'disabled':'true'})
 
 class InvitedTableForm(forms.ModelForm):
     '''
@@ -45,7 +44,8 @@ class InvitedTableForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(InvitedTableForm, self).__init__(*args, **kwargs)
-        if isinstance(kwargs['instance'], Invited):
+        if isinstance(kwargs['instance'], self.Meta.model):
+            # 1. choose the hometable which has not sub_teacher that class time
             class_list = HomeTable.objects.filter(day=kwargs['instance'].day, time=kwargs['instance'].time, sub_teacher=None).distinct('classroom').values_list('classroom', flat=True)
             self.fields['classroom'] = forms.ModelChoiceField(queryset=ClassRoom.objects.filter(pk__in=class_list), required=False)
 
