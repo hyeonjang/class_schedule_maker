@@ -24,7 +24,8 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-       <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        {% if user.is_authenticated %}
         <ul class="navbar-nav px-3">
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'school:manage_semester' %}">개인정보<span class="sr-only">(current)</span></a>
@@ -46,8 +47,9 @@
               <a href="{% url 'logout' %}" id="logout-btn" class="" role="button">Log out</a>
             </p>
           {% endif %}
-
+        {% endif %}
       </div>
+      
     </nav>
     <!-- End Navbar -->
 </header>

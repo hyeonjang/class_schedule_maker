@@ -5,38 +5,44 @@
 {% block content %}
 {% include "_modal.html" %}
 
-  <div class="container mt-3">
-    <div class="card">
-      
-      <div class="card-header">
-        <h2>  </h2>
-      </div>
-        
+<main role="main" class="col-md-9 ml-sm-auto col-lg-12">
+  <div class="card mx-auto" style="width: 30rem;">
+    <h2 class="card-header">Login</h1>
+
       <div class="card-body">
-        <div class="row no-gutters">
-          <div class=""> 
-            {% include 'login.html' %}
-          </div>
-        </div>
+        <form action="" method="post">
+          {% csrf_token %}
+            <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+              {% for error in form.non_field_errors %}
+                {{ error }}
+              {% endfor %}
+            </div>
+            {% for field in form %}
+              <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {% render_field field class="form-control" placeholder=field.label %}
+                <div class="{% if field.errors %} invalid {% endif %}">
+                  {% for error in field.errors %}
+                    <p class="help-block">{{ error }}</p>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+            <div class="modal-footer">
+              <button type="submit" class="submit-btn btn btn-primary">Log in</button>
+            </div>
+          
+          </form>
       </div>
          
       <div class="card-footer">
-        <a id="su-home-btn" class="">
-          homeroom
-        </a>
-
-        <a id="su-sub-btn" class="">
-          subject
-        </a>
-
-        <a id="su-inv-btn" class="">
-          invited
-        </a>
-
+        <a id="su-home-btn" class="">homeroom</a>
+        <a id="su-sub-btn" class="">subject</a>
+        <a id="su-inv-btn" class="">invited</a>
       </div>
+
     </div>
-  </div>
-</div>
+</main>
 {% endblock %}
 
 {% block extrascripts %}
