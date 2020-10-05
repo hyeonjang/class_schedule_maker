@@ -5,32 +5,44 @@ from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-
 from bootstrap_modal_forms.generic import BSModalCreateView
-from .forms import SubjectPopForm, HomeroomPopForm, InvitedPopForm, CustomAuthenticationForm
+from .forms import SubjectPopForm, HomeroomPopForm, InvitedPopForm
 
 class HomeroomSignUpView(BSModalCreateView):
+    '''
+    inherited
+    '''
     form_class = HomeroomPopForm
     template_name = 'signup.html'
     success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('login')
 
 class SubjectSignUpView(BSModalCreateView):
+    '''
+    inherited
+    '''
     form_class = SubjectPopForm
     template_name = 'signup.html'
     success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('')
+    success_url = reverse_lazy('login')
+
+    def get_success_url(self):
+        return reverse_lazy('login')
 
 class InvitedSignUpView(BSModalCreateView):
+    '''
+    inherited
+    '''
     form_class = InvitedPopForm
     template_name = 'signup.html'
     success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('')
+    success_url = reverse_lazy('login')
 
 class CustomLoginView(LoginView):
-    form_class = CustomAuthenticationForm
-    template_name = 'index.html'
-    success_message = 'Success: You were successfully logged in.'
+    '''
+    inherited
+    '''
+    template_name = 'login.html'
 
     def get_success_url(self):
         return reverse_lazy('home')
@@ -40,4 +52,4 @@ def logout_view(request):
     logout view
     '''
     logout(request)
-    return redirect('index')
+    return redirect('login')

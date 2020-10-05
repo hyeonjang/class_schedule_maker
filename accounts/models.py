@@ -4,7 +4,7 @@ accounts
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from school.models import ClassRoom, Subject
-import accounts.utils
+import timetable
 
 class User(AbstractUser):
     '''
@@ -66,10 +66,10 @@ class HomeTeacher(models.Model):
         if self.classroom is None:
             return 0
         return self.classroom.grade
-   
-    def save(self, *args, **kwargs):   
+
+    def save(self, *args, **kwargs):
         super(HomeTeacher, self).save(*args, **kwargs)
-        accounts.utils.create_homeroom_timetable(self)
+        timetable.models.HomeTable.objects.filter(teacher=self.user).update(classroom=self.classroom)
 
 class SubjectTeacher(models.Model):
     '''
@@ -83,7 +83,6 @@ class SubjectTeacher(models.Model):
 
     def save(self, *args, **kwargs):
         super(SubjectTeacher, self).save(*args, **kwargs)
-        accounts.utils.create_subject_timetable(self)
 
 class InvitedTeacher(models.Model):
     '''
@@ -98,7 +97,6 @@ class InvitedTeacher(models.Model):
 
     def save(self, *args, **kwargs):
         super(InvitedTeacher, self).save(*args, **kwargs)
-        accounts.utils.create_invited_timetable(self.start, self.end, self)
 
     @staticmethod
     def get_from(pk):
