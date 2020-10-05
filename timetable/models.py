@@ -3,7 +3,7 @@ Abstract TimeTable model
 '''
 from django.db import models
 from django.utils import timezone
-
+from django.core.validators import ValidationError
 from accounts.models import User
 from school.models import Term, Holiday, ClassRoom, Subject
 
@@ -14,7 +14,7 @@ class TimeTable(models.Model):
     '''
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     semester = models.ForeignKey(Term, on_delete=models.CASCADE, blank=True) # works in view.py
-    classroom = models.ForeignKey(ClassRoom, on_delete=models.CASCADE, null=True, blank=True) #user choice
+    classroom = models.ForeignKey(ClassRoom, on_delete=models.SET_NULL, null=True, blank=True) #user choice
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, null=True, blank=True) #user choice
     day = models.DateField(default=timezone.now, null=True, blank=True) # works in view.py
     time = models.SmallIntegerField(default=0, blank=True) # works in view.py
@@ -124,4 +124,6 @@ class HomeTable(TimeTable):
     def save(self, *args, **kwargs):
         if (self.sub_teacher or self.inv_teacher) is not None:
             return
+        if self.classroom is None:
+            raise ValidationError("classroom is missing")
         return super(HomeTable, self).save(*args, **kwargs)
