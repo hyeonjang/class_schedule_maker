@@ -14,11 +14,10 @@
         {{ error }}
       {% endfor %}
     </div>
-
     {% for field in form %}
       <div class="form-group">
         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {% render_field field class="form-control" placeholder=field.label %}
+        {% render_field field|add_class:"form-control" placeholder=field.label %}
         <div class="{% if field.errors %} invalid {% endif %}">
           {% for error in field.errors %}
             <p class="help-block">{{ error }}</p>
@@ -33,3 +32,15 @@
   </div>
 
 </form>
+
+{% load static %}
+{% block extrascripts %}
+<link rel="stylesheet" href="{% static 'css/bootstrap-datepicker.css'%}"/>
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+<script>
+$(function() {
+      $('.datepicker').datepicker({
+          });
+  });
+</script>
+{% endblock extrascripts %}
