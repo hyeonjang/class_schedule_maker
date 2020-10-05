@@ -33,7 +33,7 @@ def home(request):
             week = semester.get_week(InvitedTeacher.get_from(request.user).start)
             return redirect(reverse_lazy('timetable:inv_view', kwargs={'user_id':request.user.id, 'start':week[0], 'end':week[4]}))
     else:
-        return redirect(reverse_lazy('index'))
+        return redirect(reverse_lazy('login'))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
