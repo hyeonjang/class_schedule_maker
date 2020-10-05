@@ -3,10 +3,8 @@ School informations - Semester, Hoilday, ...
 '''
 import time
 from django.utils import timezone
-
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
 from .utils import update_classroom_timetable, add_user_to_hometeacher
 
 # Create your models here.
@@ -142,8 +140,8 @@ class ClassRoom(models.Model):
         '''
         instantiate timetable
         '''
-        semester = Term
-        update_classroom_timetable(semester.get_current(), self.teacher, self)
+        update_classroom_timetable(Term.get_current(), self.teacher, self)
+        add_user_to_hometeacher(self.teacher, self)
 
 class Subject(models.Model):
     '''

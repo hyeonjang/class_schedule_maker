@@ -6,14 +6,12 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views import generic
-
 from bootstrap_modal_forms.generic import (
     BSModalFormView,
     BSModalCreateView,
     BSModalUpdateView,
     BSModalDeleteView
 )
-
 from .models import Term, Holiday, ClassRoom, Subject
 from .forms import (
     GradeFilterForm,
