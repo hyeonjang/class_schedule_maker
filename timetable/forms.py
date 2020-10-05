@@ -3,8 +3,9 @@ modul doc
 '''
 from django import forms
 from django.forms import inlineformset_factory
+from bootstrap_modal_forms.forms import BSModalForm, BSModalModelForm
 from accounts.models import User
-from school.models import ClassRoom, Subject
+from school.models import Term, ClassRoom, Subject
 from .models import SubjectTable, HomeTable, Invited
 
 class SubjectTableForm(forms.ModelForm):
@@ -29,7 +30,7 @@ class HomeTableForm(forms.ModelForm):
         if isinstance(kwargs['instance'], self.Meta.model):
             # 1. fields update
             hometeacher = kwargs['instance'].teacher.return_by_type()
-            self.fields['subject'] = forms.ModelChoiceField(queryset=Subject.objects.filter(grade=hometeacher.get_grade()))
+            self.fields['subject'] = forms.ModelChoiceField(queryset=Subject.objects.filter(grade=hometeacher.get_grade()), required=False)
             
             # 2. disable to select subject when other teacher already exists
             if kwargs['instance'].sub_teacher or kwargs['instance'].inv_teacher:
@@ -50,8 +51,9 @@ class InvitedTableForm(forms.ModelForm):
             class_list = HomeTable.objects.filter(day=kwargs['instance'].day, time=kwargs['instance'].time, sub_teacher=None).distinct('classroom').values_list('classroom', flat=True)
             self.fields['classroom'] = forms.ModelChoiceField(queryset=ClassRoom.objects.filter(pk__in=class_list), required=False)
 
-SubjectTableCreateFormset = inlineformset_factory(User, SubjectTable, extra=40, form=SubjectTableForm, can_delete=False)
+class TableCreateForm(BSModalForm):
+    semester = forms.ModelChoiceField(queryset=Term.objects.all())
+
 SubjectTableUpdateFormset = inlineformset_factory(User, SubjectTable, extra=0, form=SubjectTableForm, can_delete=False)
-HomeTableCreateFormset = inlineformset_factory(User, HomeTable, fk_name='teacher', extra=40, form=HomeTableForm, can_delete=False)
 HomeTableUpdateFormset = inlineformset_factory(User, HomeTable, fk_name='teacher', extra=0, form=HomeTableForm, can_delete=False)
 InvitedTableUpdateFormset = inlineformset_factory(User, Invited, extra=0, form=InvitedTableForm, can_delete=False)
