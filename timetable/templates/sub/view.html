@@ -1,7 +1,21 @@
 {% extends 'base.html' %}
 
+{% block extrascripts %}
+<script type="text/javascript">
+    $(function () {
+      $("#sub-create").modalForm({
+        formURL: "{% url 'timetable:sub_create' user.id %}"
+      });
+      $("#sub-reset").modalForm({
+        formURL: "{% url 'timetable:sub_reset' user.id %}"
+      });
+      })
+</script>
+{% endblock extrascripts %}
+
 {% load static %}
 {% block content %}
+{% include "_modal.html" %}
 
   {% if list_weeks %}
   {% include 'sub/_list.html' %}
@@ -12,11 +26,14 @@
     <h1 class="h2">Subject </h1>
     <div class="btn-toolbar mb-2 mb-md-0">
       <div class="btn-group mr-2">
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:sub_create' user.id %}">
+        <a class="btn btn-sm btn-outline-secondary" id="sub-create">
           Create
         </a>
         <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:sub_update' user.id start end %}">
           Update
+        </a>
+        <a class="btn btn-sm btn-outline-secondary" id="sub-reset">
+          Reset
         </a>
       </div>
       <button class="btn btn-sm btn-outline-secondary">

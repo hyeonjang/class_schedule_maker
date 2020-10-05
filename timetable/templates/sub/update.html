@@ -27,7 +27,7 @@
         </thead>
         <tbody>
         {% for course in timetables %}
-        {% cycle '<tr scope="row"><th> 1 </th>' '' '' '' '' %}
+        {% cycle '<tr scope="row"><th>  </th>' '' '' '' '' %}
           <td> 
             {% for field in course %}
             <div class="form-group">
@@ -47,6 +47,10 @@
       {{ timetables.management_form }}
       {{ timetables.non_form_errors.as_ul }}
       <div class="modal-footer">
+        <div class="form-check">
+          <input type="checkbox" class="form-check-input" name="check" value="True">
+          <label class="form-check-label" for="exampleCheck1">Check if you want to update whole</label>
+        </div>
         <button type="submit" class="btn btn-secondary btn-lg">Update</button>
       </div>
 
