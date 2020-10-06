@@ -48,16 +48,16 @@
       {% csrf_token %}
       <table class="table table-bordered table-hover" id="TimeTableView">
         <thead class="">
-          <th scope="col" style="width: 12.5%">Mon</th>
-          <th scope="col" style="width: 12.5%">Tue</th>
-          <th scope="col" style="width: 12.5%">Wed</th>
-          <th scope="col" style="width: 12.5%">Thr</th>
-          <th scope="col" style="width: 12.5%">Fri</th>
+          <th scope="col" style="width: 12.5%">{{ timetables.0.day|date:"D m/d" }}</th>
+          <th scope="col" style="width: 12.5%">{{ timetables.1.day|date:"D m/d" }}</th>
+          <th scope="col" style="width: 12.5%">{{ timetables.2.day|date:"D m/d" }}</th>
+          <th scope="col" style="width: 12.5%">{{ timetables.3.day|date:"D m/d" }}</th>
+          <th scope="col" style="width: 12.5%">{{ timetables.4.day|date:"D m/d" }}</th>
         </thead>
         <tbody>
         {% for course in timetables %}
         {% cycle '<tr scope="row" style="height: 100px;">' '' '' '' ''%}
-          <td>
+          <td class="text-center">
               <div class="col"> 
                 <div class="col"> 
                   {% if course.classroom %}{{ course.classroom }}{% endif %}
@@ -73,7 +73,9 @@
       {{ timetables.non_form_errors.as_ul }} 
     </form>
     </div>
-    
+    {% if information %}
+      {% include '_info.html' %}
+    {% endif %}
   </main>
 
 {% if count %}

@@ -1,0 +1,35 @@
+<h2>Information</h2>
+<div class="table-responsive">
+<table class="table table-bordered table-hover" id="Detailed">
+    <thead class="">
+        <th scope="col" style="width: 100px;">
+        {% if user.user_type == 1 %}
+            교과
+        {% elif user.user_type == 2 or user.user_type == 3 %}
+            반
+        {% endif %}
+        </th>
+        {% for week in list_weeks %}
+            <th scope="col">{{ forloop.counter }}주차</th>
+        {% endfor %} 
+            <th scope="col">현재시수</th>
+    </thead>
+      
+    <tbody>
+    {% for item, count in information.items %}
+        <tr>
+            {% if user.user_type == 1 %}
+                <td>{{ item.name|make_list|first }}</td>
+            {% elif user.user_type == 2 or user.user_type == 3 %}
+                <td>{{ item }}</td>
+            {% endif %}
+            {% for count in count.0 %}
+                <td>{{ count }}</td> <!--count_per_week-->
+            {% endfor %}
+            <td class="">{{ count.1 }}/{{ count.2 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+</div>
