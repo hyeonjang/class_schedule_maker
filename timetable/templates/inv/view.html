@@ -9,10 +9,10 @@
       $("#inv-reset").modalForm({
         formURL: "{% url 'timetable:inv_reset' user.id %}"
       });
-
       })
- </script>
- {% endblock extrascripts %}
+
+</script>
+{% endblock extrascripts %}
 
 {% load static %}
 {% block content %}
@@ -25,7 +25,7 @@
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Invited</h1>
-    <button class="btn btn-outline-secondary" data-provide="datepicker" id="weekpicker">
+    <button class="btn btn-sm btn-outline-secondary" data-provide="datepicker" id="weekpicker" disabled>
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
       {{request.resolver_match.kwargs.start}} ~ {{request.resolver_match.kwargs.end}}
     </button>
@@ -41,12 +41,6 @@
           Reset
         </a>
       </div>
-
-      <button class="btn btn-sm btn-outline-secondary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        This week
-      </button>
-      
     </div>
   </div>
 

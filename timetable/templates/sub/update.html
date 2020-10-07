@@ -1,61 +1,76 @@
 {% extends 'base.html' %}
 
+{% block extrascripts %}
+<script type="text/javascript">
+    $(function () {
+      $('#select-all').change(function () {
+        if ($(this).prop('checked')) {
+            $('.list-week').prop('checked', true);
+        } else {
+            $('.list-week').prop('checked', false);
+        }
+      });
+    })
+</script>
+{% endblock extrascripts %}
+
 {% load widget_tweaks %}
+
 {% load static %}
 {% block content %}
 
-  {% if list_weeks %}
-  {% include 'sub/_list.html' %}
-  {% endif %}
 
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Subject</h1>
+      <button class="btn btn-sm btn-outline-secondary" data-provide="datepicker" id="weekpicker" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        {{request.resolver_match.kwargs.start}} ~ {{request.resolver_match.kwargs.end}}
+      </button>
     </div>
 
-    <div class="table-responsive">
     <form action="" method="post" id="Table-Update-form">
-      {% csrf_token %}
-      <table class="table table-bordered table-hover" id="TimeTableUpdate">
-        <thead class="">
-          <th scope="col" style="width: 2.5%" >#</th> 
-          <th scope="col" style="width: 12.5%">Mon</th>
-          <th scope="col" style="width: 12.5%">Tue</th>
-          <th scope="col" style="width: 12.5%">Wed</th>
-          <th scope="col" style="width: 12.5%">Thr</th>
-          <th scope="col" style="width: 12.5%">Fri</th>
-        </thead>
-        <tbody>
-        {% for course in timetables %}
-        {% cycle '<tr scope="row"><th>  </th>' '' '' '' '' %}
-          <td> 
-            {% for field in course %}
-            <div class="form-group">
-              {% render_field field class="form-control" placeholder=field.label %}
-              <div class="{% if field.errors %} invalid {% endif %}">
-                {% for error in field.errors %}
-                  <p class="help-block">{{ error }}</p>
-                {% endfor %}
+    {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover" id="TimeTableUpdate">
+          <thead class="">
+            <th scope="col" style="width: 2.5%" >#</th> 
+            <th scope="col" style="width: 12.5%">Mon</th>
+            <th scope="col" style="width: 12.5%">Tue</th>
+            <th scope="col" style="width: 12.5%">Wed</th>
+            <th scope="col" style="width: 12.5%">Thr</th>
+            <th scope="col" style="width: 12.5%">Fri</th>
+          </thead>
+          <tbody>
+          {% for course in timetables %}
+          {% cycle '<tr scope="row"><th>  </th>' '' '' '' '' %}
+            <td> 
+              {% for field in course %}
+              <div class="form-group">
+                {% render_field field class="form-control" placeholder=field.label %}
+                <div class="{% if field.errors %} invalid {% endif %}">
+                  {% for error in field.errors %}
+                    <p class="help-block">{{ error }}</p>
+                  {% endfor %}
+                </div>
               </div>
-            </div>
-            {% endfor %}
-          </td>
-        {% cycle '' '' '' '' '</tr>' %}
-        {% endfor %}
-        </tbody>
-      </table>
-      {{ timetables.management_form }}
-      {{ timetables.non_form_errors.as_ul }}
-      <div class="modal-footer">
-        <div class="form-check">
-          <input type="checkbox" class="form-check-input" name="check" value="True">
-          <label class="form-check-label" for="exampleCheck1">Check if you want to update whole</label>
+              {% endfor %}
+            </td>
+          {% cycle '' '' '' '' '</tr>' %}
+          {% endfor %}
+          </tbody>
+        </table>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-secondary btn-lg">Update</button>
         </div>
-        <button type="submit" class="btn btn-secondary btn-lg">Update</button>
+        {{ timetables.management_form }}
+        {{ timetables.non_form_errors.as_ul }}
       </div>
-
+    
+    {% if list_weeks %}
+    {% include 'sub/_list.html' %}
+    {% endif %}
     </form>
-    </div>
-
   </main>
 {% endblock content %}
