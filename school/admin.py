@@ -6,4 +6,3 @@ admin.site.register(Holiday)
 admin.site.register(Term)
 admin.site.register(ClassRoom)
 admin.site.register(Subject)
-

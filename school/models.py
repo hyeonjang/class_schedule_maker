@@ -99,11 +99,17 @@ class Term(models.Model):
                 weeks.append(week)
         return weeks
 
-    def get_count_of_weeks(self):
+    def get_count_of_weeks(self, start=None, end=None):
         '''
         return the count of weeks
         '''
-        return self.end.isocalendar()[1]-self.start.isocalendar()[1]
+        _start = self.start
+        _end = self.end
+        if start:
+            _start = start
+        if end:
+            _end = end
+        return _end.isocalendar()[1]-_start.isocalendar()[1]
 
 class ClassRoom(models.Model):
     '''
