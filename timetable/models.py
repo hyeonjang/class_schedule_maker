@@ -65,12 +65,17 @@ class SubjectTable(TimeTable):
         # 1. reset reference tables
         HomeTable.objects.filter(sub_teacher=self, day=self.day, time=self.time).update(sub_teacher=None, subject=None)
         # 2. find and update
-        qs = HomeTable.objects.filter(classroom=self.classroom, day=self.day, time=self.time)
-        qs.update(sub_teacher=self, subject=self.subject)
+        if self.classroom:
+            qs = HomeTable.objects.filter(classroom=self.classroom.pk, day=self.day, time=self.time)
+            if qs.get().inv_teacher:
+                raise ValidationError(f"{qs} {self.day} {self.time}")
+            if qs.get().sub_teacher:
+                raise ValidationError(f"2 {self.day} {self.time}")
+            qs.update(sub_teacher=self, subject=self.subject)
 
     def save(self, *args, **kwargs):
-        self.copy_to_hometable()
         super(SubjectTable, self).save(*args, **kwargs)
+        self.copy_to_hometable()
 
 class Invited(TimeTable):
     """
