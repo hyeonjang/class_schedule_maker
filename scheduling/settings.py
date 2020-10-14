@@ -133,10 +133,10 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR + "/scheduling/static",
-    BASE_DIR + "/timetable/static",
+    os.path.join(BASE_DIR, "scheduling/static"),
+    os.path.join(BASE_DIR, "timetable/static"),
 ]
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Heroku: Update database configuration from $DATABASE_URL.
 import dj_database_url
