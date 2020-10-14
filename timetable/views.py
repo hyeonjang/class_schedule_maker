@@ -52,7 +52,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     list_weeks = create_list_for_weeks()
-    semester = Term.get_current()
+    #semester = Term.objects.first()
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -104,7 +104,7 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
         Return TimeTable information to Templates
         '''
         information = dict()
-        semester = Term.get_current()
+        semester = semester = Term.objects.first()
         classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
 
         for classroom in classrooms:
@@ -184,7 +184,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     success_url = '/'
 
     list_weeks = create_list_for_weeks()
-    semester = Term.get_current()
+    #semester = Term.get_current()
 
     def auto_created_subject(self):
         from operator import itemgetter
@@ -271,7 +271,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
         '''
         information = dict()
         teacher = self.request.user.return_by_type()
-        semester = Term.get_current()
+        #semester = Term.get_current()
         subjects = Subject.objects.filter(grade=teacher.get_grade())
 
         for subject in subjects:
@@ -340,7 +340,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     list_weeks = create_list_for_weeks()
-    semester = Term.get_current()
+    #semester = Term.get_current()
 
     def get_object(self, queryset=None):
         return self.request.user

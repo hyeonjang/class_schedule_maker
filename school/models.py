@@ -36,13 +36,11 @@ class Term(models.Model):
             self.semester = 2
         super(Term, self).save(*args, **kwargs)
 
-    @staticmethod
-    def get_current():
+    def get_current(self):
         '''
         get current semester
         '''
-        now = timezone.datetime.today()
-        return Term.objects.filter(start__year=now.year).get()
+        return self.objects.first()
 
     @staticmethod
     def get_current_week():
