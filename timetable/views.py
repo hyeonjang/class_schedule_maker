@@ -52,7 +52,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     list_weeks = create_list_for_weeks()
-    #semester = Term.objects.first()
+    semester = Term.objects.first()
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -104,7 +104,7 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
         Return TimeTable information to Templates
         '''
         information = dict()
-        semester = semester = Term.objects.first()
+        semester = Term.objects.first()
         classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
 
         for classroom in classrooms:
@@ -184,7 +184,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     success_url = '/'
 
     list_weeks = create_list_for_weeks()
-    #semester = Term.get_current()
+    semester = Term.objects.first()
 
     def auto_created_subject(self):
         from operator import itemgetter
@@ -271,7 +271,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
         '''
         information = dict()
         teacher = self.request.user.return_by_type()
-        #semester = Term.get_current()
+        semester = Term.objects.first()
         subjects = Subject.objects.filter(grade=teacher.get_grade())
 
         for subject in subjects:
@@ -292,7 +292,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomView, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = HomeTable.objects.filter(semester=Term.objects.first(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = create_list_for_weeks()
         context['information'] = self.create_information()
@@ -340,7 +340,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     list_weeks = create_list_for_weeks()
-    #semester = Term.get_current()
+    semester = Term.objects.first()
 
     def get_object(self, queryset=None):
         return self.request.user

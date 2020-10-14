@@ -135,7 +135,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR + "/scheduling/static",
     BASE_DIR + "/timetable/static",
-    BASE_DIR + "/accounts/static",
 ]
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
