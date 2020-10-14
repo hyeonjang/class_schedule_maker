@@ -20,8 +20,8 @@ from accounts.models import User, InvitedTeacher
 from school.models import Term
 
 def home(request):
+    current_week = Term.get_current_week()
     if request.user.is_authenticated:
-        current_week = Term.get_current_week()
         if request.user.user_type is User.SUPERVISOR:
             return reverse_lazy('school:manage_school', kwargs={'user_id':request.user.id})
         elif request.user.user_type is User.HOMEROOM:
@@ -29,7 +29,7 @@ def home(request):
         elif request.user.user_type is User.SUBJECT:
             return redirect(reverse_lazy('timetable:sub_view', kwargs={'user_id':request.user.id, 'start':current_week[0], 'end':current_week[4]}))
         elif request.user.user_type is User.INVITED:
-            semester = Term.get_current()
+            semester = Term.objects.first()
             week = semester.get_week(InvitedTeacher.get_from(request.user).start)
             return redirect(reverse_lazy('timetable:inv_view', kwargs={'user_id':request.user.id, 'start':week[0], 'end':week[4]}))
     else:
