@@ -184,8 +184,11 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     success_url = '/'
 
     # added member
-    # semester = Term.objects.first()
-    list_weeks = create_list_for_weeks(semester)
+    def get_semester(self):
+        return Term.objects.filter().get()
+        
+    def create_list_for_weeks(self):
+        return create_list_for_weeks(self.get_semester())
 
     def auto_created_subject(self):
         from operator import itemgetter
@@ -206,12 +209,12 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomUpdate, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=self.semester, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         if self.request.POST:
             context['timetables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
             context['timetables'] = HomeTableUpdateFormset(instance=self.request.user, queryset=qs)
-        context['list_weeks'] = self.list_weeks
+        context['list_weeks'] = self.create_list_for_weeks()
         return context
 
     def form_valid(self, form):
@@ -219,14 +222,14 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
         formset = context['timetables']
         if formset.is_valid():
             weeks = []
-            for week in self.list_weeks:
+            for week in context['list_weeks']:
                 # 0. query the being updated weeks
                 if self.request.POST.get(f"{week[0].strftime('%W')}week") is not None:
                     weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
             for form in formset:
                 instance = form.save(commit=False)
                 # 1. using django ORM
-                qs = HomeTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__iso_week_day=instance.day.isoweekday(), day__week__in=weeks, time=instance.time)
+                qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=instance.day.isoweekday(), day__week__in=weeks, time=instance.time)
                 # 2. excepting which has sub_teahcer or inv_teacher
                 query = qs.filter(sub_teacher=None)&qs.filter(inv_teacher=None)
                 # 3. update subject
@@ -266,8 +269,12 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'home/view.html'
     model = HomeTable
 
-    # add new member
-    # semester = Term.objects.filter().get()
+    # added member
+    def get_semester(self):
+        return Term.objects.filter().get()
+        
+    def create_list_for_weeks(self):
+        return create_list_for_weeks(self.get_semester())
 
     def create_information(self):
         '''
@@ -282,7 +289,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
             weeks = semester.get_weeks_start_end()
             count_per_week = []
             for week in weeks:
-                count_per_week.append(HomeTable.objects.filter(semester=self.semester, teacher=self.request.user, subject=subject, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
+                count_per_week.append(HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, subject=subject, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
             dic = {subject:[count_per_week, HomeTable.objects.filter(teacher=self.request.user, subject=subject).count(), subject.count]}
 
             information.update(dic)
@@ -296,9 +303,9 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomView, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=self.semester, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
-        context['list_weeks'] = create_list_for_weeks(self.semester)
+        context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
         return context
 
@@ -343,8 +350,11 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = InvitedTableForm
 
     # added member
-    # semester = Term.objects.filter().get()
-    list_weeks = create_list_for_weeks(semester)
+    def get_semester(self):
+        return Term.objects.filter().get()
+
+    def create_list_for_weeks(self):
+        return create_list_for_weeks(self.get_semester())
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -360,7 +370,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
             context['timetables'] = InvitedTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
             context['timetables'] = InvitedTableUpdateFormset(instance=self.request.user, queryset=qs)
-        context['list_weeks'] = self.list_weeks
+        context['list_weeks'] = self.create_list_for_weeks()
         return context
 
     def form_valid(self, form):
@@ -368,7 +378,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
         formset = context['timetables']
         if formset.is_valid():
             weeks = []
-            for week in self.list_weeks:
+            for week in context['list_weeks']:
                 if self.request.POST.get(f"{week[0].strftime('%W')}week") is not None:
                     weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
             for form in formset:
