@@ -31,8 +31,7 @@ class SchoolSignUp(BSModalCreateView):
     '''
     form_class = SchoolModelForm
     template_name = 'school/create.html'
-    success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('account:login')
 
 class TermManageListView(LoginRequiredMixin, generic.ListView):
     '''

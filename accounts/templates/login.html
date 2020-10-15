@@ -54,15 +54,15 @@
           modalID: "#create-modal",
         });
         $("#su-home-btn").modalForm({
-          formURL: "{% url 'homeroom_signup' %}",
+          formURL: "{% url 'account:homeroom_signup' %}",
           modalID: "#create-modal",
         });
         $("#su-sub-btn").modalForm({
-          formURL: "{% url 'subject_signup' %}",
+          formURL: "{% url 'account:subject_signup' %}",
           modalID: "#create-modal",
         });
         $("#su-inv-btn").modalForm({
-          formURL: "{% url 'invited_signup' %}",
+          formURL: "{% url 'account:invited_signup' %}",
           modalID: "#create-modal",
         });
         })

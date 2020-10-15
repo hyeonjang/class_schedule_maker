@@ -1,7 +1,7 @@
 '''
 doc
 '''
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -14,13 +14,12 @@ class HomeroomSignUpView(BSModalCreateView):
     '''
     form_class = HomeroomPopForm
     template_name = 'signup.html'
-    success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('timetable:home_view')
+    success_url = reverse_lazy('account:login')
 
     def form_valid(self, form):
-        if self.request.is_ajax():
+        if not self.request.is_ajax(): #bug in django-bootstrap-modal-form
             form.save()
-        return redirect('login')
+        return redirect(self.success_url)
 
 class SubjectSignUpView(BSModalCreateView):
     '''
@@ -28,12 +27,12 @@ class SubjectSignUpView(BSModalCreateView):
     '''
     form_class = SubjectPopForm
     template_name = 'signup.html'
-    success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('home')
+    success_url = reverse_lazy('account:login')
 
-    def get_success_url(self):
-        print(redirect(reverse_lazy('home')))
-        return reverse_lazy('home')
+    def form_valid(self, form):
+        if not self.request.is_ajax(): #bug in django-bootstrap-modal-form
+            form.save()
+        return redirect(self.success_url)
 
 class InvitedSignUpView(BSModalCreateView):
     '''
@@ -41,8 +40,12 @@ class InvitedSignUpView(BSModalCreateView):
     '''
     form_class = InvitedPopForm
     template_name = 'signup.html'
-    success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('account:login')
+
+    def form_valid(self, form):
+        if not self.request.is_ajax(): #bug in django-bootstrap-modal-form
+            form.save()
+        return redirect(self.success_url)
 
 class CustomLoginView(LoginView):
     '''
@@ -58,4 +61,4 @@ def logout_view(request):
     logout view
     '''
     logout(request)
-    return redirect('login')
+    return redirect('account:login')
