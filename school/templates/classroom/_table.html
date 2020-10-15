@@ -2,12 +2,11 @@
     <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
-      <th class="text-center" scope="col">School</th>
-      <th class="text-center" scope="col">Grade</th>
-      <th class="text-center" scope="col">Number</th>
-      <th class="text-center" scope="col">Teacher</th>
-      <th class="text-center" scope="col">Student Number</th>
-      <th class="text-center" scope="col">Update / Delete</th>
+      <th class="text-center" scope="col">학교</th>
+      <th class="text-center" scope="col">학년</th>
+      <th class="text-center" scope="col">반</th>
+      <th class="text-center" scope="col">담임</th>
+      <th class="text-center" scope="col">수정 / 삭제</th>
     </tr>
     </thead>
     <tbody>
@@ -18,15 +17,14 @@
         <td class="text-center">{{ classroom.grade }}</td>
         <td class="text-center">{{ classroom.number }}</td>
         <td class="text-center">{{ classroom.teacher }}</td>
-        <td class="text-center">{{ classroom.student_number }}</td>
         <td class="text-center">
           <!-- Update book buttons -->
-          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_classroom' classroom.pk %}">
-            <span class="fa fa-pencil"></span>
+          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_classroom' user.school.pk classroom.pk %}">
+            <li class="fas fa-pencil-alt"></li>
           </button>
           <!-- Delete book buttons -->
-          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_classroom' classroom.pk %}">
-            <span class="fa fa-trash"></span>
+          <button type="button" class="bs-modal btn btn-sm btn-danger" data-form-url="{% url 'school:delete_classroom' user.school.pk classroom.pk %}">
+            <i class="fas fa-trash-alt"></i>
           </button>
         </td>
       </tr>

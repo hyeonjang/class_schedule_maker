@@ -1,16 +1,16 @@
-<table id="classroom-table" class="table">
+<table id="semester-table" class="table">
     <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
-      <th class="text-center" scope="col">School</th>
-      <th class="text-center" scope="col">Year</th>
+      <th class="text-center" scope="col">학교</th>
+      <th class="text-center" scope="col">연도</th>
       <th class="text-center" scope="col">학기</th>
       <th class="text-center" scope="col">주차</th>
-      <th class="text-center" scope="col">Update / Delete</th>
+      <th class="text-center" scope="col">수정 / 삭제</th>
     </tr>
     </thead>
     <tbody>
-    {% for term in semester %}
+    {% for term in semesters %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
         <td class="text-center">{{ term.school }}</td>
@@ -19,12 +19,12 @@
         <td class="text-center">{{ term.start|date:"W" }}주차 ~ {{ term.end|date:"W" }}주차</td>
         <td class="text-center">
           <!-- Update book buttons -->
-          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_semester' term.pk %}">
-            <span class="fa fa-pencil"></span>
+          <button type="button" class="update-semester btn btn-sm btn-primary" data-form-url="{% url 'school:update_semester' user.school.pk term.pk %}">
+            <i class="fas fa-pencil-alt"></i>
           </button>
           <!-- Delete book buttons -->
-          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_semester' term.pk %}">
-            <span class="fa fa-trash"></span>
+          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_semester' user.school.pk term.pk %}">
+            <i class="fas fa-trash-alt"></i>
           </button>
         </td>
       </tr>

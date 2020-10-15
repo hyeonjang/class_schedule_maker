@@ -13,7 +13,7 @@ from bootstrap_modal_forms.generic import (
     BSModalUpdateView,
     BSModalDeleteView
 )
-from .models import School, Term, Holiday, ClassRoom, Subject
+from .models import Term, Holiday, ClassRoom, Subject
 from .forms import (
     SchoolModelForm,
     GradeFilterForm,
@@ -46,10 +46,10 @@ class TermManageListView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(TermManageListView, self).get_context_data()
-        qs_t = Term.objects.all()
-        qs_h = Holiday.objects.all()
+        qs_t = Term.objects.filter(school=self.request.user.school)
+        qs_h = Holiday.objects.filter(school=self.request.user.school)
         context.update({
-            'semester' : qs_t,
+            'semesters' : qs_t,
             'holidays' : qs_h,
         })
         return context
@@ -66,9 +66,9 @@ class SubjectManageListView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectManageListView, self).get_context_data()
-        qs_s = Subject.objects.all()
+        qs_s = Subject.objects.filter(school=self.request.user.school)
         if 'grade' in self.request.GET:
-            qs_s = Subject.objects.filter(grade=int(self.request.GET['grade']))
+            qs_s = qs_s.filter(grade=int(self.request.GET['grade']))
         context.update({
             'subjects' : qs_s,
         })
@@ -86,9 +86,9 @@ class ClassRoomManageListView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ClassRoomManageListView, self).get_context_data()
-        qs_c = ClassRoom.objects.all()
+        qs_c = ClassRoom.objects.filter(school=self.request.user.school)
         if 'grade' in self.request.GET:
-            qs_c = ClassRoom.objects.filter(grade=int(self.request.GET['grade']))
+            qs_c = qs_c.filter(grade=int(self.request.GET['grade']))
         context.update({
             'classrooms' : qs_c,
         })
@@ -144,14 +144,16 @@ class SemesterCreateView(BSModalCreateView):
     template_name = "semester/create.html"
     form_class = TermModelForm
     success_message = 'Success: Semester was added.'
-    success_url = reverse_lazy('school:manage_semester')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_semester', kwargs={'school_id':self.request.user.school.pk})
 
     def form_valid(self, form):
         if self.request.is_ajax():
             instance = form.save(commit=False)
             instance.school = self.request.user.school
             instance.save()
-        return redirect(self.success_url)
+        return redirect(self.get_success_url())
 
 class SemesterUpdateView(BSModalUpdateView):
     '''
@@ -160,8 +162,9 @@ class SemesterUpdateView(BSModalUpdateView):
     model = Term
     template_name = 'semester/update.html'
     form_class = TermModelForm
-    success_message = 'Success: Semester was updated.'
-    success_url = reverse_lazy('school:manage_semester')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_semester', kwargs={'school_id':self.request.user.school.pk})
 
 class SemesterDeleteView(BSModalDeleteView):
     '''
@@ -170,7 +173,23 @@ class SemesterDeleteView(BSModalDeleteView):
     model = Term
     template_name = 'semester/delete.html'
     success_message = 'Success: Semester was deleted.'
-    success_url = reverse_lazy('school:manage_semester')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_semester', kwargs={'school_id':self.request.user.school.pk})
+
+def semesters(request):
+    '''
+    module doc
+    '''
+    data = dict()
+    if request.method == 'GET':
+        term = Term.objects.filter(school=request.user.school.pk)
+        data['table'] = render_to_string(
+            'semester/_table.html',
+            {'semesters': term},
+            request=request
+        )
+        return JsonResponse(data)
 
 ### the end of subject feautures
 ########################################################
@@ -184,7 +203,9 @@ class HolidayCreateView(BSModalCreateView):
     template_name = "holiday/create.html"
     form_class = HolidayModelForm
     success_message = 'Success: Holiday was added.'
-    success_url = reverse_lazy('school:manage_semester')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_semester', kwargs={'school_id':self.request.user.school.pk})
 
     def form_valid(self, form):
         if self.request.is_ajax():
@@ -200,8 +221,10 @@ class HolidayUpdateView(BSModalUpdateView):
     model = Holiday
     template_name = 'holiday/update.html'
     form_class = HolidayModelForm
-    success_message = 'Success: Holiday was updated.'
-    success_url = reverse_lazy('school:manage_semester')
+    success_message = 'Success: Holiday was deleted.'
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_semester', kwargs={'school_id':self.request.user.school.pk})
 
 class HolidayDeleteView(BSModalDeleteView):
     '''
@@ -210,7 +233,23 @@ class HolidayDeleteView(BSModalDeleteView):
     model = Holiday
     template_name = 'holiday/delete.html'
     success_message = 'Success: Holiday was deleted.'
-    success_url = reverse_lazy('school:manage_semester')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_semester', kwargs={'school_id':self.request.user.school.pk})
+
+def holidays(request):
+    '''
+    module doc
+    '''
+    data = dict()
+    if request.method == 'GET':
+        holidays = Holiday.objects.filter(school=request.user.school)
+        data['table'] = render_to_string(
+            'holiday/_table.html',
+            {'holidays': holidays},
+            request=request
+        )
+        return JsonResponse(data)
 
 ### the end of subject feautures
 ########################################################
@@ -222,8 +261,9 @@ class ClassRoomCreateView(BSModalCreateView):
     '''
     template_name = "classroom/create.html"
     form_class = ClassRoomModelForm
-    success_message = 'Success: Subject was created.'
-    success_url = reverse_lazy('school:manage_classroom')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_classroom', kwargs={'school_id':self.request.user.school.pk})
 
 class ClassRoomUpdateView(BSModalUpdateView):
     '''
@@ -232,8 +272,9 @@ class ClassRoomUpdateView(BSModalUpdateView):
     model = ClassRoom
     template_name = 'classroom/update.html'
     form_class = ClassRoomModelForm
-    success_message = 'Success: Book was updated.'
-    success_url = reverse_lazy('school:manage_classroom')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_classroom', kwargs={'school_id':self.request.user.school.pk})
 
 class ClassRoomDeleteView(BSModalDeleteView):
     '''
@@ -242,7 +283,9 @@ class ClassRoomDeleteView(BSModalDeleteView):
     model = ClassRoom
     template_name = 'classroom/delete.html'
     success_message = 'Success: Book was deleted.'
-    success_url = reverse_lazy('school:manage_classroom')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_classroom', kwargs={'school_id':self.request.user.school.pk})
 
 def classrooms(request):
     '''
@@ -268,8 +311,9 @@ class SubjectCreateView(BSModalCreateView):
     '''
     template_name = "subject/create.html"
     form_class = SubjectModelForm
-    success_message = 'Success: Subject was created.'
-    success_url = reverse_lazy('school:manage_subject')
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_subject', kwargs={'school_id':self.request.user.school.pk})
 
 class SubjectUpdateView(BSModalUpdateView):
     '''
@@ -278,8 +322,10 @@ class SubjectUpdateView(BSModalUpdateView):
     model = Subject
     template_name = 'subject/update.html'
     form_class = SubjectModelForm
-    success_message = 'Success: Subject was updated.'
-    success_url = reverse_lazy('school:manage_subject')
+    form_class = SubjectModelForm
+
+    def get_success_url(self):
+        return reverse_lazy('school:manage_subject', kwargs={'school_id':self.request.user.school.pk})
 
 class SubjectDeleteView(BSModalDeleteView):
     '''
@@ -288,7 +334,22 @@ class SubjectDeleteView(BSModalDeleteView):
     model = Subject
     template_name = 'subject/delete.html'
     success_message = 'Success: Subject was deleted.'
-    success_url = reverse_lazy('school:manage_subject')
 
+    def get_success_url(self):
+        return reverse_lazy('school:manage_subject', kwargs={'school_id':self.request.user.school.pk})
+
+def subjects(request):
+    '''
+    module doc
+    '''
+    data = dict()
+    if request.method == 'GET':
+        subjects = Subject.objects.filter(school=request.user.school)
+        data['table'] = render_to_string(
+            'subject/_table.html',
+            {'subjects': subjects},
+            request=request
+        )
+        return JsonResponse(data)
 ### the end of subject feautures
 ########################################################

@@ -5,14 +5,14 @@
 
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">Subject</h1>
+      <h1 class="h2 font-weight-bold">과목</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group mr-2">
           <button id="create-subject" class="btn btn btn-outline-secondary btn-sm" type="button" name="button">
-            <span class="fa fa-plus mr-2"></span>Create Subject
+            <span class="fa fa-plus mr-2"></span>Create
           </button>
-          <button id="filter-subject" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_subject' %}">
-            <span class="fa fa-filter mr-2"></span>Filter by Grade
+          <button id="filter-subject" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_subject' user.school.pk %}">
+            <span class="fa fa-filter mr-2"></span>Filter
           </button>
         </div>
       </div>
@@ -23,7 +23,7 @@
         {% if subjects %}
           {% include "subject/_table.html" %}
         {% else %}
-          <p class="no-subjects text-primary">No subjects added yet.</p>
+          <p class="no-subjects text-primary">아직 추가된 과목이 없습니다.</p>
         {% endif %}
       </div>
     </div>
@@ -38,13 +38,13 @@
       $(function () {
 
           $("#create-subject").modalForm({
-            formURL: "{% url 'school:create_subject' %}",
+            formURL: "{% url 'school:create_subject' user.school.pk %}",
             modalID: "#create-modal"
           });
           
           var asyncSuccessMessage = [
             "<div ",
-            "style='position:fixed;top:0;z-index:10000;width:100%;border-radius:0;' ",
+            "style='top:0;z-index:10000;width:100%;border-radius:0;' ",
             "class='alert alert-icon alert-success alert-dismissible fade show mb-0' role='alert'>",
             "Success: Book was updated.",
             "<button type='button' class='close' data-dismiss='alert' aria-label='Close'>",
@@ -56,23 +56,23 @@
             "<\/script>"
           ].join("");
 
-          function updateClassRoomModalForm() {
-            $(".update-classroom").each(function () {
+          function updateSubjectModalForm() {
+            $(".update-subject").each(function () {
               $(this).modalForm({
                 formURL: $(this).data("form-url"),
                 asyncUpdate: true,
                 asyncSettings: {
                   closeOnSubmit: false,
                   successMessage: asyncSuccessMessage,
-                  dataUrl:"{% url 'school:classrooms' %}",
-                  dataElementId: "#classroom-table",
+                  dataUrl:"{% url 'school:subjects' %}",
+                  dataElementId: "#subject-table",
                   dataKey: "table",
-                  addModalFormFunction: updateClassRoomModalForm
+                  addModalFormFunction: updateSubjectModalForm
                 }
               });
             });
           }
-          updateClassRoomModalForm();
+          updateSubjectModalForm();
 
           // Read and Delete book buttons open modal with id="modal"
           // The formURL is retrieved from the data of the element

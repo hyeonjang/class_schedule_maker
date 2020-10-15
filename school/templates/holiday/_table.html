@@ -1,26 +1,30 @@
-<table id="classroom-table" class="table">
+<table id="holiday-table" class="table">
     <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
-      <th class="text-center" scope="col">Year</th>
-      <th class="text-center" scope="col">Month</th>
-      <th class="text-center" scope="col">Day</th>
-      <th class="text-center" scope="col">Weekday</th>
+      <th class="text-center" scope="col">학교</th>
+      <th class="text-center" scope="col">연도</th>
+      <th class="text-center" scope="col">날</th>
+      <th class="text-center" scope="col">내용</th>
+      <th class="text-center" scope="col">수정/삭제</th>
     </tr>
     </thead>
     <tbody>
     {% for day in holidays %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
-        <td class="text-center">{{ day }}</td>
+        <td class="text-center">{{ day.school }}</td>
+        <td class="text-center">{{ day.day|date:"Y" }}</td>
+        <td class="text-center">{{ day.day|date:"m-d" }}</td>
+        <td class="text-center">{{ day.text }}</td>
         <td class="text-center">
           <!-- Update book buttons -->
-          <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_holiday' day.pk %}">
-            <span class="fa fa-pencil"></span>
+          <button type="button" class="update-holiday btn btn-sm btn-primary" data-form-url="{% url 'school:update_holiday' user.school.pk day.pk %}">
+            <li class="fas fa-pencil-alt"></li>
           </button>
           <!-- Delete book buttons -->
-          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_holiday' day.pk %}">
-            <span class="fa fa-trash"></span>
+          <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_holiday' user.school.pk day.pk %}">
+            <i class="fas fa-trash-alt"></i>
           </button>
         </td>
       </tr>

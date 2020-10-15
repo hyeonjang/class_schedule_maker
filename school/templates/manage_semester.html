@@ -6,29 +6,29 @@
 
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">Semester</h1>
+      <h1 class="h2 font-weight-bold">학기</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <button id="add-semester" class="btn btn-outline-secondary btn-sm" type="button" name="button">
-          <span class="fa fa-plus mr-2"></span>Add Semester
+          <span class="fa fa-plus mr-2"></span>Create
         </button>
       </div>
     </div>
 
         <div class="row">
           <div class="col-12 mb-3">
-            {% if semester %}
+            {% if semesters %}
               {% include "semester/_table.html" %}
             {% else %}
-              <p class="no-semester text-primary">No semester added yet.</p>
+              <p class="no-semester text-primary">아직 생성된 학기가 없습니다.</p>
             {% endif %}
           </div>
         </div>
         
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Holidays in Semester</h1>
+          <h1 class="h2 font-weight-bold">학기 중 수업없는 날</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <button id="add-holiday" class="btn btn-outline-secondary btn-sm" type="button" name="button">
-                <span class="fa fa-plus mr-2"></span>Add Holidays
+                <span class="fa fa-plus mr-2"></span>Create
               </button>
             </div>
           </div>
@@ -38,7 +38,7 @@
             {% if holidays %}
               {% include "holiday/_table.html" %}
             {% else %}
-              <p class="no-holidays text-primary">No holidays added yet.</p>
+              <p class="no-holidays text-primary">아직 추가된 휴일이 없습니다.</p>
             {% endif %}
           </div>
         </div>
@@ -54,12 +54,12 @@
           // The formURL is given explicitly
           // Create book button opens modal with id="create-modal"
           $("#add-semester").modalForm({
-            formURL: "{% url 'school:create_semester' %}",
+            formURL: "{% url 'school:create_semester' user.school.pk %}",
             modalID: "#create-modal"
           });
 
           $("#add-holiday").modalForm({
-            formURL: "{% url 'school:create_holiday' %}",
+            formURL: "{% url 'school:create_holiday' user.school.pk %}",
             modalID: "#create-modal"
           });
           
@@ -77,23 +77,41 @@
             "<\/script>"
           ].join("");
 
-          function updateClassRoomModalForm() {
-            $(".update-classroom").each(function () {
+          function updateSemesterModalForm() {
+            $(".update-semester").each(function () {
               $(this).modalForm({
                 formURL: $(this).data("form-url"),
                 asyncUpdate: true,
                 asyncSettings: {
                   closeOnSubmit: false,
                   successMessage: asyncSuccessMessage,
-                  dataUrl:"{% url 'school:classrooms' %}",
-                  dataElementId: "#classroom-table",
+                  dataUrl:"{% url 'school:semesters' %}",
+                  dataElementId: "#semester-table",
                   dataKey: "table",
-                  addModalFormFunction: updateClassRoomModalForm
+                  addModalFormFunction: updateSemesterModalForm
                 }
               });
             });
           }
-          updateClassRoomModalForm();
+          updateSemesterModalForm();
+
+          function updateHolidayModalForm() {
+            $(".update-holiday").each(function () {
+              $(this).modalForm({
+                formURL: $(this).data("form-url"),
+                asyncUpdate: true,
+                asyncSettings: {
+                  closeOnSubmit: false,
+                  successMessage: asyncSuccessMessage,
+                  dataUrl:"{% url 'school:holidays' %}",
+                  dataElementId: "#holiday-table",
+                  dataKey: "table",
+                  addModalFormFunction: updateHolidayModalForm
+                }
+              });
+            });
+          }
+          updateHolidayModalForm();
 
           // Read and Delete book buttons open modal with id="modal"
           // The formURL is retrieved from the data of the element

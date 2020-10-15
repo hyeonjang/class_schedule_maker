@@ -5,14 +5,14 @@
 
   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-      <h1 class="h2">ClassRoom</h1>
+      <h1 class="h2 font-weight-bold">학급</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group mr-2">
           <button id="create-classroom" class="btn btn-outline-secondary btn-sm" type="button" name="button">
-            <span class="fa fa-plus mr-2"></span>Create ClassRoom
+            <span class="fa fa-plus mr-2"></span>Create
           </button>
-          <button id="filter-classroom" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' %}">
-            <span class="fa fa-filter mr-2"></span>Filter by Grade
+          <button id="filter-classroom" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_classroom' user.school.pk %}">
+            <span class="fa fa-filter mr-2"></span>Filter
           </button>
         </div>
       </div>
@@ -20,13 +20,10 @@
 
         <div class="row">
           <div class="col-12 mb-3">
-     
-          </div>
-          <div class="col-12 mb-3">
             {% if classrooms %}
               {% include "classroom/_table.html" %}
             {% else %}
-              <p class="no-classroom text-primary">No classroom added yet.</p>
+              <p class="no-classroom text-primary">아직 추가된 반이 없습니다.</p>
             {% endif %}
           </div>
         </div>
@@ -41,7 +38,7 @@
       $(function () {
           
           $("#create-classroom").modalForm({
-            formURL: "{% url 'school:create_classroom' %}",
+            formURL: "{% url 'school:create_classroom' user.school.pk %}",
             modalID: "#create-modal"
           });
 
@@ -55,7 +52,7 @@
             "</button>",
             "</div>",
             "<script>",
-            "$('.alert').fadeTo(2000, 500).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
+            "$('.alert').fadeTo(6000, 4000).slideUp(500, function () {$('.alert').slideUp(500).remove();});",
             "<\/script>"
           ].join("");
 
@@ -84,7 +81,7 @@
           });
 
           // Hide message
-          $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+          $(".alert").fadeTo(6000, 4000).slideUp(500, function () {
               $(".alert").slideUp(500);
           });
       });
