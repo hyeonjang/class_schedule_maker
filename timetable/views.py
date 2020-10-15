@@ -126,6 +126,7 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
         if semester is None:
             return
         weeks = semester.get_weeks_start_end()
+        classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
 
         for classroom in classrooms:
             count_per_week = []
@@ -330,7 +331,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomView, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=None, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
@@ -490,8 +491,8 @@ class InvitedView(generic.TemplateView):
         return redirect('timetable:inv_view')
     def get_context_data(self, **kwargs):
         context = super(InvitedView, self).get_context_data(**kwargs)
-        qs = Invited.objects.filter(teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
-        context['list_weeks'] = create_list_for_weeks()
+        context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
         return context
