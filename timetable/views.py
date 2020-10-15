@@ -51,7 +51,14 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = SubjectTableForm
 
     # added member
-    # semester = Term.objects.filter()
+    def get_semester(self):
+        qs = Term.objects.filter()
+        if qs:
+            return qs.get()
+        return None
+
+    def create_list_for_weeks(self):
+        return create_list_for_weeks(self.get_semester())
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -61,12 +68,12 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
-        qs = SubjectTable.objects.filter(semester=self.semester, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         if self.request.POST:
             context['timetables'] = SubjectTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
             context['timetables'] = SubjectTableUpdateFormset(instance=self.request.user, queryset=qs)
-        context['list_weeks'] = create_list_for_weeks(self.semester)
+        context['list_weeks'] = self.create_list_for_weeks()
         return context
 
     def form_valid(self, form):
@@ -74,7 +81,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         formset = context['timetables']
         if formset.is_valid():
             weeks = []
-            for week in self.list_weeks:
+            for week in context['list_weeks']:
                 if self.request.POST.get(f"{week[0].strftime('%W')}week") is not None:
                     weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
             for form in formset:
@@ -98,20 +105,32 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'sub/view.html'
     model = SubjectTable
 
-    # semester = Term.objects.filter().get()
+    # added member
+    def get_semester(self):
+        qs = Term.objects.filter()
+        if qs:
+            return qs.get()
+        return None
+
+    def create_list_for_weeks(self):
+        return create_list_for_weeks(self.get_semester())
+
 
     def create_information(self):
         '''
         Return TimeTable information to Templates
         '''
         information = dict()
-        classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
+        teacher = self.request.user.return_by_type()
+        semester = self.get_semester()
+        if semester is None:
+            return
+        weeks = semester.get_weeks_start_end()
 
         for classroom in classrooms:
-            weeks = self.semester.get_weeks_start_end()
             count_per_week = []
             for week in weeks:
-                count_per_week.append(SubjectTable.objects.filter(semester=self.semester, teacher=self.request.user, classroom=classroom, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
+                count_per_week.append(SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, classroom=classroom, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
             dic = {ClassRoom.objects.get(pk=classroom):[count_per_week, SubjectTable.objects.filter(teacher=self.request.user, classroom=classroom).count()]}
 
             information.update(dic)
@@ -125,8 +144,8 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectView, self).get_context_data(**kwargs)
-        context['timetables'] = SubjectTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
-        context['list_weeks'] = create_list_for_weeks()
+        context['timetables'] = SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
         return context
 
@@ -185,7 +204,10 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     def get_semester(self):
-        return Term.objects.filter().get()
+        qs = Term.objects.filter()
+        if qs:
+            return qs.get()
+        return None
         
     def create_list_for_weeks(self):
         return create_list_for_weeks(self.get_semester())
@@ -271,8 +293,11 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
 
     # added member
     def get_semester(self):
-        return Term.objects.filter().get()
-        
+        qs = Term.objects.filter()
+        if qs:
+            return qs.get()
+        return None
+
     def create_list_for_weeks(self):
         return create_list_for_weeks(self.get_semester())
 
@@ -282,11 +307,13 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
         '''
         information = dict()
         teacher = self.request.user.return_by_type()
-        semester = Term.objects.filter().get()
+        semester = self.get_semester()
+        if semester is None:
+            return
+        weeks = semester.get_weeks_start_end()
         subjects = Subject.objects.filter(grade=teacher.get_grade())
 
         for subject in subjects:
-            weeks = semester.get_weeks_start_end()
             count_per_week = []
             for week in weeks:
                 count_per_week.append(HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, subject=subject, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
@@ -303,7 +330,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomView, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = HomeTable.objects.filter(semester=None, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
@@ -351,11 +378,15 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     def get_semester(self):
-        return Term.objects.filter().get()
+        qs = Term.objects.filter()
+        if qs:
+            return qs.get()
+        return None
 
     def create_list_for_weeks(self):
         return create_list_for_weeks(self.get_semester())
 
+    # original member
     def get_object(self, queryset=None):
         return self.request.user
 
@@ -383,7 +414,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
                     weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
             for form in formset:
                 inst = form.save(commit=False)
-                qs = Invited.objects.filter(semester=self.semester, teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), day__week__in=weeks, time=inst.time)
+                qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), day__week__in=weeks, time=inst.time)
                 for ins in qs:
                     ins.subject = inst.subject
                     ins.classroom = inst.classroom
@@ -420,24 +451,38 @@ class InvitedView(generic.TemplateView):
     template_name = 'inv/view.html'
     model = HomeTable
 
+    # added member
+    def get_semester(self):
+        qs = Term.objects.filter()
+        if qs:
+            return qs.get()
+        return None
+
+    def create_list_for_weeks(self):
+        return create_list_for_weeks(self.get_semester())
+
     def create_information(self):
         '''
         Return TimeTable information to Templates
         '''
         information = dict()
-        semester = Term.objects.filter().get()
+        teacher = self.request.user.return_by_type()
+        semester = self.get_semester()
+        if semester is None:
+            return
+        weeks = semester.get_weeks_start_end()
         classrooms = Invited.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
 
         for classroom in classrooms:
-            weeks = semester.get_weeks_start_end()
             count_per_week = []
             for week in weeks:
-                count_per_week.append(Invited.objects.filter(teacher=self.request.user, classroom=classroom, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
+                count_per_week.append(Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, classroom=classroom, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
             dic = {ClassRoom.objects.get(pk=classroom):[count_per_week, Invited.objects.filter(teacher=self.request.user, classroom=classroom).count()]}
 
             information.update(dic)
         return information
-
+    
+    # original member
     def get_success_url(self):
         '''
         class doc
