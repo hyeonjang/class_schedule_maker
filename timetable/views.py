@@ -51,7 +51,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = SubjectTableForm
 
     # added member
-    semester = Term.objects.filter()
+    # semester = Term.objects.filter()
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -98,7 +98,7 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'sub/view.html'
     model = SubjectTable
 
-    semester = Term.objects.filter().get()
+    # semester = Term.objects.filter().get()
 
     def create_information(self):
         '''
@@ -184,7 +184,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     success_url = '/'
 
     # added member
-    semester = Term.objects.first()
+    # semester = Term.objects.first()
     list_weeks = create_list_for_weeks(semester)
 
     def auto_created_subject(self):
@@ -267,7 +267,7 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
     model = HomeTable
 
     # add new member
-    semester = Term.objects.filter().get()
+    # semester = Term.objects.filter().get()
 
     def create_information(self):
         '''
@@ -343,7 +343,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = InvitedTableForm
 
     # added member
-    semester = Term.objects.filter().get()
+    # semester = Term.objects.filter().get()
     list_weeks = create_list_for_weeks(semester)
 
     def get_object(self, queryset=None):
