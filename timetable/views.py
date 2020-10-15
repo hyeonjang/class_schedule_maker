@@ -22,6 +22,13 @@ class SubjectCreate(LoginRequiredMixin, BSModalFormView):
     form_class = TableCreateForm
     template_name = 'create.html'
 
+    # added member
+    def get_semester(self):
+        qs = Term.objects.filter(pk=self.kwargs['semester_id']) # in url
+        if qs:
+            return qs.get()
+        return None
+
     def form_valid(self, form):
         if self.request.is_ajax(): #bug django-bootstrap-modal-forms twice redirection
             semester = form.cleaned_data['semester']
@@ -40,7 +47,7 @@ class SubjectCreate(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0], 'end':week[4]})
 
 class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     '''
@@ -64,7 +71,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'start':self.kwargs['start'], 'end':self.kwargs['end']})
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start'], 'end':self.kwargs['end']})
 
     def get_context_data(self, **kwargs):
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
@@ -82,8 +89,8 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         if formset.is_valid():
             weeks = []
             for week in context['list_weeks']:
-                if self.request.POST.get(f"{week[0].strftime('%W')}week") is not None:
-                    weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
+                if self.request.POST.get(f"{week['days'][0].strftime('%W')}week") is not None:
+                    weeks.append(self.request.POST.get(f"{week['days'][0].strftime('%W')}week"))
             for form in formset:
                 inst = form.save(commit=False)
                 qs = SubjectTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), day__week__in=weeks, time=inst.time)
@@ -97,6 +104,22 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
+
+class SubjectReset(LoginRequiredMixin, BSModalFormView):
+    form_class = TableCreateForm
+    template_name = 'reset.html'
+
+    def form_valid(self, form):
+        if self.request.is_ajax(): #bug django-bootstrap-modal-forms twice redirection
+            semester = form.cleaned_data['semester']
+            sub = SubjectTable.objects.filter(teacher=self.request.user, semester=semester)
+            HomeTable.objects.filter(sub_teacher__in=sub).update(subject=None, sub_teacher=None)
+            sub.update(classroom=None, subject=None)
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        week = Term.get_current_week()
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0], 'end':week[4]})
 
 class SubjectView(LoginRequiredMixin, generic.TemplateView):
     '''
@@ -150,28 +173,19 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
         context['information'] = self.create_information()
         return context
 
-class SubjectReset(LoginRequiredMixin, BSModalFormView):
-    form_class = TableCreateForm
-    template_name = 'reset.html'
-
-    def form_valid(self, form):
-        if self.request.is_ajax(): #bug django-bootstrap-modal-forms twice redirection
-            semester = form.cleaned_data['semester']
-            sub = SubjectTable.objects.filter(teacher=self.request.user, semester=semester)
-            HomeTable.objects.filter(sub_teacher__in=sub).update(subject=None, sub_teacher=None)
-            sub.update(classroom=None, subject=None)
-        return redirect(self.get_success_url())
-
-    def get_success_url(self):
-        week = Term.get_current_week()
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
-
 ### the end of subject
 ##########################################################
 ### Teacher Roles == Homeroom Features
 class HomeroomCreate(LoginRequiredMixin, BSModalFormView):
     form_class = TableCreateForm
     template_name = 'create.html'
+
+    # added member
+    def get_semester(self):
+        qs = Term.objects.filter(pk=self.kwargs['semester_id']) # in url
+        if qs:
+            return qs.get()
+        return None
 
     def form_valid(self, form):
         if self.request.is_ajax(): #bug django-bootstrap-modal-forms twice redirection
@@ -182,7 +196,7 @@ class HomeroomCreate(LoginRequiredMixin, BSModalFormView):
             for i in range(0, weeks+1):
                 for j in range(0, 40):
                     classroom = self.request.user.return_by_type().classroom
-                    new_table = HomeTable(teacher=self.request.user, classroom=classroom, semester=semester, day=week[j%5]+timezone.timedelta(days=7*i), time=(j//5)%8+1)
+                    new_table = HomeTable(semester=semester, teacher=self.request.user, classroom=classroom, day=week[j%5]+timezone.timedelta(days=7*i), time=(j//5)%8+1)
                     bulk_tables.append(new_table)
             HomeTable.objects.bulk_create(bulk_tables)
         return redirect(self.get_success_url())
@@ -192,7 +206,7 @@ class HomeroomCreate(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0], 'end':week[4]})
 
 class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     '''
@@ -247,8 +261,8 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
             weeks = []
             for week in context['list_weeks']:
                 # 0. query the being updated weeks
-                if self.request.POST.get(f"{week[0].strftime('%W')}week") is not None:
-                    weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
+                if self.request.POST.get(f"{week['days'][0].strftime('%W')}week") is not None:
+                    weeks.append(self.request.POST.get(f"{week['days'][0].strftime('%W')}week"))
             for form in formset:
                 instance = form.save(commit=False)
                 # 1. using django ORM
@@ -283,7 +297,7 @@ class HomeroomReset(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0], 'end':week[4]})
 
 class HomeroomView(LoginRequiredMixin, generic.TemplateView):
     '''
@@ -351,15 +365,15 @@ class InvitedCreate(LoginRequiredMixin, BSModalFormView):
         if self.request.is_ajax(): #bug django-bootstrap-modal-forms twice redirection
             semester = form.cleaned_data['semester']
             user = self.request.user.return_by_type()
-            print(self.request.user)
             week = semester.get_week(user.start)
             weeks = semester.get_count_of_weeks(user.start, user.end)
             bulk_tables = []
             for i in range(0, weeks+1):
                 for j in range(0, 40):
-                    new_table = Invited(teacher=self.request.user, semester=semester, day=week[j%5] + timezone.timedelta(days=7*i), time=(j//5)%8+1)
+                    new_table = Invited(semester=semester, teacher=self.request.user, day=week[j%5] + timezone.timedelta(days=7*i), time=(j//5)%8+1)
                     bulk_tables.append(new_table)
-            Invited.objects.bulk_create(bulk_tables)
+            t = Invited.objects.bulk_create(bulk_tables)
+            print(t)
         return redirect(self.get_success_url())
 
     def form_invalid(self, form):
@@ -379,7 +393,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
 
     # added member
     def get_semester(self):
-        qs = Term.objects.filter()
+        qs = Term.objects.filter(pk=self.kwargs['semester_id']) # in url
         if qs:
             return qs.get()
         return None
@@ -393,11 +407,11 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0], 'end':week[4]})
 
     def get_context_data(self, **kwargs):
         context = super(InvitedUpdate, self).get_context_data(**kwargs)
-        qs = Invited.objects.filter(teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end']))
+        qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end']))
         if self.request.POST:
             context['timetables'] = InvitedTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
@@ -411,8 +425,8 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
         if formset.is_valid():
             weeks = []
             for week in context['list_weeks']:
-                if self.request.POST.get(f"{week[0].strftime('%W')}week") is not None:
-                    weeks.append(self.request.POST.get(f"{week[0].strftime('%W')}week"))
+                if self.request.POST.get(f"{week['days'][0].strftime('%W')}week") is not None:
+                    weeks.append(self.request.POST.get(f"{week['days'][0].strftime('%W')}week"))
             for form in formset:
                 inst = form.save(commit=False)
                 qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), day__week__in=weeks, time=inst.time)
@@ -443,9 +457,9 @@ class InvitedReset(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0], 'end':week[4]})
 
-class InvitedView(generic.TemplateView):
+class InvitedView(LoginRequiredMixin, generic.TemplateView):
     '''
     class doc
     '''
@@ -454,7 +468,7 @@ class InvitedView(generic.TemplateView):
 
     # added member
     def get_semester(self):
-        qs = Term.objects.filter()
+        qs = Term.objects.filter(pk=self.kwargs['semester_id'])
         if qs:
             return qs.get()
         return None
@@ -467,7 +481,6 @@ class InvitedView(generic.TemplateView):
         Return TimeTable information to Templates
         '''
         information = dict()
-        teacher = self.request.user.return_by_type()
         semester = self.get_semester()
         if semester is None:
             return
@@ -489,10 +502,26 @@ class InvitedView(generic.TemplateView):
         class doc
         '''
         return redirect('timetable:inv_view')
+
     def get_context_data(self, **kwargs):
         context = super(InvitedView, self).get_context_data(**kwargs)
         qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
+        return context
+
+###########################################################
+class TermListView(LoginRequiredMixin, generic.TemplateView):
+
+    template_name = "term_list.html"
+    model = Term
+
+    def get_current_week(self):
+        return Term.get_current_week()
+
+    def get_context_data(self, **kwargs):
+        context = super(TermListView, self).get_context_data(**kwargs)
+        context['semesters'] = Term.objects.filter(school=self.request.user.school)
+        context['weeks'] = self.get_current_week()
         return context

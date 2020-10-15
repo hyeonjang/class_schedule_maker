@@ -15,7 +15,12 @@ class HomeroomSignUpView(BSModalCreateView):
     form_class = HomeroomPopForm
     template_name = 'signup.html'
     success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('timetable:home_view')
+
+    def form_valid(self, form):
+        if self.request.is_ajax():
+            form.save()
+        return redirect('login')
 
 class SubjectSignUpView(BSModalCreateView):
     '''
@@ -24,10 +29,11 @@ class SubjectSignUpView(BSModalCreateView):
     form_class = SubjectPopForm
     template_name = 'signup.html'
     success_message = 'Success: Sign up succeeded. You can now Log in.'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('home')
 
     def get_success_url(self):
-        return reverse_lazy('login')
+        print(redirect(reverse_lazy('home')))
+        return reverse_lazy('home')
 
 class InvitedSignUpView(BSModalCreateView):
     '''

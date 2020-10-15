@@ -4,10 +4,10 @@
 <script type="text/javascript">
     $(function () {
       $("#home-create").modalForm({
-        formURL: "{% url 'timetable:home_create' user.id %}"
+        formURL: "{% url 'timetable:home_create' user.id semester_id %}"
       });
       $("#home-reset").modalForm({
-        formURL: "{% url 'timetable:home_reset' user.id %}"
+        formURL: "{% url 'timetable:home_reset' user.id semester_id %}"
       });
       })
  </script>
@@ -32,7 +32,7 @@
           <a class="btn btn-sm btn-outline-secondary" id="home-create">
             Create
           </a>
-          <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:home_update' user.id start end %}">
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:home_update' user.id semester_id start end %}">
             Update
           </a>
           <a class="btn btn-sm btn-outline-secondary" id="home-reset">

@@ -4,10 +4,10 @@
 <script type="text/javascript">
     $(function () {
       $("#sub-create").modalForm({
-        formURL: "{% url 'timetable:sub_create' user.id %}"
+        formURL: "{% url 'timetable:sub_create' user.id semester_id %}"
       });
       $("#sub-reset").modalForm({
-        formURL: "{% url 'timetable:sub_reset' user.id %}"
+        formURL: "{% url 'timetable:sub_reset' user.id semester_id %}"
       });
       })
 </script>
@@ -33,7 +33,7 @@
         <a class="btn btn-sm btn-outline-secondary" id="sub-create">
           Create
         </a>
-        <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:sub_update' user.id start end %}">
+        <a class="btn btn-sm btn-outline-secondary" href="{% url 'timetable:sub_update' user.id semester_id start end %}">
           Update
         </a>
         <a class="btn btn-sm btn-outline-secondary" id="sub-reset">

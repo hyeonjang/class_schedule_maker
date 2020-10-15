@@ -60,16 +60,20 @@
   <script type="text/javascript">
       $(function () {
         $("#su-school-btn").modalForm({
-          formURL: "{% url 'school:school_signup' %}"
+          formURL: "{% url 'school:school_signup' %}",
+          modalID: "#create-modal",
         });
         $("#su-home-btn").modalForm({
-          formURL: "{% url 'homeroom_signup' %}"
+          formURL: "{% url 'homeroom_signup' %}",
+          modalID: "#create-modal",
         });
         $("#su-sub-btn").modalForm({
-          formURL: "{% url 'subject_signup' %}"
+          formURL: "{% url 'subject_signup' %}",
+          modalID: "#create-modal",
         });
         $("#su-inv-btn").modalForm({
-          formURL: "{% url 'invited_signup' %}"
+          formURL: "{% url 'invited_signup' %}",
+          modalID: "#create-modal",
         });
         })
  </script>

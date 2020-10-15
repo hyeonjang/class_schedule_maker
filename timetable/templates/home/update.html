@@ -42,7 +42,7 @@
           </thead>
           <tbody>
           {% for course in timetables %}
-          {% cycle '<tr scope="row"><th class="align-middle"> 1 </th>' '' '' '' '' %}
+          {% cycle '<tr scope="row"><th class="align-middle"></th>' '' '' '' '' %}
             <td class="text-center {% if course.is_holi_or_event %} bg-danger {% endif %} {% if course.sub_teacher %} bg-warning {% endif %}"> 
               {% for field in course %}
               <div class="form-group">

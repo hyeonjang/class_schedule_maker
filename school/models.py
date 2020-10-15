@@ -124,7 +124,7 @@ class Term(models.Model):
             _start = start
         if end:
             _end = end
-        return _end.isocalendar()[1]-_start.isocalendar()[1]
+        return (_end-_start).days//7
 
 class ClassRoom(models.Model):
     '''

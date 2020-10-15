@@ -7,12 +7,14 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
       <h1 class="h2">Subject</h1>
       <div class="btn-toolbar mb-2 mb-md-0">
-        <button id="create-subject" class="btn btn btn-outline-secondary btn-sm" type="button" name="button">
-          <span class="fa fa-plus mr-2"></span>Create Subject
-        </button>
-        <button id="filter-subject" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_subject' %}">
-          <span class="fa fa-filter mr-2"></span>Filter by Grade
-        </button>
+        <div class="btn-group mr-2">
+          <button id="create-subject" class="btn btn btn-outline-secondary btn-sm" type="button" name="button">
+            <span class="fa fa-plus mr-2"></span>Create Subject
+          </button>
+          <button id="filter-subject" class="bs-modal btn btn-outline-secondary btn-sm" type="button" name="button" data-form-url="{% url 'school:filter_subject' %}">
+            <span class="fa fa-filter mr-2"></span>Filter by Grade
+          </button>
+        </div>
       </div>
     </div>
 
