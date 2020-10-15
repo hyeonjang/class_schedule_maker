@@ -26,7 +26,7 @@ def home(request):
         return Term.objects.filter(start__year=now_year).get()
     def current_week():
         return Term.get_current_week()
-    
+
     if request.user.is_authenticated:
         if request.user.user_type is User.SUPERVISOR:
             return reverse_lazy('school:manage_school', kwargs={'user_id':request.user.id})

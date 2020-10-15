@@ -28,19 +28,19 @@
         {% if user.is_authenticated %}
         <ul class="navbar-nav px-3">
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'timetable:term_view' %}">시간표<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/">개인정보</a>
           </li>
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'school:manage_semester' %}">개인정보<span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="{% url 'timetable:term_view' %}">시간표</a>
           </li>
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'school:manage_semester' %}">학기관리</a>
+            <a class="nav-link" href="{% url 'school:manage_semester' user.school.pk %}">학기관리</a>
           </li>
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'school:manage_classroom' %}">반관리</a>
+            <a class="nav-link" href="{% url 'school:manage_classroom' user.school.pk %}">반관리</a>
           </li>
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'school:manage_subject' %}">교과관리</a>
+            <a class="nav-link" href="{% url 'school:manage_subject' user.school.pk  %}">교과관리</a>
           </li>
         </ul>
 

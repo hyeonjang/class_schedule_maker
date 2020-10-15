@@ -2,7 +2,7 @@
 <div class="table-responsive">
 <table class="table table-bordered table-hover" id="Detailed">
     <thead class="">
-        <th scope="col" style="width: 100px;">
+        <th scope="col" class="text-center" style="min-width: 60px;">
         {% if user.user_type == 1 %}
             교과
         {% elif user.user_type == 2 or user.user_type == 3 %}
@@ -10,7 +10,7 @@
         {% endif %}
         </th>
         {% for week in list_weeks %}
-            <th scope="col">{{ week.0|date:"W" }}주차</th>
+            <th scope="col">{{ week.days.0|date:"W" }}주차</th>
         {% endfor %} 
             <th scope="col">현재시수</th>
     </thead>
@@ -19,14 +19,14 @@
     {% for item, count in information.items %}
         <tr>
             {% if user.user_type == 1 %}
-                <td>{{ item.name|make_list|first }}</td>
+                <td class="text-center">{{ item.name }}</td>
             {% elif user.user_type == 2 or user.user_type == 3 %}
-                <td>{{ item }}</td>
+                <td class="text-center">{{ item }}</td>
             {% endif %}
             {% for count in count.0 %}
-                <td>{{ count }}</td> <!--count_per_week-->
+                <td class="text-center">{{ count }}</td> <!--count_per_week-->
             {% endfor %}
-            <td class="">{{ count.1 }}/{{ count.2 }}</td>
+            <td class="text-center">{{ count.1 }}/{{ count.2 }}</td>
         </tr>
     {% endfor %}
     </tbody>
