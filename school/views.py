@@ -4,6 +4,7 @@ module doc
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.template.loader import render_to_string
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from bootstrap_modal_forms.generic import (
@@ -12,8 +13,9 @@ from bootstrap_modal_forms.generic import (
     BSModalUpdateView,
     BSModalDeleteView
 )
-from .models import Term, Holiday, ClassRoom, Subject
+from .models import School, Term, Holiday, ClassRoom, Subject
 from .forms import (
+    SchoolModelForm,
     GradeFilterForm,
     TermModelForm,
     HolidayModelForm,
@@ -23,6 +25,14 @@ from .forms import (
 
 ########################################################
 ### management views
+class SchoolSignUp(BSModalCreateView):
+    '''
+    inherited
+    '''
+    form_class = SchoolModelForm
+    template_name = 'school/create.html'
+    success_message = 'Success: Sign up succeeded. You can now Log in.'
+    success_url = reverse_lazy('login')
 
 class TermManageListView(LoginRequiredMixin, generic.ListView):
     '''
@@ -136,6 +146,13 @@ class SemesterCreateView(BSModalCreateView):
     success_message = 'Success: Semester was added.'
     success_url = reverse_lazy('school:manage_semester')
 
+    def form_valid(self, form):
+        if self.request.is_ajax():
+            instance = form.save(commit=False)
+            instance.school = self.request.user.school
+            instance.save()
+        return redirect(self.success_url)
+
 class SemesterUpdateView(BSModalUpdateView):
     '''
     module doc
@@ -168,6 +185,13 @@ class HolidayCreateView(BSModalCreateView):
     form_class = HolidayModelForm
     success_message = 'Success: Holiday was added.'
     success_url = reverse_lazy('school:manage_semester')
+
+    def form_valid(self, form):
+        if self.request.is_ajax():
+            instance = form.save(commit=False)
+            instance.school = self.request.user.school
+            instance.save()
+        return redirect(self.success_url)
 
 class HolidayUpdateView(BSModalUpdateView):
     '''
@@ -226,7 +250,7 @@ def classrooms(request):
     '''
     data = dict()
     if request.method == 'GET':
-        clss = ClassRoom.objects.all()
+        clss = ClassRoom.objects.filter(school=request.user.school)
         data['table'] = render_to_string(
             'classroom/_table.html',
             {'classrooms': clss},

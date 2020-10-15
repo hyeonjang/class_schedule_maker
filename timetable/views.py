@@ -51,8 +51,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = SubjectTableForm
 
     # added member
-    list_weeks = create_list_for_weeks()
-    semester = Term.objects.first()
+    semester = Term.objects.filter()
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -62,12 +61,12 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
-        qs = SubjectTable.objects.filter(teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = SubjectTable.objects.filter(semester=self.semester, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         if self.request.POST:
             context['timetables'] = SubjectTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
             context['timetables'] = SubjectTableUpdateFormset(instance=self.request.user, queryset=qs)
-        context['list_weeks'] = create_list_for_weeks()
+        context['list_weeks'] = create_list_for_weeks(self.semester)
         return context
 
     def form_valid(self, form):
@@ -99,19 +98,20 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'sub/view.html'
     model = SubjectTable
 
+    semester = Term.objects.filter().get()
+
     def create_information(self):
         '''
         Return TimeTable information to Templates
         '''
         information = dict()
-        semester = Term.objects.first()
         classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
 
         for classroom in classrooms:
-            weeks = semester.get_weeks_start_end()
+            weeks = self.semester.get_weeks_start_end()
             count_per_week = []
             for week in weeks:
-                count_per_week.append(SubjectTable.objects.filter(teacher=self.request.user, classroom=classroom, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
+                count_per_week.append(SubjectTable.objects.filter(semester=self.semester, teacher=self.request.user, classroom=classroom, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
             dic = {ClassRoom.objects.get(pk=classroom):[count_per_week, SubjectTable.objects.filter(teacher=self.request.user, classroom=classroom).count()]}
 
             information.update(dic)
@@ -183,8 +183,9 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = HomeTableForm
     success_url = '/'
 
-    list_weeks = create_list_for_weeks()
+    # added member
     semester = Term.objects.first()
+    list_weeks = create_list_for_weeks(semester)
 
     def auto_created_subject(self):
         from operator import itemgetter
@@ -265,20 +266,23 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
     template_name = 'home/view.html'
     model = HomeTable
 
+    # add new member
+    semester = Term.objects.filter().get()
+
     def create_information(self):
         '''
         Return TimeTable information to Templates
         '''
         information = dict()
         teacher = self.request.user.return_by_type()
-        semester = Term.objects.first()
+        semester = Term.objects.filter().get()
         subjects = Subject.objects.filter(grade=teacher.get_grade())
 
         for subject in subjects:
             weeks = semester.get_weeks_start_end()
             count_per_week = []
             for week in weeks:
-                count_per_week.append(HomeTable.objects.filter(teacher=self.request.user, subject=subject, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
+                count_per_week.append(HomeTable.objects.filter(semester=self.semester, teacher=self.request.user, subject=subject, day__range=(week[0].strftime("%Y-%m-%d"), week[1].strftime("%Y-%m-%d"))).count())
             dic = {subject:[count_per_week, HomeTable.objects.filter(teacher=self.request.user, subject=subject).count(), subject.count]}
 
             information.update(dic)
@@ -292,9 +296,9 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomView, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=Term.objects.first(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        qs = HomeTable.objects.filter(semester=self.semester, teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
         context['timetables'] = qs
-        context['list_weeks'] = create_list_for_weeks()
+        context['list_weeks'] = create_list_for_weeks(self.semester)
         context['information'] = self.create_information()
         return context
 
@@ -339,8 +343,8 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     form_class = InvitedTableForm
 
     # added member
-    list_weeks = create_list_for_weeks()
-    semester = Term.objects.first()
+    semester = Term.objects.filter().get()
+    list_weeks = create_list_for_weeks(semester)
 
     def get_object(self, queryset=None):
         return self.request.user
@@ -411,7 +415,7 @@ class InvitedView(generic.TemplateView):
         Return TimeTable information to Templates
         '''
         information = dict()
-        semester = Term.get_current()
+        semester = Term.objects.filter().get()
         classrooms = Invited.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
 
         for classroom in classrooms:

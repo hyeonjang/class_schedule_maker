@@ -2,6 +2,7 @@
     <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
+      <th class="text-center" scope="col">School</th>
       <th class="text-center" scope="col">Grade</th>
       <th class="text-center" scope="col">Number</th>
       <th class="text-center" scope="col">Teacher</th>
@@ -13,6 +14,7 @@
     {% for classroom in classrooms %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
+        <td class="text-center">{{ classroom.school }}</td>
         <td class="text-center">{{ classroom.grade }}</td>
         <td class="text-center">{{ classroom.number }}</td>
         <td class="text-center">{{ classroom.teacher }}</td>

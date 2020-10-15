@@ -4,17 +4,22 @@ School Information Form
 from django import forms
 from bootstrap_modal_forms.forms import BSModalModelForm, BSModalForm
 from accounts.models import User
-from .models import Term, Holiday, ClassRoom, Subject
+from .models import School, Term, Holiday, ClassRoom, Subject
+
+class SchoolModelForm(BSModalModelForm):
+    class Meta:
+        model = School
+        fields = '__all__'
 
 class TermModelForm(BSModalModelForm):
     class Meta:
         model = Term
-        fields = '__all__'
+        fields = ['start', 'end', 'semester']
 
 class HolidayModelForm(BSModalModelForm):
     class Meta:
         model = Holiday
-        fields = '__all__'
+        fields = ['day', 'text']
         widgets = {
             'day': forms.DateInput()
         }

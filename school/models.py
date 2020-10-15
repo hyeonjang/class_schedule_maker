@@ -8,10 +8,24 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .utils import update_classroom_timetable, add_user_to_hometeacher
 
 # Create your models here.
+class School(models.Model):
+    '''
+    School
+    '''
+    area = models.CharField(default="", max_length=64)
+    name = models.CharField(default="", max_length=64)
+
+    def __str__(self):
+        return self.area + self.name + "초등학교"
+
+    class Meta:
+        unique_together = ('area', 'name')
+
 class Holiday(models.Model):
     '''
     Hoilday Datatable
     '''
+    school = models.ForeignKey(School, on_delete=models.CASCADE, default=1)
     day = models.DateField()
     text = models.TextField(default="explanation")
 
@@ -22,6 +36,7 @@ class Term(models.Model):
     '''
     Semester Datatable
     '''
+    school = models.ForeignKey(School, on_delete=models.CASCADE, default=1)
     start = models.DateField()
     end = models.DateField()
     semester = models.SmallIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(2)])
@@ -36,11 +51,13 @@ class Term(models.Model):
             self.semester = 2
         super(Term, self).save(*args, **kwargs)
 
-    def get_current(self):
+    @staticmethod
+    def get_current():
         '''
         get current semester
         '''
-        return self.objects.first()
+        now = timezone.now()
+        return Term.objects.filter(start__year=now.year).get()
 
     @staticmethod
     def get_current_week():
@@ -122,6 +139,7 @@ class ClassRoom(models.Model):
         (6, '6학년'),
     ]
 
+    school = models.ForeignKey(School, on_delete=models.CASCADE, default=1)
     grade = models.PositiveSmallIntegerField(default=1, choices=GRADE_RANGE)
     number = models.PositiveSmallIntegerField(default=1, validators=[MinValueValidator(0), MaxValueValidator(20)])
     teacher = models.OneToOneField("accounts.User", on_delete=models.CASCADE, default=0, related_name="teacher_name")
@@ -144,7 +162,7 @@ class ClassRoom(models.Model):
         '''
         instantiate timetable
         '''
-        update_classroom_timetable(Term.get_current(), self.teacher, self)
+        update_classroom_timetable(Term.objects.all().get(), self.teacher, self)
         add_user_to_hometeacher(self.teacher, self)
 
 class Subject(models.Model):
@@ -160,6 +178,7 @@ class Subject(models.Model):
         (6, '6학년'),
     ]
 
+    school = models.ForeignKey(School, on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length=64)
     grade = models.PositiveSmallIntegerField(choices=GRADE_RANGE)
     count = models.IntegerField(default=272, validators=[MinValueValidator(64), MaxValueValidator(448)]) # 2018년도 교육과정 기준

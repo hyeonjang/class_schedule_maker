@@ -2,17 +2,21 @@
     <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
+      <th class="text-center" scope="col">School</th>
       <th class="text-center" scope="col">Year</th>
-      <th class="text-center" scope="col">Month</th>
-      <th class="text-center" scope="col">Day</th>
-      <th class="text-center" scope="col">Weekday</th>
+      <th class="text-center" scope="col">학기</th>
+      <th class="text-center" scope="col">주차</th>
+      <th class="text-center" scope="col">Update / Delete</th>
     </tr>
     </thead>
     <tbody>
     {% for term in semester %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
-        <td class="text-center">{{ term }}</td>
+        <td class="text-center">{{ term.school }}</td>
+        <td class="text-center">{{ term.start|date:"Y" }}</td>
+        <td class="text-center">{{ term.semester }}</td>
+        <td class="text-center">{{ term.start|date:"W" }}주차 ~ {{ term.end|date:"W" }}주차</td>
         <td class="text-center">
           <!-- Update book buttons -->
           <button type="button" class="update-classroom btn btn-sm btn-primary" data-form-url="{% url 'school:update_semester' term.pk %}">

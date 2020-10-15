@@ -13,7 +13,7 @@ class HomeroomPopForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
     '''
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2', 'school']
 
     @transaction.atomic
     def save(self):
@@ -29,7 +29,7 @@ class SubjectPopForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
     '''
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2', 'school']
 
     @transaction.atomic
     def save(self):
@@ -50,7 +50,7 @@ class InvitedPopForm(PopRequestMixin, CreateUpdateAjaxMixin, UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2', 'school']
 
     @transaction.atomic
     def save(self):

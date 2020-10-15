@@ -36,9 +36,20 @@
       </div>
          
       <div class="card-footer">
-        <a id="su-home-btn" class="">homeroom</a>
-        <a id="su-sub-btn" class="">subject</a>
-        <a id="su-inv-btn" class="">invited</a>
+        <div class="col">
+          <p> 
+            학교생성
+            <a id="su-school-btn" class="">school</a>
+          </p>
+        </div>
+        <div class="col">
+          <p>
+            회원가입
+            <a id="su-home-btn" class="">homeroom</a>
+            <a id="su-sub-btn" class="">subject</a>
+            <a id="su-inv-btn" class="">invited</a>
+          </p>
+        </div>
       </div>
 
     </div>
@@ -48,6 +59,9 @@
 {% block extrascripts %}
   <script type="text/javascript">
       $(function () {
+        $("#su-school-btn").modalForm({
+          formURL: "{% url 'school:school_signup' %}"
+        });
         $("#su-home-btn").modalForm({
           formURL: "{% url 'homeroom_signup' %}"
         });

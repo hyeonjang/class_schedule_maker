@@ -2,12 +2,9 @@
     <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
+      <th class="text-center" scope="col">School</th>
       <th class="text-center" scope="col">Grade</th>
       <th class="text-center" scope="col">Name</th>
-      <th class="text-center" scope="col">Teacher</th>
-      <th class="text-center" scope="col">Teacher</th>
-      <th class="text-center" scope="col">Teacher</th>
-      <th class="text-center" scope="col">Teacher</th>
       <th class="text-center" scope="col">Count</th>
       <th class="text-center" scope="col">Update / Delete</th>
     </tr>
@@ -16,12 +13,9 @@
     {% for subject in subjects %}
       <tr>
         <th class="text-center" scope="row">{{ forloop.counter }}</th>
+        <td class="text-center">{{ subject.school }}</td>
         <td class="text-center">{{ subject.grade }}</td>
         <td class="text-center">{{ subject.name }}</td>
-        <td class="text-center">{% if subject.teacher1 %}{{ subject.teacher1 }}{% endif %}</td> 
-        <td class="text-center">{% if subject.teacher2 %}{{ subject.teacher2 }}{% endif %}</td>
-        <td class="text-center">{% if subject.teacher3 %}{{ subject.teacher3 }}{% endif %}</td>
-        <td class="text-center">{% if subject.teacher4 %}{{ subject.teacher4 }}{% endif %}</td>
         <td class="text-center">{{ subject.count }}</td>
         <td class="text-center">
           <button type="button" class="update-book btn btn-sm btn-primary" data-form-url="{% url 'school:update_subject' subject.pk %}">

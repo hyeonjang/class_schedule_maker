@@ -7,10 +7,11 @@ from . import views
 app_name = 'school'
 
 urlpatterns = [
+    path('school/', views.SchoolSignUp.as_view(), name='school_signup'),
     path('manage/term', views.TermManageListView.as_view(), name='manage_semester'),
     path('manage/subject', views.SubjectManageListView.as_view(), name='manage_subject'),
     path('manage/classroom', views.ClassRoomManageListView.as_view(), name='manage_classroom'),
-  
+
     path('filter_by_grade_cla/', views.ClassRoomGradeFilterView.as_view(), name='filter_classroom'),
     path('filter_by_grade_sub/', views.SubjectGradeFilterView.as_view(), name='filter_subject'),
 
@@ -31,4 +32,3 @@ urlpatterns = [
     path('update_subject/<int:pk>', views.SubjectUpdateView.as_view(), name='update_subject'),
     path('delete_subject/<int:pk>', views.SubjectDeleteView.as_view(), name='delete_subject'),
 ]
-

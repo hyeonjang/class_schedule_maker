@@ -3,7 +3,7 @@ accounts
 '''
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from school.models import ClassRoom, Subject
+from school.models import School, ClassRoom, Subject
 import timetable
 
 class User(AbstractUser):
@@ -23,8 +23,9 @@ class User(AbstractUser):
         (SUPERVISOR, 'supervisor'),
         (ADMIN, 'admin'),
     ]
+    school = models.ForeignKey(School, on_delete=models.SET_NULL, null=True)
     user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
-
+    
     def to_string(self):
         '''
         return name

@@ -4,8 +4,6 @@ modul doc
 from django.urls import path, register_converter
 from . import converters, views
 
-#url(r'^user/(?P<user_id>\d+)/profile/$', 'yourapp.views.view', name='user_url')
-
 register_converter(converters.DateConverter, 'date')
 
 app_name = 'timetable'
