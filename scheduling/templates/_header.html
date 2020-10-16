@@ -45,10 +45,10 @@
         </ul>
 
           {% if not user.is_anonymous %}
-            <p class="text-muted ml-auto m-2">
+            <p class="text-muted ml-auto pl-3 m-2">
               안녕하세요 <strong>{{ user }}</strong>선생님
             </p>
-            <p class="text-muted ml-auto m-2">
+            <p class="text-muted ml-auto pl-3 m-2">
               <a href="{% url 'account:logout' %}" id="logout-btn" style="font-size: 80%;" role="button">로그아웃</a>
             </p>
           {% endif %}
