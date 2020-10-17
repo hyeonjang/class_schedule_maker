@@ -1,0 +1,54 @@
+@startuml
+'style'
+skinparam SequenceBoxBorderColor #ffffff
+
+'struct'
+actor HomeTeacher
+
+box timetables
+    participant Views
+end box
+
+box school
+    participant Model
+end box
+
+database SubjectTables
+database HomeTables
+database InvitedTables
+
+'graph'
+'view'
+ref over SubjectTables, HomeTables, InvitedTables
+    HomeTables associate with these
+end ref
+
+== Create ==
+HomeTeacher -> Views : create
+Views -> Model : query 'Semester'
+note right: already exists
+Model -> Views : return 'Semester'
+    loop Semester.start to Semester.end
+        loop 40 times
+            Views -> Views : instantiate
+        end
+    end
+Views -> HomeTables : 40 bulk create
+
+== Update ==
+HomeTeacher -> Views : update
+Views -> HomeTables : filter
+HomeTables -> Views : return objects
+alt auto case
+    Views -> Views : automatical
+else not
+    Views -> Views : not
+end
+Views -> HomeTables : bulk update
+
+== Reset ==
+HomeTeacher -> Views : reset
+Views -> HomeTables : filter
+HomeTables -> Views : return objects
+Views -> HomeTables : reset
+@enduml
