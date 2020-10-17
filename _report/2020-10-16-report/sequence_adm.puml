@@ -1,0 +1,34 @@
+@startuml
+'style'
+skinparam SequenceBoxBorderColor #ffffff
+
+'struct'
+actor Admin
+
+box school
+    participant Views
+    participant Forms
+    participant Models
+end box
+
+database School
+
+'graph'
+==Repetition==
+Forms -> Views : make form
+Views -> Admin : view
+Admin -> Views : CRUD
+Views -> Forms : action
+Forms -> Forms : check Validation
+alt if valid
+    Forms -> Models : save
+else invalid
+    Forms -> Views : raise Validation Error
+end
+Models -> Models : check Validation
+alt if valid
+    Models -> School : save:CRUD
+else invalid
+    Models -> Views : raise Validation Error
+end
+@enduml
