@@ -81,9 +81,12 @@ namespace accounts {
         + date start
         + date end
     }
-    User <|-- HomeTeacher
-    User <|-- SubjectTeacher
-    User <|-- InvitedTeacher
+    User *-- HomeTeacher
+    User *-- SubjectTeacher
+    User *-- InvitedTeacher
+
+    school.Classroom *-- HomeTeacher
+    school.Subject *-- SubjectTeacher
 }
 
 @enduml
