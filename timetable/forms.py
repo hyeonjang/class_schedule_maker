@@ -19,6 +19,11 @@ class SubjectTableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SubjectTableForm, self).__init__(*args, **kwargs)
         if isinstance(kwargs['instance'], self.Meta.model):
+            # 0. disable
+            if kwargs['instance'].is_event_or_holi:
+                for field in self.fields.values():
+                    field.widget.attrs.update({'disabled':'true'})
+                return
             # 1. choose the hometable which has not sub_teacher that class time
             class_list = HomeTable.objects.filter(day=kwargs['instance'].day, time=kwargs['instance'].time, inv_teacher=None).distinct('classroom').values_list('classroom', flat=True)
             self.fields['classroom'] = forms.ModelChoiceField(queryset=ClassRoom.objects.filter(pk__in=class_list), required=False)
@@ -35,6 +40,11 @@ class HomeTableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(HomeTableForm, self).__init__(*args, **kwargs)
         if isinstance(kwargs['instance'], self.Meta.model):
+            # 0. disable
+            if kwargs['instance'].is_event_or_holi:
+                for field in self.fields.values():
+                    field.widget.attrs.update({'disabled':'true'})
+                return
             # 1. fields update
             hometeacher = kwargs['instance'].teacher.return_by_type()
             self.fields['subject'] = forms.ModelChoiceField(queryset=Subject.objects.filter(grade=hometeacher.get_grade()), required=False)
@@ -55,7 +65,12 @@ class InvitedTableForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(InvitedTableForm, self).__init__(*args, **kwargs)
         if isinstance(kwargs['instance'], self.Meta.model):
-            # 1. choose the hometable which has not sub_teacher that class time
+            # 0. disable
+            if kwargs['instance'].is_event_or_holi:
+                for field in self.fields.values():
+                    field.widget.attrs.update({'disabled':'true'})
+                return
+            # 1. choose the hometable which has not inv_teacher that class time
             class_list = HomeTable.objects.filter(day=kwargs['instance'].day, time=kwargs['instance'].time, sub_teacher=None).distinct('classroom').values_list('classroom', flat=True)
             self.fields['classroom'] = forms.ModelChoiceField(queryset=ClassRoom.objects.filter(pk__in=class_list), required=False)
 

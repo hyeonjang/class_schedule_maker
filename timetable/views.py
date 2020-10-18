@@ -144,12 +144,11 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
         Return TimeTable information to Templates
         '''
         information = dict()
-        teacher = self.request.user.return_by_type()
         semester = self.get_semester()
         if semester is None:
             return
         weeks = semester.get_weeks_start_end()
-        classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True)
+        classrooms = SubjectTable.objects.exclude(classroom=None).distinct('classroom').values_list('classroom', flat=True).order_by()
 
         for classroom in classrooms:
             count_per_week = []
@@ -271,9 +270,13 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
                 query = qs.filter(sub_teacher=None)&qs.filter(inv_teacher=None)
                 # 3. update subject
                 if form.cleaned_data['auto']:
-                    query.update(subject=self.auto_created_subject())
+                    for inst in query:
+                        inst.subject = self.auto_created_subject()
+                        inst.save()
                 else:
-                    query.update(subject=instance.subject)
+                    for inst in query:
+                        inst.subject = instance.subject
+                        inst.save()
             return redirect(self.get_success_url())
         else:
             messages.warning(self.request, formset.errors)

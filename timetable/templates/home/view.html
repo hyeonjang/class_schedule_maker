@@ -47,16 +47,16 @@
       {% csrf_token %}
         <table class="table table-bordered table-hover" id="TimeTableView">
           <thead class="">
-            <th scope="col" style="width: 12.5%">{{ timetables.0.day|date:"D m/d" }}</th>
-            <th scope="col" style="width: 12.5%">{{ timetables.1.day|date:"D m/d" }}</th>
-            <th scope="col" style="width: 12.5%">{{ timetables.2.day|date:"D m/d" }}</th>
-            <th scope="col" style="width: 12.5%">{{ timetables.3.day|date:"D m/d" }}</th>
-            <th scope="col" style="width: 12.5%">{{ timetables.4.day|date:"D m/d" }}</th>
+            <th scope="col" style="width: 12.5%;">{{ timetables.0.day|date:"D m/d" }}</th>
+            <th scope="col" style="width: 12.5%;">{{ timetables.1.day|date:"D m/d" }}</th>
+            <th scope="col" style="width: 12.5%;">{{ timetables.2.day|date:"D m/d" }}</th>
+            <th scope="col" style="width: 12.5%;">{{ timetables.3.day|date:"D m/d" }}</th>
+            <th scope="col" style="width: 12.5%;">{{ timetables.4.day|date:"D m/d" }}</th>
           </thead>
           <tbody>
           {% for course in timetables %}
             {% cycle '<tr scope="row" style="height: 100px;">' '' '' '' ''%}
-              <td class="text-center {% if course.is_holi_or_event %} table-dark {% endif %} {% if course.sub_teacher %} table-warning {% endif %} {% if course.inv_teacher %} table-info {% endif %}">
+              <td class="text-center {% if course.is_event_or_holi %} table-secondary {% endif %} {% if course.sub_teacher %} table-warning {% endif %} {% if course.inv_teacher %} table-info {% endif %}">
                 <div class=""> 
                   <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
                   <p>{% if course.subject %}{{ course.subject.name }}{% endif %}</p>

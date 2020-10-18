@@ -5,6 +5,7 @@ import time
 from django.utils import timezone
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+import timetable
 from .utils import update_classroom_timetable, add_user_to_hometeacher
 
 # Create your models here.

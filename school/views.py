@@ -211,7 +211,7 @@ class HolidayCreateView(BSModalCreateView):
             instance = form.save(commit=False)
             instance.school = self.request.user.school
             instance.save()
-        return redirect(self.success_url)
+        return redirect(self.get_success_url())
 
 class HolidayUpdateView(BSModalUpdateView):
     '''
