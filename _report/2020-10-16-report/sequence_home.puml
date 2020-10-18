@@ -7,6 +7,7 @@ actor HomeTeacher
 
 box timetables
     participant Views
+    participant Forms
 end box
 
 box school
@@ -36,6 +37,10 @@ Model -> Views : return 'Semester'
 Views -> HomeTables : 40 bulk create
 
 == Update ==
+Forms -> HomeTables : query
+HomeTables -> HomeTables : filter
+HomeTables -> Forms : return objects
+Forms -> Views : view
 HomeTeacher -> Views : update
 Views -> HomeTables : filter
 HomeTables -> Views : return objects
