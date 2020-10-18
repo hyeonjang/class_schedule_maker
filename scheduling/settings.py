@@ -133,8 +133,10 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "accounts/static"),
     os.path.join(BASE_DIR, "scheduling/static"),
     os.path.join(BASE_DIR, "timetable/static"),
+
 ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 

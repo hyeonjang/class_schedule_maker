@@ -80,6 +80,9 @@ html {
   [role="main"] {
     padding-top: 48px; /* Space for fixed navbar */
   }
+  .invalid {
+    color: #ff0000;
+  }
   .form-group .invalid {
     color: #ff0000;
   }
