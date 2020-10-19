@@ -463,7 +463,9 @@ class InvitedReset(LoginRequiredMixin, BSModalFormView):
     def form_valid(self, form):
         if self.request.is_ajax(): #bug django-bootstrap-modal-forms twice redirection
             semester = form.cleaned_data['semester']
-            Invited.objects.filter(teacher=self.request.user, semester=semester).update(subject=None)
+            inv = Invited.objects.filter(teacher=self.request.user, semester=semester)
+            HomeTable.objects.filter(inv_teacher__in=inv).update(subject=None, inv_teacher=None)
+            inv.update(subject=None, classroom=None)
         return redirect(self.get_success_url())
 
     def get_success_url(self):
