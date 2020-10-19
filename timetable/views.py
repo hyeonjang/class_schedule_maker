@@ -91,8 +91,8 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         if formset.is_valid():
             weeks = []
             for week in context['list_weeks']:
-                if self.request.POST.get(f"{week['days'][0].strftime('%W')}week") is not None:
-                    weeks.append(self.request.POST.get(f"{week['days'][0].strftime('%W')}week"))
+                if self.request.POST.get(f"{week['day'].strftime('%W')}week") is not None:
+                    weeks.append(self.request.POST.get(f"{week['day'].strftime('%W')}week"))
             for form in formset:
                 inst = form.save(commit=False)
                 qs = SubjectTable.objects.filter(semester=Term.get_current(), teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), day__week__in=weeks, time=inst.time)
@@ -230,7 +230,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
         if qs:
             return qs.get()
         return None
-        
+
     def create_list_for_weeks(self):
         return create_list_for_weeks(self.get_semester())
 
@@ -270,8 +270,8 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
             weeks = []
             for week in context['list_weeks']:
                 # 0. query the being updated weeks
-                if self.request.POST.get(f"{week['days'][0].strftime('%W')}week") is not None:
-                    weeks.append(self.request.POST.get(f"{week['days'][0].strftime('%W')}week"))
+                if self.request.POST.get(f"{week['day'].strftime('%W')}week") is not None:
+                    weeks.append(self.request.POST.get(f"{week['day'].strftime('%W')}week"))
             for form in formset:
                 instance = form.save(commit=False)
                 # 1. using django ORM
@@ -432,8 +432,8 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
         if formset.is_valid():
             weeks = []
             for week in context['list_weeks']:
-                if self.request.POST.get(f"{week['days'][0].strftime('%W')}week") is not None:
-                    weeks.append(self.request.POST.get(f"{week['days'][0].strftime('%W')}week"))
+                if self.request.POST.get(f"{week['day'].strftime('%W')}week") is not None:
+                    weeks.append(self.request.POST.get(f"{week['day'].strftime('%W')}week"))
             for form in formset:
                 inst = form.save(commit=False)
                 qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=inst.day.isoweekday(), day__week__in=weeks, time=inst.time)
