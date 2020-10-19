@@ -61,9 +61,7 @@
         {% cycle '<tr scope="row" style="height: 100px;">' '' '' '' ''%}
           <td class="text-center">
               <div class="col"> 
-                <div class="col"> 
-                  {% if course.classroom %}{{ course.classroom }}{% endif %}
-                </div>
+                <p>{% if course.classroom %}{{ course.classroom }}{% endif %}</p>
                 <p>{% if course.subject %}{{ course.subject }}{% endif %}</p>
             </div>
           </td>

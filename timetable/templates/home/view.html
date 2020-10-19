@@ -60,7 +60,8 @@
                 <div class=""> 
                   <p>{% if course.classRoom %}{{ course.classRoom }}{% endif %}</p>
                   <p>{% if course.subject %}{{ course.subject.name }}{% endif %}</p>
-                  <p>{% if course.sub_teacher or course.inv_teacher %}
+                  <p>
+                    {% if course.sub_teacher or course.inv_teacher %}
                     <p>{{ course.sub_teacher.teacher }} {{ course.inv_teacher.teacher }}</p>
                     {% endif %}
                   </p>

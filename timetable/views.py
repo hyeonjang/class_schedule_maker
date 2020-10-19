@@ -56,7 +56,8 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     template_name = 'sub/update.html'
     model = SubjectTable
     form_class = SubjectTableForm
-
+    success_url = '/'
+    
     # added member
     def get_semester(self):
         qs = Term.objects.filter()
@@ -399,6 +400,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     template_name = 'inv/update.html'
     model = Invited
     form_class = InvitedTableForm
+    success_url = '/'
 
     # added member
     def get_semester(self):
