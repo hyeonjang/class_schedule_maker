@@ -56,7 +56,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     template_name = 'sub/update.html'
     model = SubjectTable
     form_class = SubjectTableForm
-    
+
     # added member
     def get_semester(self):
         qs = Term.objects.filter()
@@ -99,7 +99,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
                 for ins in qs:
                     ins.subject = inst.subject
                     ins.classroom = inst.classroom
-                    ins.save()       
+                    ins.save()
             return redirect(self.get_success_url())
         else:
             return self.render_to_response(self.get_context_data(form=form))
@@ -251,7 +251,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
+        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomUpdate, self).get_context_data(**kwargs)
@@ -383,8 +383,7 @@ class InvitedCreate(LoginRequiredMixin, BSModalFormView):
                 for j in range(0, 40):
                     new_table = Invited(semester=semester, teacher=self.request.user, day=week[j%5] + timezone.timedelta(days=7*i), time=(j//5)%8+1)
                     bulk_tables.append(new_table)
-            t = Invited.objects.bulk_create(bulk_tables)
-            print(t)
+            Invited.objects.bulk_create(bulk_tables)
         return redirect(self.get_success_url())
 
     def form_invalid(self, form):
@@ -417,7 +416,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
+        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
 
     def get_context_data(self, **kwargs):
         context = super(InvitedUpdate, self).get_context_data(**kwargs)
@@ -445,7 +444,7 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
                 for ins in qs:
                     ins.subject = inst.subject
                     ins.classroom = inst.classroom
-                    ins.save() 
+                    ins.save()
             return redirect(self.get_success_url())
         else:
             messages.warning(self.request, formset.errors)

@@ -20,7 +20,7 @@ urlpatterns = [
     path('<int:user_id>/<int:semester_id>/<date:start>/home/update/', views.HomeroomUpdate.as_view(), name='home_update'),
 
     path('<int:user_id>/<int:semester_id>/inv/create/', views.InvitedCreate.as_view(), name='inv_create'),
-    path('<int:user_id>/<int:semester_id>/sub/reset/', views.InvitedReset.as_view(), name='inv_reset'),
+    path('<int:user_id>/<int:semester_id>/inv/reset/', views.InvitedReset.as_view(), name='inv_reset'),
     path('<int:user_id>/<int:semester_id>/<date:start>/inv/view/', views.InvitedView.as_view(), name='inv_view'),
     path('<int:user_id>/<int:semester_id>/<date:start>/inv/update/', views.InvitedUpdate.as_view(), name='inv_update'),
 ]
