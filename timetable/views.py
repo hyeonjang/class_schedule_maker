@@ -47,7 +47,7 @@ class SubjectCreate(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0]})
 
 class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     '''
@@ -71,11 +71,13 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start'], 'end':self.kwargs['end']})
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.get_week()['start']})
 
     def get_context_data(self, **kwargs):
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
-        qs = SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        qs = SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(start, end)).order_by("time", "day")
         if self.request.POST:
             context['timetables'] = SubjectTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
@@ -119,7 +121,7 @@ class SubjectReset(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0]})
 
 class SubjectView(LoginRequiredMixin, generic.TemplateView):
     '''
@@ -135,9 +137,13 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
             return qs.get()
         return None
 
+    def get_week(self):
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        return {'start':self.kwargs['start'], 'end':end}
+
     def create_list_for_weeks(self):
         return create_list_for_weeks(self.get_semester())
-
 
     def create_information(self):
         '''
@@ -167,7 +173,9 @@ class SubjectView(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(SubjectView, self).get_context_data(**kwargs)
-        context['timetables'] = SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        context['timetables'] = SubjectTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(start, end)).order_by("time", "day")
         context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
         return context
@@ -205,7 +213,7 @@ class HomeroomCreate(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0]})
 
 class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     '''
@@ -245,7 +253,9 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomUpdate, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(start, end)).order_by("time", "day")
         if self.request.POST:
             context['timetables'] = HomeTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
@@ -300,7 +310,7 @@ class HomeroomReset(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:home_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0]})
 
 class HomeroomView(LoginRequiredMixin, generic.TemplateView):
     '''
@@ -340,15 +350,11 @@ class HomeroomView(LoginRequiredMixin, generic.TemplateView):
             information.update(dic)
         return information
 
-    def get_success_url(self):
-        '''
-        class doc
-        '''
-        return redirect('timetable:home_view')
-
     def get_context_data(self, **kwargs):
         context = super(HomeroomView, self).get_context_data(**kwargs)
-        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(start, end)).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
@@ -384,7 +390,7 @@ class InvitedCreate(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0]})
 
 class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     '''
@@ -408,13 +414,11 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-    def get_success_url(self):
-        week = Term.get_current_week()
-        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.get_semester().pk, 'start':week[0], 'end':week[4]})
-
     def get_context_data(self, **kwargs):
         context = super(InvitedUpdate, self).get_context_data(**kwargs)
-        qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end']))
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(start, end))
         if self.request.POST:
             context['timetables'] = InvitedTableUpdateFormset(self.request.POST, instance=self.request.user, queryset=qs)
         else:
@@ -460,7 +464,7 @@ class InvitedReset(LoginRequiredMixin, BSModalFormView):
 
     def get_success_url(self):
         week = Term.get_current_week()
-        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0], 'end':week[4]})
+        return reverse_lazy('timetable:inv_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':week[0]})
 
 class InvitedView(LoginRequiredMixin, generic.TemplateView):
     '''
@@ -498,33 +502,13 @@ class InvitedView(LoginRequiredMixin, generic.TemplateView):
 
             information.update(dic)
         return information
-    
-    # original member
-    def get_success_url(self):
-        '''
-        class doc
-        '''
-        return redirect('timetable:inv_view')
 
     def get_context_data(self, **kwargs):
         context = super(InvitedView, self).get_context_data(**kwargs)
-        qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(self.kwargs['start'], self.kwargs['end'])).order_by("time", "day")
+        start = self.kwargs['start']
+        end = start + timezone.timedelta(days=4)
+        qs = Invited.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__range=(start, end)).order_by("time", "day")
         context['timetables'] = qs
         context['list_weeks'] = self.create_list_for_weeks()
         context['information'] = self.create_information()
-        return context
-
-###########################################################
-class TermListView(LoginRequiredMixin, generic.TemplateView):
-
-    template_name = "term_list.html"
-    model = Term
-
-    def get_current_week(self):
-        return Term.get_current_week()
-
-    def get_context_data(self, **kwargs):
-        context = super(TermListView, self).get_context_data(**kwargs)
-        context['semesters'] = Term.objects.filter(school=self.request.user.school)
-        context['weeks'] = self.get_current_week()
         return context

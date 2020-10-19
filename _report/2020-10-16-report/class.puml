@@ -11,6 +11,7 @@ namespace school {
         + listOfdate get_semester()
     }
     class Holiday {
+        + School school
         + date day
         + string text
     }
@@ -30,7 +31,7 @@ namespace school {
     School *-- Semester
     School *-- Classroom
     School *-- Subject
-
+    School *-- Holiday 
     Classroom *-- accounts.User
 }
 

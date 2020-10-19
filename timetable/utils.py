@@ -11,6 +11,6 @@ def create_list_for_weeks(semester):
     list_weeks = []
     dict_week = dict()
     for days in weeks:
-        dict_week = {"pk":semester.pk, "days":(days[0], days[1])} #@@todo select 4th
+        dict_week = {"pk":semester.pk, "day":days[0]} #@@todo select 4th
         list_weeks.append(dict_week)
     return list_weeks

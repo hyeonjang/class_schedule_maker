@@ -9,21 +9,21 @@
         {% for semester in semesters %}
         <li>
           {% if user.user_type == 1 %}
-            <a href="{% url 'timetable:home_view' user.id semester.pk weeks.0 weeks.4 %}">
+            <a href="{% url 'timetable:home_view' user.id semester.pk weeks.0 %}">
               {{semester.school}} : {{semester}}
               ({{semester.start|date:"Y-m-d"}} ~ {{semester.end|date:"Y-m-d"}})
             </a>
           {% endif %}
           
           {% if user.user_type == 2 %}
-            <a href="{% url 'timetable:inv_view' user.id semester.pk weeks.0 weeks.4 %}">
+            <a href="{% url 'timetable:inv_view' user.id semester.pk weeks.0 %}">
               {{semester.school}} : {{semester}}
               ({{semester.start|date:"Y-m-d"}} ~ {{semester.end|date:"Y-m-d"}})
             </a>
           {% endif %}
 
           {% if user.user_type == 3 %}
-            <a href="{% url 'timetable:sub_view' user.id semester.pk weeks.0 weeks.4 %}">
+            <a href="{% url 'timetable:sub_view' user.id semester.pk weeks.0 %}">
               {{semester.school}} : {{semester}}
               ({{semester.start|date:"Y-m-d"}} ~ {{semester.end|date:"Y-m-d"}})
             </a>

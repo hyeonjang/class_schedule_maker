@@ -5,7 +5,7 @@
       <th class="text-center" scope="col">학교</th>
       <th class="text-center" scope="col">연도</th>
       <th class="text-center" scope="col">학기</th>
-      <th class="text-center" scope="col">주차</th>
+      <th class="text-center" scope="col">기간</th>
       <th class="text-center" scope="col">수정 / 삭제</th>
     </tr>
     </thead>
@@ -16,7 +16,26 @@
         <td class="text-center">{{ term.school }}</td>
         <td class="text-center">{{ term.start|date:"Y" }}</td>
         <td class="text-center">{{ term.semester }}</td>
-        <td class="text-center">{{ term.start|date:"W" }}주차 ~ {{ term.end|date:"W" }}주차</td>
+        <td class="text-center">
+          {% if user.user_type == 1 %}
+            <a href="{% url 'timetable:home_view' user.id term.pk term.start %}">
+              {{ term.start|date:"Y/m/d" }} ~ {{ term.end|date:"Y/m/d" }}
+            </a>
+          {% endif %}
+        
+          {% if user.user_type == 2 %}
+            <a href="{% url 'timetable:inv_view' user.id term.pk term.start %}">
+              {{ term.start|date:"Y/m/d" }} ~ {{ term.end|date:"Y/m/d" }}
+            </a>
+          {% endif %}
+
+          {% if user.user_type == 3 %}
+            <a href="{% url 'timetable:sub_view' user.id term.pk term.start %}">
+              {{ term.start|date:"Y/m/d" }} ~ {{ term.end|date:"Y/m/d" }}
+            </a>
+          {% endif %}
+
+        </td>
         <td class="text-center">
           <!-- Update book buttons -->
           <button type="button" class="update-semester btn btn-sm btn-primary" data-form-url="{% url 'school:update_semester' user.school.pk term.pk %}">

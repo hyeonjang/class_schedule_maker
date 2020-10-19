@@ -23,21 +23,31 @@ from school.models import Term
 def home(request):
     def current_term():
         now_year = timezone.now().year
-        return Term.objects.filter(start__year=now_year).get()
+        qs = Term.objects.filter(start__year=now_year)
+        if qs:
+            return qs.get()
+        return None
+
     def current_week():
         return Term.get_current_week()
 
     if request.user.is_authenticated:
-        if request.user.user_type is User.SUPERVISOR:
-            return reverse_lazy('school:manage_school', kwargs={'user_id':request.user.id})
-        elif request.user.user_type is User.HOMEROOM:
-            return redirect(reverse_lazy('timetable:home_view', kwargs={'user_id':request.user.id, 'semester_id':current_term().pk, 'start':current_week()[0], 'end':current_week()[4]}))
-        elif request.user.user_type is User.SUBJECT:
-            return redirect(reverse_lazy('timetable:sub_view', kwargs={'user_id':request.user.id, 'semester_id':current_term().pk, 'start':current_week()[0], 'end':current_week()[4]}))
-        elif request.user.user_type is User.INVITED:
-            semester = Term.objects.first()
-            week = semester.get_week(InvitedTeacher.get_from(request.user).start)
-            return redirect(reverse_lazy('timetable:inv_view', kwargs={'user_id':request.user.id, 'semester_id':current_term().pk, 'start':week[0], 'end':week[4]}))
+        semester = current_term()
+        print(semester)
+        if semester is None:
+            return redirect(reverse_lazy('school:manage_semester', kwargs={'school_id':request.user.school.id}))
+        else:
+            if request.user.user_type is User.HOMEROOM:
+                return redirect(reverse_lazy('timetable:home_view', kwargs={'user_id':request.user.id, 'semester_id':current_term().pk, 'start':current_week()[0]}))
+            elif request.user.user_type is User.SUBJECT:
+                return redirect(reverse_lazy('timetable:sub_view', kwargs={'user_id':request.user.id, 'semester_id':current_term().pk, 'start':current_week()[0]}))
+            elif request.user.user_type is User.INVITED:
+                semester = current_term()
+                if semester is None:
+                    week = current_week()
+                else:
+                    week = semester.get_week(InvitedTeacher.get_from(request.user).start)
+                return redirect(reverse_lazy('timetable:inv_view', kwargs={'user_id':request.user.id, 'semester_id':current_term().pk, 'start':week[0]}))
     else:
         return redirect(reverse_lazy('account:login'))
 
