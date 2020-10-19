@@ -177,6 +177,7 @@ class HomeTable(TimeTable):
             return
 
         # 2. validation checking
-        # if self.classroom is None:
-            # raise ValidationError(f"{self.day} {self.time}교시 학급정보가 입력되지 않았습니다.")
+        if self.classroom is None:
+            raise ValidationError(f"{self.day} {self.time}교시 학급정보가 입력되지 않았습니다.")
+
         return super(HomeTable, self).save(*args, **kwargs)

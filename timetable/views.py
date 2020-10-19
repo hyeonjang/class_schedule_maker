@@ -282,8 +282,9 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
                 query = qs.filter(sub_teacher=None)&qs.filter(inv_teacher=None)
                 # 3. update subject
                 if form.cleaned_data['auto']:
+                    sub = self.auto_created_subject()
                     for inst in query:
-                        inst.subject = self.auto_created_subject()
+                        inst.subject = sub
                         inst.save()
                 else:
                     for inst in query:
