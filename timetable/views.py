@@ -56,7 +56,6 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
     template_name = 'sub/update.html'
     model = SubjectTable
     form_class = SubjectTableForm
-    success_url = '/'
     
     # added member
     def get_semester(self):
@@ -72,7 +71,7 @@ class SubjectUpdate(LoginRequiredMixin, generic.UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.get_week()['start']})
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
 
     def get_context_data(self, **kwargs):
         context = super(SubjectUpdate, self).get_context_data(**kwargs)
@@ -223,7 +222,6 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
     template_name = 'home/update.html'
     model = HomeTable
     form_class = HomeTableForm
-    success_url = '/'
 
     # added member
     def get_semester(self):
@@ -251,6 +249,9 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_success_url(self):
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
 
     def get_context_data(self, **kwargs):
         context = super(HomeroomUpdate, self).get_context_data(**kwargs)
@@ -400,7 +401,6 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     template_name = 'inv/update.html'
     model = Invited
     form_class = InvitedTableForm
-    success_url = '/'
 
     # added member
     def get_semester(self):
@@ -415,6 +415,9 @@ class InvitedUpdate(LoginRequiredMixin, generic.UpdateView):
     # original member
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_success_url(self):
+        return reverse_lazy('timetable:sub_view', kwargs={'user_id':self.request.user.id, 'semester_id':self.kwargs['semester_id'], 'start':self.kwargs['start']})
 
     def get_context_data(self, **kwargs):
         context = super(InvitedUpdate, self).get_context_data(**kwargs)
