@@ -173,6 +173,9 @@ class HomeTable(TimeTable):
         if self.is_event_or_holi is True:
             self.__reset__()
 
+        if self.sub_teacher is not None or self.inv_teacher is not None:
+            return
+
         # 2. validation checking
         # if self.classroom is None:
             # raise ValidationError(f"{self.day} {self.time}교시 학급정보가 입력되지 않았습니다.")
