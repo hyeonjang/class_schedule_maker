@@ -5,7 +5,7 @@ skinparam SequenceBoxBorderColor #ffffff
 'struct'
 actor SubjectTeacher
 
-box timetables
+box timetable
     participant Views
     participant Forms
 end box

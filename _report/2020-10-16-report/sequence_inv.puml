@@ -5,7 +5,7 @@ skinparam SequenceBoxBorderColor #ffffff
 'struct'
 actor InvitedTeacher
 
-box timetabes
+box timetable
     participant Views
     participant Forms
 end box
@@ -24,7 +24,7 @@ InvitedTeacher -> Views : create
 Views -> Model : query 'Semester'
 note right: already exists
 Model -> Views : return 'Semester'
-    loop Semester.start to Semester.end
+    loop InvitedTeacher.start to InvitedTeacher.end
         loop 40 times
             Views -> Views : instantiate
         end
