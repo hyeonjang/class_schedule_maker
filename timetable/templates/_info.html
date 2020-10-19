@@ -10,7 +10,7 @@
         {% endif %}
         </th>
         {% for week in list_weeks %}
-            <th scope="col">{{ week.days.0|date:"W" }}주차</th>
+            <th scope="col">{{ week.day|date:"W" }}주차</th>
         {% endfor %} 
             <th scope="col">현재시수</th>
     </thead>
