@@ -27,6 +27,8 @@ class SubjectTableForm(forms.ModelForm):
             # 1. choose the hometable which has not sub_teacher that class time
             class_list = HomeTable.objects.filter(day=kwargs['instance'].day, time=kwargs['instance'].time, inv_teacher=None).distinct('classroom').values_list('classroom', flat=True)
             self.fields['classroom'] = forms.ModelChoiceField(queryset=ClassRoom.objects.filter(pk__in=class_list), required=False)
+            # 2. filter subject
+            self.fields['subject'] = forms.ModelChoiceField(queryset=Subject.objects.filter(pk__in=kwargs['instance'].teacher.return_by_type().subject.all()), required=False)
 
 class HomeTableForm(forms.ModelForm):
     '''

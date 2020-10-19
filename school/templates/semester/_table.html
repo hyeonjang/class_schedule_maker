@@ -24,13 +24,13 @@
           {% endif %}
         
           {% if user.user_type == 2 %}
-            <a href="{% url 'timetable:inv_view' user.id term.pk term.start %}">
+            <a href="{% url 'timetable:sub_view' user.id term.pk term.start %}">
               {{ term.start|date:"Y/m/d" }} ~ {{ term.end|date:"Y/m/d" }}
             </a>
           {% endif %}
 
           {% if user.user_type == 3 %}
-            <a href="{% url 'timetable:sub_view' user.id term.pk term.start %}">
+            <a href="{% url 'timetable:inv_view' user.id term.pk term.start %}">
               {{ term.start|date:"Y/m/d" }} ~ {{ term.end|date:"Y/m/d" }}
             </a>
           {% endif %}
