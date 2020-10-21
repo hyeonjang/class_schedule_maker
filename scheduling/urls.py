@@ -33,7 +33,6 @@ def home(request):
 
     if request.user.is_authenticated:
         semester = current_term()
-        print(semester)
         if semester is None:
             return redirect(reverse_lazy('school:manage_semester', kwargs={'school_id':request.user.school.id}))
         else:

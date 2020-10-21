@@ -30,17 +30,31 @@
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'home' %}">시간표</a>
           </li>
+          {% if user.is_staff %}
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'school:manage_semester' user.school.pk %}">학기관리</a>
           </li>
+          {% endif %}
+          {% if user.user_type == 1%}
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="{% url 'school:manage_classroom' user.school.pk %}">반관리</a>
+            <a class="nav-link" href="{% url 'school:manage_classroom' user.school.pk %}">학급관리</a>
           </li>
+          {% endif %}
+          {% if user.user_type == 1 or user.user_type == 2%}
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'school:manage_subject' user.school.pk  %}">교과관리</a>
           </li>
+          {% endif %}
           <li class="nav-item text-nowrap">
-            <a class="nav-link" href="/">개인정보</a>
+            {% if user.user_type == 1 %}
+            <a class="nav-link" href="{% url 'account:home_profile' user.id %}">개인정보</a>
+            {% endif %}
+            {% if user.user_type == 2 %}
+            <a class="nav-link" href="{% url 'account:sub' user.id %}">개인정보</a>
+            {% endif %}
+            {% if user.user_type == 3 %}
+            <a class="nav-link" href="{% url 'account:inv_profile' user.id %}">개인정보</a>
+            {% endif %}
           </li>
         </ul>
       

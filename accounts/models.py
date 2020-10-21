@@ -23,9 +23,20 @@ class User(AbstractUser):
         (SUPERVISOR, 'supervisor'),
         (ADMIN, 'admin'),
     ]
+
+    GRADE_RANGE = [
+        (1, '1학년'),
+        (2, '2학년'),
+        (3, '3학년'),
+        (4, '4학년'),
+        (5, '5학년'),
+        (6, '6학년'),
+    ]
+
+    grade = models.SmallIntegerField(default=1, choices=GRADE_RANGE)
     school = models.ForeignKey(School, on_delete=models.SET_NULL, null=True)
     user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, null=True)
-    
+
     def to_string(self):
         '''
         return name
