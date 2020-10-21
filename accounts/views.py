@@ -1,13 +1,13 @@
 '''
 doc
 '''
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from bootstrap_modal_forms.generic import BSModalCreateView
-from accounts.models import User
+from accounts.models import User, HomeTeacher, SubjectTeacher, InvitedTeacher
 from .forms import SubjectPopForm, HomeroomPopForm, InvitedPopForm, HomeroomProfileForm, SubjectProfileForm, InvitedProfileForm
 
 class HomeroomSignUpView(BSModalCreateView):
@@ -24,17 +24,33 @@ class HomeroomSignUpView(BSModalCreateView):
         return redirect(self.success_url)
 
 @login_required
-def homeroomProfileView(request, user_id):
+def profileView(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if request:
+        related = user.return_by_type()
+    context = {
+        'related' : related,
+    }
+
+    return render(request, 'profile_view.html', context)
+
+@login_required
+def homeroomProfileUpdate(request, user_id):
     user = get_object_or_404(User, id=user_id)
     if request.method == 'POST':
         form = HomeroomProfileForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect(reverse('account:login'))
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request=request, user=user)
+            return redirect(reverse('account:profile_view', kwargs={'user_id':user.id}))
     else:
         form = HomeroomProfileForm(instance=user)
 
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile_update.html', {'form': form})
 
 class SubjectSignUpView(BSModalCreateView):
     '''
@@ -56,11 +72,16 @@ def subjectProfileView(request, user_id):
         form = SubjectProfileForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect(reverse('home'))
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request=request, user=user)
+            return redirect(reverse('account:profile_view', kwargs={'user_id':user.id}))
     else:
         form = SubjectProfileForm(instance=user)
 
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile_update.html', {'form': form})
 
 
 class InvitedSignUpView(BSModalCreateView):
@@ -83,11 +104,16 @@ def invitedProfileView(request, user_id):
         form = InvitedProfileForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            return redirect(reverse('home'))
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request=request, user=user)
+            return redirect(reverse('account:profile_view', kwargs={'user_id':user.id}))
     else:
-        form = InvitedProfileForm(instance=user)
+        form = HomeroomProfileForm(instance=user)
 
-    return render(request, 'profile.html', {'form': form})
+    return render(request, 'profile_update.html', {'form': form})
 
 class CustomLoginView(LoginView):
     '''

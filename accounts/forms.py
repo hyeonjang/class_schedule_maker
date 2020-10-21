@@ -29,11 +29,11 @@ class HomeroomProfileForm(forms.ModelForm):
     Profile for Homeroom Teacher
     '''
     classroom = forms.ModelChoiceField(queryset=school.models.ClassRoom.objects.all())
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'school', 'grade']
+        fields = ['username', 'password', 'first_name', 'last_name', 'email', 'school', 'grade', ]
 
     @transaction.atomic
     def save(self, **kwargs):
@@ -68,11 +68,11 @@ class SubjectProfileForm(forms.ModelForm):
     Profile for Subject Teacher
     '''
     subject = forms.ModelMultipleChoiceField(queryset=school.models.Subject.objects.all(), required=False)
-    password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'school', 'grade']
+        fields = ['username', 'password', 'first_name', 'last_name', 'email', 'school', 'grade', ]
 
     @transaction.atomic
     def save(self, **kwargs):
@@ -80,7 +80,7 @@ class SubjectProfileForm(forms.ModelForm):
         user.set_password(user.password)
         user.save()
         sub = user.return_by_type()
-        #sub.subject.remove(school.models.Subject.objects.all().get())
+        sub.subject.clear()
         sub.subject.add(*self.cleaned_data.get('subject'))
         return user
 
@@ -114,7 +114,7 @@ class InvitedProfileForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'school', 'grade']
+        fields = ['username', 'password', 'first_name', 'last_name', 'email', 'school', 'grade', ]
 
     @transaction.atomic
     def save(self, **kwargs):

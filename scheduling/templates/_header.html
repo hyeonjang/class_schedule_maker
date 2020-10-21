@@ -46,15 +46,7 @@
           </li>
           {% endif %}
           <li class="nav-item text-nowrap">
-            {% if user.user_type == 1 %}
-            <a class="nav-link" href="{% url 'account:home_profile' user.id %}">개인정보</a>
-            {% endif %}
-            {% if user.user_type == 2 %}
-            <a class="nav-link" href="{% url 'account:sub' user.id %}">개인정보</a>
-            {% endif %}
-            {% if user.user_type == 3 %}
-            <a class="nav-link" href="{% url 'account:inv_profile' user.id %}">개인정보</a>
-            {% endif %}
+            <a class="nav-link" href="{% url 'account:profile_view' user.id %}">개인정보</a>
           </li>
         </ul>
       

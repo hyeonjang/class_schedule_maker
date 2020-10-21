@@ -13,8 +13,9 @@ urlpatterns = [
     path('signup/sub/', views.SubjectSignUpView.as_view(), name='subject_signup'),
     path('signup/inv/', views.InvitedSignUpView.as_view(), name='invited_signup'),
     
-    path('<int:user_id>/profile/home', views.homeroomProfileView, name='home_profile'),
-    path('<int:user_id>/profile/sub', views.subjectProfileView, name='sub_profile'),
-    path('<int:user_id>/profile/inv', views.invitedProfileView, name='inv_profile'),
+    path('<int:user_id>/profile/', views.profileView, name='profile_view'),
+    path('<int:user_id>/profile/update/home', views.homeroomProfileUpdate, name='home_profile'),
+    path('<int:user_id>/profile/update/sub', views.subjectProfileView, name='sub_profile'),
+    path('<int:user_id>/profile/update/inv', views.invitedProfileView, name='inv_profile'),
 
 ]

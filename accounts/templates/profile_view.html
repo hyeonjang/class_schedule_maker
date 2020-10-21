@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+{% load static %}
+
+{% block content %}
+
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2 font-weight-bold">프로필</h1>
+  </div>
+
+   <form method="post" action="">
+    {% csrf_token %}
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item">아이디 : {{ user.username }}</li>
+          <li class="list-group-item">이메일 : {{ user.email }}</li>
+          <li class="list-group-item">이름 : {{ user.first_name }}</li>
+          <li class="list-group-item">성 : {{ user.last_name }}</li>
+          <li class="list-group-item">학교 : {{ user.school }}</li>
+          <li class="list-group-item">학년: {{ user.grade }}</li>
+
+        {% if user.user_type == 1 %}
+          <li class="list-group-item">맡은 반: {{ related.classroom.grade }}학년 {{related.classroom.grade }}반 </li>
+        {% endif %}
+        {% if user.user_type == 2 %}
+          <li class="list-group-item">
+            맡은 과목: 
+            {% for subject in related.subject.all %}
+              {{ subject }}, 
+            {% endfor %}
+          </li>
+        {% endif %}
+        {% if user.user_type == 3 %}
+          <li class="list-group-item">시작일 : {{ related.start|date:"Y-m-d" }} </li>
+          <li class="list-group-item">종료일 : {{ related.end|date:"Y-m-d" }} </li>
+        {% endif %}
+        </ul>
+      </div>
+    
+      <div class="modal-footer">
+        {% if user.user_type == 1 %}
+        <a type="submit" class="submit-btn btn btn-success" href="{% url 'account:home_profile' user.id %}">Update</a>
+        {% endif %}
+        {% if user.user_type == 2 %}
+        <a type="submit" class="submit-btn btn btn-success" href="{% url 'account:sub_profile' user.id %}">Update</a>
+        {% endif %}
+        {% if user.user_type == 3 %}
+        <a type="submit" class="submit-btn btn btn-success" href="{% url 'account:inv_profile' user.id %}">Update</a>
+        {% endif %}
+      </div>
+    
+    </form>
+    
+  </div>
+</main>
+
+{% endblock content %}
