@@ -38,6 +38,7 @@
         </td>
         <td class="text-center">
           <!-- Update book buttons -->
+          {% if user.is_staff %}
           <button type="button" class="update-semester btn btn-sm btn-primary" data-form-url="{% url 'school:update_semester' user.school.pk term.pk %}">
             <i class="fas fa-pencil-alt"></i>
           </button>
@@ -45,6 +46,7 @@
           <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_semester' user.school.pk term.pk %}">
             <i class="fas fa-trash-alt"></i>
           </button>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

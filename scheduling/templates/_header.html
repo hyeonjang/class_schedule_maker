@@ -30,11 +30,9 @@
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'home' %}">시간표</a>
           </li>
-          {% if user.is_staff %}
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'school:manage_semester' user.school.pk %}">학기관리</a>
           </li>
-          {% endif %}
           {% if user.user_type == 1%}
           <li class="nav-item text-nowrap">
             <a class="nav-link" href="{% url 'school:manage_classroom' user.school.pk %}">학급관리</a>

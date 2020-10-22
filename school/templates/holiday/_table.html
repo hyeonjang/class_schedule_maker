@@ -19,6 +19,7 @@
         <td class="text-center">{{ day.text }}</td>
         <td class="text-center">
           <!-- Update book buttons -->
+          {% if user.is_staff %}
           <button type="button" class="update-holiday btn btn-sm btn-primary" data-form-url="{% url 'school:update_holiday' user.school.pk day.pk %}">
             <li class="fas fa-pencil-alt"></li>
           </button>
@@ -26,6 +27,7 @@
           <button type="button" class="bs-modal delete-book btn btn-sm btn-danger" data-form-url="{% url 'school:delete_holiday' user.school.pk day.pk %}">
             <i class="fas fa-trash-alt"></i>
           </button>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}
