@@ -291,7 +291,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
                     for inst in query:
                         inst.subject = instance.subject
                         if inst.sub_teacher is None or inst.inv_teacher is None:
-                        inst.save()
+                            inst.save()
             return redirect(self.get_success_url())
         else:
             messages.warning(self.request, formset.errors)
