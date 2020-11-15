@@ -275,22 +275,21 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
                 if self.request.POST.get(f"{week['day'].strftime('%W')}week") is not None:
                     weeks.append(self.request.POST.get(f"{week['day'].strftime('%W')}week"))
             for form in formset:
-                instance = form.save(commit=False)
-                # 1. using django ORM
-                qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=instance.day.isoweekday(), day__week__in=weeks, time=instance.time)
-                # 2. excepting which has sub_teahcer or inv_teacher
-                query = qs.filter(sub_teacher=None)&qs.filter(inv_teacher=None)
-                # 3. update subject
-                if form.cleaned_data['auto']:
-                    sub = self.auto_created_subject()
-                    for inst in query:
-                        inst.subject = sub
-                        if inst.sub_teacher is None or inst.inv_teacher is None:
+                if form.has_changed():
+                    instance = form.save(commit=False)
+                    # 1. using django ORM
+                    qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=instance.day.isoweekday(), day__week__in=weeks, time=instance.time)
+                    # 2. excepting which has sub_teahcer or inv_teacher
+                    query = qs.filter(sub_teacher=None)&qs.filter(inv_teacher=None)
+                    # 3. update subject
+                    if form.cleaned_data['auto']:
+                        sub = self.auto_created_subject()
+                        for inst in query:
+                            inst.subject = sub
                             inst.save()
-                else:
-                    for inst in query:
-                        inst.subject = instance.subject
-                        if inst.sub_teacher is None or inst.inv_teacher is None:
+                    else:
+                        for inst in query:
+                            inst.subject = instance.subject
                             inst.save()
             return redirect(self.get_success_url())
         else:
