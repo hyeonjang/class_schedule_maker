@@ -56,6 +56,12 @@ class HomeTableForm(forms.ModelForm):
                 self.fields['subject'].widget.attrs.update({'disabled':'true'})
                 self.fields['auto'].widget.attrs.update({'disabled':'true'})
 
+    def is_disabled(self):
+        if self.fields['subject'].widget.attrs:
+            if self.fields['subject'].widget.attrs['disabled']:
+                return True
+        return False
+
 class InvitedTableForm(forms.ModelForm):
     '''
     class doc

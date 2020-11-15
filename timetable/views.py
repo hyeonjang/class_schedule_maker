@@ -275,7 +275,7 @@ class HomeroomUpdate(LoginRequiredMixin, generic.UpdateView):
                 if self.request.POST.get(f"{week['day'].strftime('%W')}week") is not None:
                     weeks.append(self.request.POST.get(f"{week['day'].strftime('%W')}week"))
             for form in formset:
-                if form.has_changed():
+                if form.has_changed() and not form.is_disabled():
                     instance = form.save(commit=False)
                     # 1. using django ORM
                     qs = HomeTable.objects.filter(semester=self.get_semester(), teacher=self.request.user, day__iso_week_day=instance.day.isoweekday(), day__week__in=weeks, time=instance.time)
